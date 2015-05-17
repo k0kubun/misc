@@ -23,6 +23,7 @@ library
                      Handler.Common
                      Handler.Home
                      Handler.Echo
+                     Handler.Mirror
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
