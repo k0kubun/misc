@@ -1,9 +1,12 @@
 module Handler.Mirror where
 
 import Import
+import qualified Data.Text as T
 
 getMirrorR :: Handler Html
-getMirrorR = error "Not yet implemented: getMirrorR"
+getMirrorR = defaultLayout $(widgetFile "mirror")
 
 postMirrorR :: Handler Html
-postMirrorR = error "Not yet implemented: postMirrorR"
+postMirrorR = do
+  postedText <- runInputPost $ ireq textField "content"
+  defaultLayout $(widgetFile "posted")
