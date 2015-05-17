@@ -27,4 +27,13 @@ getBlogR = do
     $(widgetFile "articles")
 
 postBlogR :: Handler Html
-postBlogR = error "Not yet implemented: postBlogR"
+postBlogR = do
+  ((res, articleWidget), enctype) <- runFormPost entryForm
+  case res of
+    FormSuccess article -> do
+      articleId <- runDB $ insert article
+      setMessage $ toHtml $ (articleTitle article) <> " created"
+      redirect $ ArticleR articleId
+    _ -> defaultLayout $ do
+      setTitle "Please correct your entry form"
+      $(widgetFile "articleAddError")
