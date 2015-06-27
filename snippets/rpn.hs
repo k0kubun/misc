@@ -5,4 +5,8 @@ reduct :: [Double] -> String -> [Double]
 reduct (x:y:ys) "*" = (y * x):ys
 reduct (x:y:ys) "+" = (y + x):ys
 reduct (x:y:ys) "-" = (y - x):ys
-reduct xs str       = (read str):xs
+reduct (x:y:ys) "/" = (y / x):ys
+reduct (x:y:ys) "^" = (y ** x):ys
+reduct (x:xs)  "ln" = log x:xs
+reduct xs     "sum" = [sum xs]
+reduct xs str       = read str:xs
