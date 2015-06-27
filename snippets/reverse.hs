@@ -1,3 +1,4 @@
 reverse' :: [a] -> [a]
-reverse' []     = []
-reverse' (x:xs) = (reverse' xs) ++ [x]
+reverse' = foldl (\acc a -> a : acc) []
+-- reverse' []     = []
+-- reverse' (x:xs) = (reverse' xs) ++ [x]
