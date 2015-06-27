@@ -1,6 +1,6 @@
 qsort :: (Ord a) => [a] -> [a]
 qsort [] = []
 qsort (x:xs) =
-  let smaller = [a | a <- xs, a <= x]
-      larger  = [a | a <- xs, a > x]
+  let smaller = filter (<=x) xs
+      larger  = filter (>x) xs
   in  qsort smaller ++ [x] ++ qsort larger
