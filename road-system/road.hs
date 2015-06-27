@@ -5,6 +5,15 @@ type RoadSystem = [Section]
 data Label = A | B | C deriving Show
 type Path = [(Label, Int)]
 
+main :: IO ()
+main = do
+  contents <- getContents
+  let groups = groupsOf 3 (map read $ lines contents)
+      system = map (\[a, b, c] -> Section a b c) groups
+      result = fst $ foldl roadStep ([], []) system
+      out    = foldl (\str path -> str ++ (show $ fst path)) "" result
+      in putStrLn out
+
 startToGoal :: RoadSystem
 startToGoal = [ Section 50 10 30
               , Section 5  90 20
@@ -25,6 +34,6 @@ roadStep (pathA, pathB) (Section a b c) =
                  else pathA ++ [(A, a), (C, c)]
       in (nextA, nextB)
 
-result =
-  let (pathA, _) = foldl roadStep ([], []) startToGoal
-  in pathA
+groupsOf :: Int -> [a] -> [[a]]
+groupsOf _ [] = []
+groupsOf n xs = take n xs : groupsOf n (drop n xs)
