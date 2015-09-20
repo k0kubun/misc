@@ -142,7 +142,7 @@ int main(int argc, char *argv[], char *envp[])
 
         // Packet must be larger than ether header
         if (size < sizeof(struct ether_header)) {
-            fprintf(stderr, "read size(%d) < %d (size of struct ether_header)\n", size, sizeof(struct ether_header));
+            fprintf(stderr, "read size(%d) < %d (size of struct ether_header)\n", size, (int)sizeof(struct ether_header));
         }
 
         print_ether_header((struct ether_header *)buf, stdout);
