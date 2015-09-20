@@ -60,7 +60,22 @@ int init_raw_socket(char *device, int promisc_flag, int ip_only)
     }
 
     if (promisc_flag) {
-        // TODO
+        // get device flag
+        if (ioctl(soc, SIOCGIFFLAGS, &ifreq) < 0) {
+            perror("ioctl");
+            close(soc);
+            return -1;
+        }
+
+        // enable IFF_PROMISC
+        ifreq.ifr_flags = ifreq.ifr_flags|IFF_PROMISC;
+
+        // write SIOCSIFFLAGS
+        if (ioctl(soc, SIOCSIFFLAGS, &ifreq) < 0) {
+            perror("ioctl");
+            close(soc);
+            return -1;
+        }
     }
 
     return soc;
@@ -78,7 +93,7 @@ int print_ether_header(struct ether_header *eh, FILE *fp)
 {
     char buf[80];
 
-    fprintf(fp, "ether_header------------------------\n");
+    fprintf(fp, "[ether_header]---------------\n");
     fprintf(fp, "ether_dhost=%s\n", my_ether_ntoa_r(eh->ether_dhost, buf, sizeof(buf)));
     fprintf(fp, "ether_shost=%s\n", my_ether_ntoa_r(eh->ether_shost, buf, sizeof(buf)));
     fprintf(fp, "ether_type=%02X",  ntohs(eh->ether_type));
@@ -111,7 +126,7 @@ int main(int argc, char *argv[], char *envp[])
     }
 
     // get fd for data linking which dumps all packets
-    if ((soc = init_raw_socket(argv[1], 0, 0)) == -1) {
+    if ((soc = init_raw_socket(argv[1], 1, 0)) == -1) {
         fprintf(stderr, "init_raw_socket:error:%s\n", argv[1]);
         return -1;
     }
