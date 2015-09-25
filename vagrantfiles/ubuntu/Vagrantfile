@@ -46,6 +46,4 @@ Vagrant.configure(2) do |config|
   # config.vm.provision :itamae do |config|
   #   config.recipes = %w[recipe.rb]
   # end
-
-  config.vm.provision "shell", path: "../pubkey.sh"
 end

@@ -1,6 +1,4 @@
 # See https://github.com/AndrewDryga/vagrant-box-osx and own your risk.
 Vagrant.configure(2) do |config|
   config.vm.box = "http://files.dryga.com/boxes/osx-yosemite-0.2.1.box"
-
-  config.vm.provision "shell", path: "../pubkey.sh"
 end
