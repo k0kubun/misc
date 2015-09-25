@@ -42,8 +42,10 @@ Vagrant.configure(2) do |config|
   # config.vm.provision "chef_solo", run_list: "vagrant_book"
   # config.vm.provision "puppet"
 
-  # vagrant plugin install vagrant-itamae
-  config.vm.provision :itamae do |config|
-    config.recipes = %w[recipe.rb]
-  end
+  # # $ vagrant plugin install vagrant-itamae
+  # config.vm.provision :itamae do |config|
+  #   config.recipes = %w[recipe.rb]
+  # end
+
+  config.vm.provision "shell", path: "../pubkey.sh"
 end

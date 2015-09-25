@@ -1,0 +1,6 @@
+authorized_keys="/home/vagrant/.ssh/authorized_keys"
+public_key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdGHo6Ai3OMSV/Ip1UCxdi3STIgZ7Bru8jbF71n5mCPVwFBXBiFFMCJ4OGtaMijwA5T1vcRWXWU1e8n99g0LQklxPUwQgySxh35usU807pGyLvt3r5ZwGYCbOPASKshZG+pYv6g7hQw3ja23Nqdzmyi2hpf7pzuikg32fgpoDacBw712SnD7YJQM/Wn2jc5ssPcRsL9ExiZ1TnixJvoM+pylcJQQR3ElFBiuzlCEVnUFx5QjsmfX5U/ImAF8s5giDrn7U9jdcGUIHmqy6TwiNIggRsNNoj32onVL8KjOb9gR7ql/g4AKjOg8uPP9JMBdpSVTiXulwcd5+Ig3ub+gkl k0kubun@vagrant"
+
+if tail -n1 $authorized_keys | grep -vq "$public_key"; then
+  echo "$public_key" >> $authorized_keys
+fi
