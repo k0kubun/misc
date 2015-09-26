@@ -1,3 +1,6 @@
+GH_USER = ENV["GH_USER"] || "matsuu"
+BRANCH = ENV["BRANCH"] || "master"
+
 Vagrant.configure(2) do |config|
   config.vm.box = 'gce'
 
@@ -15,4 +18,22 @@ Vagrant.configure(2) do |config|
     override.ssh.username = 'takashi-kokubun'
     override.ssh.private_key_path = '~/.ssh/google_compute_engine'
   end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    set -e
+    sed -i".bak" -E "s@http://(us\.|)(archive|security)\.ubuntu\.com/ubuntu@http://ftp.jaist.ac.jp/pub/Linux/ubuntu@g" /etc/apt/sources.list
+    ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+    apt-get -y update
+    apt-get -y install git ansible
+
+    rm -rf ansible-isucon
+    git clone https://github.com/#{GH_USER}/ansible-isucon.git
+    (
+      cd ansible-isucon
+      git checkout #{BRANCH}
+      cd isucon4-qualifier-ubuntu
+      PYTHONUNBUFFERED=1 ANSIBLE_FORCE_COLOR=true ansible-playbook playbook.yml -i local
+    )
+    rm -rf ansible-isucon
+  SHELL
 end
