@@ -1,6 +1,3 @@
 Vagrant.configure(2) do |config|
-  config.vm.box = "arch64"
-  config.vm.box_url = "http://iweb.dl.sourceforge.net/project/flowboard-vagrant-boxes/arch64-2013-07-26-minimal.box"
-
-  config.vm.provision "shell", path: "../pubkey.sh"
+  config.vm.box = "k0kubun/archlinux"
 end
