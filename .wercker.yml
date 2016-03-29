@@ -25,6 +25,6 @@ build:
         - script:
             code: rbenv || true
         - script:
-            code: bundle exec itamae local rbenv:install
+            code: bundle exec itamae local rbenv::install
         - script:
             code: rbenv
