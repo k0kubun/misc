@@ -30,7 +30,7 @@ build:
             code: sudo dpkg -i vagrant_1.8.1_x86_64.deb
         - script:
             name: install libxml and libxslt
-            code: sudo apt-get install libxml2-dev libxslt1-dev
+            code: sudo apt-get install -y libxml2-dev libxslt1-dev
         - script:
             name: install vagrant-digitalocean
             code: NOKOGIRI_USE_SYSTEM_LIBRARIES=1 vagrant plugin install vagrant-digitalocean
