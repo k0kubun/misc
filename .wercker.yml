@@ -23,5 +23,6 @@ build:
     steps:
         - bundle-install
         - script:
-            name: apt-get update
-            code: apt-get update
+            code: ruby -v
+        - script:
+            code: ls -la
