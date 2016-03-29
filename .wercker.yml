@@ -34,13 +34,13 @@ build:
         - script:
             name: install vagrant-digitalocean
             code: NOKOGIRI_USE_SYSTEM_LIBRARIES=1 vagrant plugin install vagrant-digitalocean
-        - script:
+        - create-file:
             name: put public key
             filename: $HOME/.ssh/id_rsa.vagrant.pub
             overwrite: true
             hide-from-log: true
             content: $DIGITALOCEAN_PUBLIC_KEY
-        - script:
+        - create-file:
             name: put private key
             filename: $HOME/.ssh/id_rsa.vagrant
             overwrite: true
