@@ -23,6 +23,8 @@ build:
     steps:
         - bundle-install
         - script:
-            code: ruby -v
+            code: rbenv || true
         - script:
-            code: ls -la
+            code: bundle exec itamae local rbenv:install
+        - script:
+            code: rbenv
