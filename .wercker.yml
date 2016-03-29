@@ -35,5 +35,17 @@ build:
             name: install vagrant-digitalocean
             code: NOKOGIRI_USE_SYSTEM_LIBRARIES=1 vagrant plugin install vagrant-digitalocean
         - script:
+            name: put public key
+            filename: $HOME/.ssh/id_rsa.vagrant.pub
+            overwrite: true
+            hide-from-log: true
+            content: $DIGITALOCEAN_PUBLIC_KEY
+        - script:
+            name: put private key
+            filename: $HOME/.ssh/id_rsa.vagrant
+            overwrite: true
+            hide-from-log: true
+            content: $DIGITALOCEAN_PRIVATE_KEY
+        - script:
             name: start vm
             code: vagrant up --provider=digital_ocean
