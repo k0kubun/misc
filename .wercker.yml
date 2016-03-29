@@ -23,8 +23,17 @@ build:
     steps:
         - bundle-install
         - script:
-            code: rbenv || true
+            name: download vagrant
+            code: wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb
         - script:
-            code: bundle exec itamae local rbenv::install
+            name: install vagrant
+            code: sudo dpkg -i vagrant_1.8.1_x86_64.deb
         - script:
-            code: rbenv
+            name: install libxml and libxslt
+            code: sudo apt-get install libxml2-dev libxslt1-dev
+        - script:
+            name: install vagrant-digitalocean
+            code: NOKOGIRI_USE_SYSTEM_LIBRARIES=1 vagrant plugin install vagrant-digitalocean
+        - script:
+            name: start vm
+            code: vagrant up --provider=digital_ocean
