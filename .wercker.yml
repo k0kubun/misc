@@ -34,6 +34,9 @@ build:
         - script:
             name: install vagrant-digitalocean
             code: NOKOGIRI_USE_SYSTEM_LIBRARIES=1 vagrant plugin install vagrant-digitalocean
+        - script:
+            name: create ssh dir
+            code: mkdir $HOME/.ssh && chmod 600 $HOME/.ssh
         - create-file:
             name: put public key
             filename: $HOME/.ssh/id_rsa.vagrant.pub
