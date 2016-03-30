@@ -7,7 +7,6 @@ Vagrant.configure(2) do |config|
       override.vm.box = 'digital_ocean'
       override.vm.box_url = 'https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box'
 
-      provider.ssh_key_name = 'vagrant/wercker/itamae'
       provider.token = ENV['DIGITALOCEAN_TOKEN']
       provider.image = 'ubuntu-14-04-x64' # ubuntu
       provider.region = 'nyc3'
