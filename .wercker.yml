@@ -39,13 +39,13 @@ build:
             filename: $HOME/.ssh/id_rsa.vagrant.pub
             overwrite: true
             hide-from-log: true
-            content: $DIGITALOCEAN_PUBLIC_KEY
+            content: $DIGITALOCEAN_PUBLIC
         - create-file:
             name: put private key
             filename: $HOME/.ssh/id_rsa.vagrant
             overwrite: true
             hide-from-log: true
-            content: $DIGITALOCEAN_PRIVATE_KEY
+            content: $DIGITALOCEAN_PRIVATE
         - script:
             name: start vm
             code: vagrant up --provider=digital_ocean
