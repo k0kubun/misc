@@ -1,0 +1,17 @@
+PATH
+  remote: /home/k0kubun/src/github.com/k0kubun/libx11-ruby
+  specs:
+    libx11 (0.1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  libx11!
+
+BUNDLED WITH
+   1.11.2
