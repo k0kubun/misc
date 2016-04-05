@@ -1,3 +1,6 @@
 source 'https://rubygems.org'
 
 gem 'libx11', path: '/home/k0kubun/src/github.com/k0kubun/libx11-ruby'
+
+gem 'pry-byebug'
+gem 'pry-doc'
