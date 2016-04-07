@@ -1,7 +1,7 @@
 PATH
   remote: /home/k0kubun/src/github.com/k0kubun/libx11-ruby
   specs:
-    libx11 (0.1.0)
+    libx11 (0.0.1)
 
 GEM
   remote: https://rubygems.org/
