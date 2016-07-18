@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM k0kubun/llvm35
 MAINTAINER Takashi Kokubun <takashikkbn@gmail.com>
 
-RUN apt-get update && apt-get install -qq flex bison libc6-dev-i386
+RUN apt-get install -qq flex bison libc6-dev-i386
