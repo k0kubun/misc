@@ -1,10 +1,14 @@
 sudo: required
-language: c
+language: ruby
+branches:
+  only:
+    - master
 services:
   - docker
-
-before_install:
-  - docker build -t misc .
-
+env:
+  - TARGET_CONTAINER_ID=test-container
+before_script:
+  - docker build -t test-image .
+  - docker run -d --name $TARGET_CONTAINER_ID test-image
 script:
-  - docker run misc echo hello
+  - bundle exec rspec
