@@ -6,9 +6,9 @@ branches:
 services:
   - docker
 env:
-  - TARGET_CONTAINER_ID=test-container
+  - DOCKER_CONTAINER=test-container
 before_script:
   - docker build -t test-image .
-  - docker run -d --name $TARGET_CONTAINER_ID test-image
+  - docker run -d --name $DOCKER_CONTAINER test-image
 script:
   - bundle exec rspec
