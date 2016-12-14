@@ -9,9 +9,9 @@ Gem::Specification.new do |s|
   s.version     = Sample::VERSION
   s.authors     = ["Takashi Kokubun"]
   s.email       = ["takashi-kokubun@cookpad.com"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of Sample."
-  s.description = "TODO: Description of Sample."
+  s.homepage    = ""
+  s.summary     = ""
+  s.description = ""
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
