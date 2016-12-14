@@ -4,3 +4,13 @@
 require_relative 'config/application'
 
 Rails.application.load_tasks
+
+task engine_bug: :environment do
+  context = Class.new do
+    include Rails.application.routes.url_helpers
+    include Rails.application.routes.mounted_helpers
+  end.new
+
+  p context.a_sample.root_path
+  p context.b_sample.root_path
+end
