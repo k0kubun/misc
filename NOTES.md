@@ -17,6 +17,14 @@
          - 依存解決ができる
      - Gradle (build.gradle)
          - デファクトスタンダードらしい
+         - Groovy DSL
+         - Mavenリポジトリによる依存解決
+         - メンバーやビルド環境間でのビルドツールのバージョンを揃えられる (Gradle Wrapper)
+     - Bazel (WORKSPACE, BUILD)
+         - 元はGoogleの社内ツール
+         - 速い？
+     - SBT (build.sbt)
+         - Scalaでのデファクトスタンダード
   - jarとは
      - classファイル(バイトコード)の入ったzip
          - zipは先頭に何がついていてもいいのでshebangを書けなくもない
