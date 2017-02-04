@@ -57,11 +57,11 @@
          - 名前がJava SEに変更。バージョン番号から「.0」部分を廃止。
          - [With the versions of the platform shipped early 2006, the Java name lost the "2", and the "dot zero".](http://www.oracle.com/technetwork/java/javase/overview/javanaming-2227065.html)
          - [dropping the "2" from the next releases better reflects the level of maturity, stability, scalability and security built into the Java platform. In addition, by eliminating the "2", we also eliminate version confusion: e.g. Java 2 Platform, Enterprise Edition 6, and we won't leave anybody wondering when Java 3, Java 4, Java 5 are coming!](http://www.oracle.com/technetwork/java/javase/overview/javanaming-2227065.html)
-         - Scripting for the Java Platform, Unicode正規化, AWS・Swingの高速化
+         - Scripting for the Java Platform, Unicode正規化, AWT・Swingの高速化
      - Java SE 6 Update 10 (2008/10/22)
          - なぜかUpdate 8と9が省略されたらしい
          - 動作速度が改善
-     - Java SE 7 (2011/7/28) Dlphin
+     - Java SE 7 (2011/7/28) Dolphin
          - OracleのSun買収後最初のリリース
          - invokedynamicの追加, Phasers
      - Java SE 8 (2014/3/13)
