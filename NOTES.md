@@ -1,0 +1,57 @@
+# Notes
+
+- Java
+  - WAF
+     - Spring Framework
+     - Spring Boot
+  - GUIツールキット
+     - AWT
+     - Swing
+  - ビルドツール
+     - Ant (build.xml)
+         - Java向けでJava製
+         - Eclipseにデフォルトで組み込まれている
+     - Maven (pom.xml)
+         - Antの後継
+         - セントラルリポジトリとしてのMavenもある
+         - 依存解決ができる
+     - Gradle (build.gradle)
+         - デファクトスタンダードらしい
+  - jarとは
+     - classファイル(バイトコード)の入ったzip
+         - zipは先頭に何がついていてもいいのでshebangを書けなくもない
+     - Javaでは基本 `java -jar foo.jar` でプログラムを実行する
+  - エディション (各エディションがJDK, JRE両方持つ)
+     - Java SE (Standard Edition)
+         - 汎用 (ワークステーション、パーソナルコンピュータ、サーバ)
+     - Java EE (Enterprise Edition)
+         - SEに加え、大規模システムを開発するためのAPIが追加されている
+     - Java ME (Micro Edition)
+         - 組み込みシステム向け
+  - バージョン
+     - JDK 1.0 (1996/1/23)
+     - JDK 1.1 (1997/2/19)
+     - J2SE 1.2 (1993/12/8) Playground
+         - ここからJava 2として呼ばれ始める。J2SE 5.0までJava 2と呼ばれる
+         - エディション名がJava 2 Platform Standard Editionに変わった
+              - EE, MEの基にもなっている
+     - J2SE 1.3 (2000/5/8) Kestrel
+     - J2SE 1.4 (2002/2/6) Merlin
+     - J2SE 5.0 (2004/9/30) Tiger
+         - 本当はJ2SE 1.5のはずのもの。1.5.0がdeveloper version、5.0がproduct versionという扱いになった。
+         - [The number "5.0" was arrived at by dropping the leading "1." from "1.5.0". Where you might have expected to see 1.5.0, it is now 5.0](http://docs.oracle.com/javase/1.5.0/docs/relnotes/version-5.0.html)
+     - Java SE 6 (2006/12/11) Mustang
+         - 名前がJava SEに変更。バージョン番号から「.0」部分を廃止。
+         - [With the versions of the platform shipped early 2006, the Java name lost the "2", and the "dot zero".](http://www.oracle.com/technetwork/java/javase/overview/javanaming-2227065.html)
+         - [dropping the "2" from the next releases better reflects the level of maturity, stability, scalability and security built into the Java platform. In addition, by eliminating the "2", we also eliminate version confusion: e.g. Java 2 Platform, Enterprise Edition 6, and we won't leave anybody wondering when Java 3, Java 4, Java 5 are coming!](http://www.oracle.com/technetwork/java/javase/overview/javanaming-2227065.html)
+     - Java SE 6 Update 10 (2008/10/22)
+         - なぜかUpdate 8と9が省略されたらしい
+     - Java SE 7 (2011/7/28) Dlphin
+         - OracleのSun買収後最初のリリース
+         - invokedynamicの追加
+     - Java SE 8 (2014/3/13)
+         - ラムダ式
+         - 型アノテーション
+         - 高速JavaScriptエンジン Nashorn
+     - Java SE 9 (2017/3/23予定)
+         - 言語レベルでのモジュール化 (Project Jigsaw)
