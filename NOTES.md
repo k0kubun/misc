@@ -63,7 +63,7 @@
          - 動作速度が改善
      - Java SE 7 (2011/7/28) Dolphin
          - OracleのSun買収後最初のリリース
-         - invokedynamicの追加, Phasers
+         - invokedynamic, ダイヤモンドオペレータ
      - Java SE 8 (2014/3/13)
          - ラムダ式, 型アノテーション, 高速JavaScriptエンジン Nashorn
      - Java SE 9 (2017/3/23予定)
