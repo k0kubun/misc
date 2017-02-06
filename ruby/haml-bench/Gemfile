@@ -1,7 +1,16 @@
 source 'https://rubygems.org'
 
+haml_path = %w[
+  /home/k0kubun/src/github.com/haml/haml
+  /Users/k0kubun/src/github.com/haml/haml
+].find { |path| Dir.exist?(path) }
+if haml_path
+  gem 'haml', path: haml_path
+else
+  gem 'haml', github: 'haml/haml', ref: 'ed361008151d14c1168a7804f7f2a0d4a414e423'
+end
+
 gem 'faml'
-gem 'haml'
 gem 'hamlit'
 
 gem 'benchmark-ips', '2.3.0'

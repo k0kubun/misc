@@ -15,6 +15,6 @@ puts
 # puts "=======================[faml]==============================="
 # puts Pry.Code(faml_src).highlighted
 # puts
-puts "=======================[hamlit]============================="
-puts Pry.Code(hamlit_src).highlighted
-puts
+#puts "=======================[hamlit]============================="
+#puts Pry.Code(hamlit_src).highlighted
+#puts
