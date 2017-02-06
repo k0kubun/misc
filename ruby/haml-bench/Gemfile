@@ -1,0 +1,10 @@
+source 'https://rubygems.org'
+
+gem 'faml'
+gem 'haml'
+gem 'hamlit'
+
+gem 'benchmark-ips', '2.3.0'
+gem 'pry-byebug'
+gem 'stackprof'
+gem 'lineprof'
