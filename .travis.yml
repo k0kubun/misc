@@ -1,14 +1,18 @@
-sudo: required
 language: ruby
-branches:
-  only:
-    - master
-services:
-  - docker
+
+rvm:
+  - 1.9.3
+  - ruby-head
+  - jruby-19mode
+
+sudo: false
+
 env:
-  - DOCKER_CONTAINER=test-container
-before_script:
-  - docker build -t test-image .
-  - docker run -d --name $DOCKER_CONTAINER test-image
-script:
-  - bundle exec rspec
+  - ESCAPE_UTILS=1
+  - ""
+
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+    - rvm: jruby-19mode
+      env: ESCAPE_UTILS=1
