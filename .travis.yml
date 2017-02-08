@@ -3,7 +3,7 @@ language: ruby
 rvm:
   - 1.9.3
   - ruby-head
-  - jruby-19mode
+  - rbx-2
 
 sudo: false
 
@@ -15,5 +15,5 @@ matrix:
   allow_failures:
     - rvm: ruby-head
   exclude:
-    - rvm: jruby-19mode
+    - rvm: rbx-2
       env: ESCAPE_UTILS=1
