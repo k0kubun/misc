@@ -3,7 +3,8 @@ language: ruby
 rvm:
   - 1.9.3
   - ruby-head
-  - rbx-2
+  - rbx
+  - rbx-3
 
 sudo: false
 
@@ -15,5 +16,7 @@ matrix:
   allow_failures:
     - rvm: ruby-head
   exclude:
-    - rvm: rbx-2
+    - rvm: rbx
+      env: ESCAPE_UTILS=1
+    - rvm: rbx-3
       env: ESCAPE_UTILS=1
