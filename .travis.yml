@@ -1,13 +1,12 @@
 language: ruby
+cache: bundler
+dist: trusty
+sudo: false
 
 rvm:
   - 1.9.3
   - ruby-head
-  - rbx-2.2.2
-  - rbx-2.2.6
-  - rbx-2.2.7
-
-sudo: false
+  - rbx-2
 
 env:
   - ESCAPE_UTILS=1
@@ -16,13 +15,7 @@ env:
 matrix:
   allow_failures:
     - rvm: ruby-head
-    - rvm: rbx-2.2.2
-    - rvm: rbx-2.2.6
-    - rvm: rbx-2.2.7
+    - rvm: rbx-2
   exclude:
-    - rvm: rbx-2.2.2
-      env: ESCAPE_UTILS=1
-    - rvm: rbx-2.2.6
-      env: ESCAPE_UTILS=1
-    - rvm: rbx-2.2.7
+    - rvm: rbx-2
       env: ESCAPE_UTILS=1
