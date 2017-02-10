@@ -1,12 +1,14 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    mime-types-data (3.2016.0521)
     rake (12.0.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  mime-types-data (= 3.2016.0521)
   rake
 
 BUNDLED WITH

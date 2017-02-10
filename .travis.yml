@@ -1,22 +1,22 @@
 language: ruby
 cache: bundler
-dist: trusty
+#dist: trusty
 sudo: false
 
 rvm:
-  - 2.4.0
-  - 2.3.3
-  - 2.2.6
-  - 2.1.10
-  - 2.0.0
-  - ruby-head
   - jruby-9.1.7.0
   - jruby-19mode
-  - rbx-3
+  #- 2.4.0
+  #- 2.3.3
+  #- 2.2.6
+  #- 2.1.10
+  #- 2.0.0
+  #- ruby-head
+  #- rbx-3
 
-matrix:
-  allow_failures:
-    - rvm: ruby-head
-    - rvm: rbx-3
-    - rvm: jruby-19mode
-    - rvm: jruby-9.1.7.0
+#matrix:
+#  allow_failures:
+#    - rvm: ruby-head
+#    - rvm: rbx-3
+#    - rvm: jruby-19mode
+#    - rvm: jruby-9.1.7.0
