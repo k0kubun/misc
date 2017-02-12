@@ -17,7 +17,8 @@
         - SAStrutsなどのサブプロジェクトがある
         - 2016/9/26 End of life
      - その他
-        - [perwendel/spark](https://github.com/perwendel/spark) for Java 8. Sinatraっぽい奴
+        - Dropwizard. Yammerが使ってるらしい
+        - [perwendel/spark](https://github.com/perwendel/spark). For Java 8. Sinatraっぽい奴
   - DIコンテナ
      - Spring Framework
      - Java Platform, Enterprise Edition (EJB, CDI)
