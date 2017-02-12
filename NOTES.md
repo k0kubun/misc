@@ -1,9 +1,31 @@
 # Notes
 
 - Java
-  - WAF
+  - Webアプリケーションフレームワーク
      - Spring Framework
-     - Spring Boot
+        - Spring Boot
+     - Java EE
+        - JSP/Servlet → JSF/Backing Bean
+     - Play Framework
+        - Railsに影響を受けている
+     - Struts2
+        - Struts1は2005年くらいのデファクトスタンダード
+        - 脆弱性が何度も報告されており、Struts2ももう下火っぽい
+     - Seaser2
+        - SAStrutsなどのサブプロジェクトがある
+        - 2016/9/26 End of life
+     - その他
+        - [perwendel/spark](https://github.com/perwendel/spark) for Java 8. Sinatraっぽい奴
+  - DIコンテナ
+     - Java Platform, Enterprise Edition (EJB, CDI)
+     - Spring Framework
+     - Seaser2
+     - Google Guice
+     - Dagger
+  - ORM
+     - Hibernate
+  - サーブレットコンテナ
+     - Apache Tomcat
   - GUIツールキット
      - AWT
      - Swing
