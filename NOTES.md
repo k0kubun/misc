@@ -17,11 +17,11 @@
      - その他
         - [perwendel/spark](https://github.com/perwendel/spark) for Java 8. Sinatraっぽい奴
   - DIコンテナ
-     - Java Platform, Enterprise Edition (EJB, CDI)
      - Spring Framework
-     - Seaser2
+     - Java Platform, Enterprise Edition (EJB, CDI)
      - Google Guice
      - Dagger
+     - Seaser2
   - ORM
      - Hibernate
   - サーブレットコンテナ
