@@ -8,6 +8,8 @@
         - JSP/Servlet → JSF/Backing Bean
      - Play Framework
         - Railsに影響を受けている
+     - JAX-RS
+        - Java API for RESTful Web Services
      - Struts2
         - Struts1は2005年くらいのデファクトスタンダード
         - 脆弱性が何度も報告されており、Struts2ももう下火っぽい
