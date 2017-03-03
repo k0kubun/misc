@@ -13,8 +13,8 @@ class RepositoryFinder
   end
 
   # @return [Array<String>] full_names
-  def source_repos(username)
-    source_repos = client.repos(username).reject { |r| r[:fork] }
+  def org_repos(orgname)
+    source_repos = client.org_repos(orgname).reject { |r| r[:fork] }
     source_repos.map { |r| r[:full_name] }
   end
 
@@ -25,7 +25,7 @@ class RepositoryFinder
   end
 end
 
-full_names = RepositoryFinder.new.source_repos('treasure-data')
+full_names = RepositoryFinder.new.org_repos('treasure-data')
 full_names.each do |full_name|
   script = "ghq get github.com:#{full_name}"
   puts ">>> #{script}"
