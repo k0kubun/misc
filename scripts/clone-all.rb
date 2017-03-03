@@ -13,6 +13,13 @@ class RepositoryFinder
   end
 
   # @return [Array<String>] full_names
+  def user_repos(username)
+    source_repos = client.repos(username).reject { |r| r[:fork] }
+    source_repos.map { |r| r[:full_name] }
+  end
+
+  # user_repos can't find private repositories for organization
+  # @return [Array<String>] full_names
   def org_repos(orgname)
     source_repos = client.org_repos(orgname).reject { |r| r[:fork] }
     source_repos.map { |r| r[:full_name] }
@@ -25,8 +32,10 @@ class RepositoryFinder
   end
 end
 
-full_names = RepositoryFinder.new.org_repos('treasure-data')
-full_names.each do |full_name|
+org_repos = RepositoryFinder.new.org_repos('treasure-data').sort
+my_repos = RepositoryFinder.new.user_repos('k0kubun').sort
+
+(org_repos + my_repos).each do |full_name|
   script = "ghq get github.com:#{full_name}"
   puts ">>> #{script}"
   system(script) || $stderr.puts("Failed to clone #{full_name}!")
