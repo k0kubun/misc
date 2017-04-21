@@ -16,7 +16,7 @@ mkdir -p "${HOME}/.llvmenv/debug-versions/${version}"
 pushd "${HOME}/.llvmenv/debug-build/${version}" > /dev/null
 
 "../../src/llvm-${version}/configure" "--prefix=${HOME}/.llvmenv/debug-versions/${version}" --disable-optimized --enable-assertions --enable-debug-runtime --enable-debug-symbols
-make -j8
+make -j4
 make install
 
 popd > /dev/null
