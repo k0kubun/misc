@@ -1,0 +1,53 @@
+#!/bin/bash -e
+
+version="$1"
+if [ -z $1 ]; then
+  echo "usage: llvm-build [version]"
+  echo "http://releases.llvm.org/download.html"
+  exit 1
+fi
+
+mkdir -p "${HOME}/.llvmenv/archives"
+mkdir -p "${HOME}/.llvmenv/src"
+mkdir -p "${HOME}/.llvmenv/build/"
+
+function download() {
+  local url="$1"
+  local path="$2"
+  if [ ! -f "$path" ]; then
+    echo "downloading from ${url} to ${path}..."
+    wget "$url" -O "$path"
+  fi
+}
+download "http://releases.llvm.org/${version}/llvm-${version}.src.tar.xz"        "${HOME}/.llvmenv/archives/llvm-${version}.tar.xz"
+download "http://releases.llvm.org/${version}/cfe-${version}.src.tar.xz"         "${HOME}/.llvmenv/archives/cfe-${version}.tar.xz"
+download "http://releases.llvm.org/${version}/compiler-rt-${version}.src.tar.xz" "${HOME}/.llvmenv/archives/compiler-rt-${version}.tar.xz"
+
+function extract() {
+  local xz_path="$1"
+  local tar_path="$2"
+  local src_path="$3"
+
+  if [ ! -d "$src_path" ]; then
+    echo "extracting from ${xz_path} to ${src_path}..."
+    pushd "${HOME}/.llvmenv/archives" > /dev/null
+    xz -dk "$xz_path"
+    tar xf "$tar_path" -C ../src
+    popd > /dev/null
+  fi
+}
+extract "llvm-${version}.tar.xz"        "llvm-${version}.tar"        "${HOME}/.llvmenv/src/llvm-${version}.src"
+extract "cfe-${version}.tar.xz"         "cfe-${version}.tar"         "${HOME}/.llvmenv/src/cfe-${version}.src"
+extract "compiler-rt-${version}.tar.xz" "compiler-rt-${version}.tar" "${HOME}/.llvmenv/src/compiler-rt-${version}.src"
+
+function copy() {
+  src="$1"
+  dest="$2"
+  if [ ! -d "$dest" ]; then
+    echo "copying from ${src} to ${dest}..."
+    cp -a "$src" "$dest"
+  fi
+}
+copy "${HOME}/.llvmenv/src/llvm-${version}.src"        "${HOME}/.llvmenv/build/llvm-${version}"
+copy "${HOME}/.llvmenv/src/cfe-${version}.src"         "${HOME}/.llvmenv/build/llvm-${version}/tools/clang"
+copy "${HOME}/.llvmenv/src/compiler-rt-${version}.src" "${HOME}/.llvmenv/build/llvm-${version}/projects/compiler-rt"
