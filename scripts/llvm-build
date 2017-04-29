@@ -1,0 +1,22 @@
+#!/bin/bash -e
+
+version="$1"
+if [ -z $1 ]; then
+  echo "usage: llvm-build [version]"
+  echo "http://releases.llvm.org/download.html"
+  exit 1
+fi
+
+here="$(cd "$(dirname $0)"; pwd)"
+"$here/llvm-download" "${version}"
+
+mkdir -p "${HOME}/.llvmenv/build/${version}"
+mkdir -p "${HOME}/.llvmenv/versions/${version}"
+
+pushd "${HOME}/.llvmenv/build/${version}" > /dev/null
+
+"../../src/llvm-${version}/configure" "--prefix=${HOME}/.llvmenv/versions/${version}" --disable-optimized --enable-assertions --enable-debug-runtime --enable-debug-symbols
+make -j4
+make install
+
+popd > /dev/null

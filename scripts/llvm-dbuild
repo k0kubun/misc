@@ -10,12 +10,12 @@ fi
 here="$(cd "$(dirname $0)"; pwd)"
 "$here/llvm-download" "${version}"
 
-mkdir -p "${HOME}/.llvmenv/debug-build/${version}"
-mkdir -p "${HOME}/.llvmenv/debug-versions/${version}"
+mkdir -p "${HOME}/.llvmenv/dbuild/${version}"
+mkdir -p "${HOME}/.llvmenv/dversions/${version}"
 
-pushd "${HOME}/.llvmenv/debug-build/${version}" > /dev/null
+pushd "${HOME}/.llvmenv/dbuild/${version}" > /dev/null
 
-"../../src/llvm-${version}/configure" "--prefix=${HOME}/.llvmenv/debug-versions/${version}" --disable-optimized --enable-assertions --enable-debug-runtime --enable-debug-symbols
+"../../src/llvm-${version}/configure" "--prefix=${HOME}/.llvmenv/dversions/${version}" --disable-optimized --enable-assertions --enable-debug-runtime --enable-debug-symbols
 make -j4
 make install
 
