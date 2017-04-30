@@ -15,7 +15,7 @@ mkdir -p "${HOME}/.llvmenv/versions/${version}"
 
 pushd "${HOME}/.llvmenv/build/${version}" > /dev/null
 
-"../../src/llvm-${version}/configure" "--prefix=${HOME}/.llvmenv/versions/${version}" --disable-optimized --enable-assertions --enable-debug-runtime --enable-debug-symbols
+"../../src/llvm-${version}/configure" "--prefix=${HOME}/.llvmenv/versions/${version}" "--enable-optimized"
 make -j4
 make install
 
