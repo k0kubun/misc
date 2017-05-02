@@ -20,7 +20,7 @@ function download() {
 }
 download "http://releases.llvm.org/${version}/llvm-${version}.src.tar.xz"        "${HOME}/.llvmenv/archives/llvm-${version}.tar.xz"
 download "http://releases.llvm.org/${version}/cfe-${version}.src.tar.xz"         "${HOME}/.llvmenv/archives/cfe-${version}.tar.xz"
-#download "http://releases.llvm.org/${version}/compiler-rt-${version}.src.tar.xz" "${HOME}/.llvmenv/archives/compiler-rt-${version}.tar.xz"
+download "http://releases.llvm.org/${version}/compiler-rt-${version}.src.tar.xz" "${HOME}/.llvmenv/archives/compiler-rt-${version}.tar.xz"
 
 function extract() {
   local xz_path="$1"
@@ -39,4 +39,4 @@ function extract() {
 }
 extract "llvm-${version}.tar.xz"        "llvm-${version}.tar"        "llvm-${version}.src"        "${HOME}/.llvmenv/src/llvm-${version}"
 extract "cfe-${version}.tar.xz"         "cfe-${version}.tar"         "cfe-${version}.src"         "${HOME}/.llvmenv/src/llvm-${version}/tools/clang"
-#extract "compiler-rt-${version}.tar.xz" "compiler-rt-${version}.tar" "compiler-rt-${version}.src" "${HOME}/.llvmenv/src/llvm-${version}/projects/compiler-rt"
+extract "compiler-rt-${version}.tar.xz" "compiler-rt-${version}.tar" "compiler-rt-${version}.src" "${HOME}/.llvmenv/src/llvm-${version}/projects/compiler-rt"
