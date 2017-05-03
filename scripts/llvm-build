@@ -15,7 +15,7 @@ mkdir -p "${HOME}/.llvmenv/versions/${version}"
 
 pushd "${HOME}/.llvmenv/build/${version}" > /dev/null
 
-"../../src/llvm-${version}/configure" "--prefix=${HOME}/.llvmenv/versions/${version}" "--enable-optimized"
+cmake -G "Unix Makefiles" "-DCMAKE_INSTALL_PREFIX=${HOME}/.llvmenv/versions/${version}" -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_ASSERTIONS=No "../../src/llvm-${version}"
 make -j4
 make install
 
