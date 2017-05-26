@@ -9,7 +9,10 @@ RUN apt-get update && apt-get install -y \
   git
 
 # Build ruby
-RUN git clone https://github.com/ruby/ruby /ruby && cd /ruby && autoreconf
-RUN mkdir /ruby-build && cd /ruby-build && ../ruby/configure
-WORKDIR /ruby-build
-RUN make -j4 && make install
+RUN git clone https://github.com/ruby/ruby /ruby
+WORKDIR /ruby
+
+#RUN autoreconf
+#RUN mkdir /ruby-build && cd /ruby-build && ../ruby/configure
+#WORKDIR /ruby-build
+#RUN make -j4 && make install
