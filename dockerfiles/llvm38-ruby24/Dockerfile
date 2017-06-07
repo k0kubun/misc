@@ -17,6 +17,6 @@ RUN apt-get update && apt-get install -y \
   libgdbm-dev
 
 COPY ruby /ruby
-RUN cd /ruby && ./configure && make -j4 && make install
+RUN cd /ruby && autoreconf && ./configure && make -j4 && make install
 
 RUN gem install bundler
