@@ -22,6 +22,7 @@ repositories {
 dependencies {
     // This dependency is found on compile classpath of this component and consumers.
     compile 'com.google.guava:guava:21.0'
+    compile 'com.treasuredata.client:td-client:0.7.38'
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
