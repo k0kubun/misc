@@ -144,6 +144,7 @@ struct ruby_cmdline_options {
     unsigned int do_split: 1;
     unsigned int do_search: 1;
     unsigned int setids: 2;
+    unsigned int cjit: 1;
 };
 
 static void init_ids(ruby_cmdline_options_t *);
@@ -237,6 +238,7 @@ usage(const char *name, int help)
 	M("-w",		   "",			   "turn warnings on for your script"),
 	M("-W[level=2]",   "",			   "set warning level; 0=silence, 1=medium, 2=verbose"),
 	M("-x[directory]", "",			   "strip off text before #!ruby line and perhaps cd to directory"),
+	M("-j",		   ", --jit",		   "use CJIT with default options"),
 	M("-h",		   "",			   "show this message, --help for more info"),
     };
     static const struct message help_msg[] = {
@@ -1069,6 +1071,10 @@ proc_options(long argc, char **argv, ruby_cmdline_options_t *opt, int envopt)
 	    if (envopt) goto noenvopt;
 	    forbid_setid("-i");
 	    ruby_set_inplace_mode(s + 1);
+	    break;
+
+	  case 'j':
+	    opt->cjit = TRUE;
 	    break;
 
 	  case 'x':
