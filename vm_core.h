@@ -413,6 +413,8 @@ struct rb_iseq_constant_body {
     unsigned int ci_kw_size;
     unsigned int line_info_size;
     unsigned int stack_max; /* for stack overflow check */
+
+    void *jit_func;
 };
 
 /* T_IMEMO/iseq */
