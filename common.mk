@@ -90,6 +90,7 @@ COMMONOBJS    = array.$(OBJEXT) \
 		inits.$(OBJEXT) \
 		io.$(OBJEXT) \
 		iseq.$(OBJEXT) \
+		jit.$(OBJEXT) \
 		load.$(OBJEXT) \
 		marshal.$(OBJEXT) \
 		math.$(OBJEXT) \
@@ -1924,6 +1925,10 @@ iseq.$(OBJEXT): {$(VPATH)}util.h
 iseq.$(OBJEXT): {$(VPATH)}vm_core.h
 iseq.$(OBJEXT): {$(VPATH)}vm_debug.h
 iseq.$(OBJEXT): {$(VPATH)}vm_opts.h
+jit.$(OBJEXT): {$(VPATH)}internal.h
+jit.$(OBJEXT): {$(VPATH)}vm_core.h
+jit.$(OBJEXT): {$(VPATH)}jit.c
+jit.$(OBJEXT): {$(VPATH)}jit.h
 load.$(OBJEXT): $(CCAN_DIR)/check_type/check_type.h
 load.$(OBJEXT): $(CCAN_DIR)/container_of/container_of.h
 load.$(OBJEXT): $(CCAN_DIR)/list/list.h
@@ -2392,6 +2397,7 @@ ruby.$(OBJEXT): {$(VPATH)}id.h
 ruby.$(OBJEXT): {$(VPATH)}intern.h
 ruby.$(OBJEXT): {$(VPATH)}internal.h
 ruby.$(OBJEXT): {$(VPATH)}io.h
+ruby.$(OBJEXT): {$(VPATH)}jit.h
 ruby.$(OBJEXT): {$(VPATH)}method.h
 ruby.$(OBJEXT): {$(VPATH)}missing.h
 ruby.$(OBJEXT): {$(VPATH)}node.h
