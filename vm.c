@@ -299,6 +299,7 @@ static rb_serial_t ruby_vm_global_method_state = 1;
 static rb_serial_t ruby_vm_global_constant_state = 1;
 static rb_serial_t ruby_vm_class_serial = 1;
 
+#include "jit.h"
 #include "vm_insnhelper.h"
 #include "vm_exec.h"
 #include "vm_insnhelper.c"
@@ -1791,7 +1792,8 @@ vm_exec(rb_thread_t *th)
     _tag.retval = Qnil;
     if ((state = EXEC_TAG()) == TAG_NONE) {
       vm_loop_start:
-	result = vm_exec_core(th, initial);
+	if ((result = jit_exec(th)) == Qundef)
+	    result = vm_exec_core(th, initial);
 	VM_ASSERT(th->ec.tag == &_tag);
 	if ((state = _tag.state) != TAG_NONE) {
 	    err = (struct vm_throw_data *)result;
