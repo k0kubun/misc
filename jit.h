@@ -7,8 +7,7 @@ enum rb_jit_iseq_func {
 #define JIT_MIN_PROFILE_CALLS 5
 #define JIT_MAX_ISEQ_SIZE 1000
 
-//typedef VALUE (*jit_func_t)(rb_thread_t *, rb_control_frame_t *);
-typedef int (*jit_func_t)();
+typedef VALUE (*jit_func_t)(rb_thread_t *, rb_control_frame_t *);
 
 extern int jit_enabled;
 
@@ -34,15 +33,19 @@ jit_exec(rb_thread_t *th)
 	    if (profile_calls == JIT_MIN_PROFILE_CALLS &&
 		(body->type == ISEQ_TYPE_METHOD || body->type == ISEQ_TYPE_BLOCK) &&
 		body->iseq_size < JIT_MAX_ISEQ_SIZE) {
-		body->jit_func = jit_compile(th->ec.cfp->iseq);
+		func = body->jit_func = jit_compile(th->ec.cfp->iseq);
+                if (UNLIKELY((ptrdiff_t)func <= (ptrdiff_t)LAST_JIT_ISEQ_FUNC)) {
+		    return Qundef;
+		}
+	    } else {
+		return Qundef;
 	    }
-	    return Qundef;
 	  case NOT_READY_JIT_ISEQ_FUNC:
 	    return Qundef;
-	  default:
+	  default: /* to avoid warning with LAST_JIT_ISEQ_FUNC */
 	    break;
 	}
     }
 
-    return Qundef;
+    return func(th, th->ec.cfp);
 }

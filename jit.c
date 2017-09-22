@@ -33,9 +33,10 @@ static void
 compile_c_to_so(const char *c_fname, const char *so_fname)
 {
     char **argv;
-    static int common_argv_len = 11;
+    static int common_argv_len = 13;
     static const char *common_argv[] = {
 	"gcc", "-O2", "-fPIC", "-shared", "-Wfatal-errors", "-w",
+	"-I./include", "-I./.ext/include/x86_64-linux", // TODO: fix this
 	"-pipe", "-nostartfiles", "-nodefaultlibs", "-nostdlib", "-o"
     };
     const char *dynamic_argv[] = { so_fname, c_fname, NULL };
@@ -55,6 +56,7 @@ get_func_ptr(const char *so_fname, const char *funcname)
 
     handle = dlopen(so_fname, RTLD_NOW);
     if (handle == NULL) {
+	fprintf(stderr, "failed to open so...\n"); /* debug */
 	return (void *)NOT_ADDED_JIT_ISEQ_FUNC;
     }
 
@@ -67,8 +69,12 @@ get_func_ptr(const char *so_fname, const char *funcname)
 static void
 jit_compile_iseq_to_c(const rb_iseq_t *iseq, FILE *f, const char *funcname)
 {
-    fprintf(f, "int %s() {\n", funcname);
-    fprintf(f, "  return 42;\n");
+    fprintf(f, "#include \"internal.h\"\n");
+    fprintf(f, "#include \"vm_core.h\"\n");
+
+    fprintf(f, "VALUE %s(rb_thread_t *th, rb_control_frame_t *cfp) {\n", funcname);
+    fprintf(f, "  th->ec.cfp = cfp+1;\n"); /* vm_pop_frame */
+    fprintf(f, "  return INT2FIX(42);\n");
     fprintf(f, "}\n");
 }
 
@@ -87,8 +93,8 @@ jit_compile(const rb_iseq_t *iseq)
 
     unique_id = ++jit_scheduled_iseqs;
     sprintf(funcname, "_cjit_%lu", unique_id);
-    sprintf(c_fname, "/tmp/ruby_cjit_%lu_%lu.c", (unsigned long)getpid(), unique_id);
-    sprintf(so_fname, "/tmp/ruby_cjit_%lu_%lu.so", (unsigned long)getpid(), unique_id);
+    sprintf(c_fname, "/tmp/_cjit_%lu_%lu.c", (unsigned long)getpid(), unique_id);
+    sprintf(so_fname, "/tmp/_cjit_%lu_%lu.so", (unsigned long)getpid(), unique_id);
 
     fprintf(stderr, "compile: %s -> %s\n", RSTRING_PTR(iseq->body->location.label), c_fname); /* debug */
 
@@ -102,6 +108,5 @@ jit_compile(const rb_iseq_t *iseq)
     func_ptr = get_func_ptr(so_fname, funcname);
     remove(so_fname);
 
-    fprintf(stderr, "result: %d\n", ((jit_func_t)func_ptr)()); /* debug */
     return func_ptr;
 }
