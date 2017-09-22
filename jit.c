@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/time.h>
+#include <dlfcn.h>
 #include "internal.h"
 #include "vm_core.h"
 
@@ -25,6 +26,7 @@ execute_command(const char *path, char *const argv[])
     }
 
     waitpid(pid, &stat, 0);
+    // TODO: check stat
 }
 
 static void
@@ -46,38 +48,60 @@ compile_c_to_so(const char *c_fname, const char *so_fname)
     xfree(argv);
 }
 
-static void
-jit_compile_iseq_to_c(const rb_iseq_t *iseq, FILE *f)
+static void *
+get_func_ptr(const char *so_fname, const char *funcname)
 {
-    fprintf(f, "int main() {\n");
-    fprintf(f, "  return 1;\n");
+    void *handle, *func_ptr;
+
+    handle = dlopen(so_fname, RTLD_NOW);
+    if (handle == NULL) {
+	return (void *)NOT_ADDED_JIT_ISEQ_FUNC;
+    }
+
+    func_ptr = dlsym(handle, funcname);
+    // TODO: dlclose(handle); on deoptimization
+
+    return func_ptr;
+}
+
+static void
+jit_compile_iseq_to_c(const rb_iseq_t *iseq, FILE *f, const char *funcname)
+{
+    fprintf(f, "int %s() {\n", funcname);
+    fprintf(f, "  return 42;\n");
     fprintf(f, "}\n");
 }
 
-void
+void *
 jit_compile(const rb_iseq_t *iseq)
 {
     FILE *f;
     unsigned long unique_id;
-    char c_fname[128], so_fname[128];
+    char c_fname[128], so_fname[128], funcname[128];
+    void *func_ptr;
 
     /* temporary stub for testing */
     if (strcmp(RSTRING_PTR(iseq->body->location.label), "jit_compiled")) {
-	return;
+	return (void *)NOT_ADDED_JIT_ISEQ_FUNC;
     }
 
     unique_id = ++jit_scheduled_iseqs;
+    sprintf(funcname, "_cjit_%lu", unique_id);
     sprintf(c_fname, "/tmp/ruby_cjit_%lu_%lu.c", (unsigned long)getpid(), unique_id);
     sprintf(so_fname, "/tmp/ruby_cjit_%lu_%lu.so", (unsigned long)getpid(), unique_id);
 
+    fprintf(stderr, "compile: %s -> %s\n", RSTRING_PTR(iseq->body->location.label), c_fname); /* debug */
+
     f = fopen(c_fname, "w");
-    jit_compile_iseq_to_c(iseq, f);
+    jit_compile_iseq_to_c(iseq, f, funcname);
     fclose(f);
 
     compile_c_to_so(c_fname, so_fname);
     remove(c_fname);
 
-    remove(so_fname); /* temp */
+    func_ptr = get_func_ptr(so_fname, funcname);
+    remove(so_fname);
 
-    fprintf(stderr, "compile: %s -> %s\n", RSTRING_PTR(iseq->body->location.label), c_fname); /* debug */
+    fprintf(stderr, "result: %d\n", ((jit_func_t)func_ptr)()); /* debug */
+    return func_ptr;
 }
