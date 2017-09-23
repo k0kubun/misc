@@ -3,7 +3,10 @@ require 'test/unit'
 class TestJIT < Test::Unit::TestCase
   TEST_ITERATIONS = 5
 
-  # def test_nop
+  def test_nop
+    test_results { |k| def k._jit; nil rescue true; end }
+  end
+
   # def test_getlocal
   # def test_setlocal
   # def test_getspecial
@@ -16,8 +19,14 @@ class TestJIT < Test::Unit::TestCase
   # def test_setconstant
   # def test_getglobal
   # def test_setglobal
-  # def test_putnil
-  # def test_putself
+
+  def test_putnil
+    test_results { |k| def k._jit; nil; end }
+  end
+
+  def test_putself
+    test_results { |k| def k._jit; self; end }
+  end
 
   def test_putobject
     test_results { |k| def k._jit; -1; end }

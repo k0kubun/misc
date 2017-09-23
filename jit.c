@@ -128,8 +128,9 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
     char *value;
 
     switch (insn) {
-      //case YARVINSN_nop:
-      //  break;
+      case YARVINSN_nop:
+	/* nop */
+        break;
       //case YARVINSN_getlocal:
       //  break;
       //case YARVINSN_setlocal:
@@ -154,10 +155,12 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       //  break;
       //case YARVINSN_setglobal:
       //  break;
-      //case YARVINSN_putnil:
-      //  break;
-      //case YARVINSN_putself:
-      //  break;
+      case YARVINSN_putnil:
+	jit_stack_push(stack, get_value_string(Qnil));
+        break;
+      case YARVINSN_putself:
+	jit_stack_push(stack, get_string("cfp->self"));
+        break;
       case YARVINSN_putobject:
 	jit_stack_push(stack, get_value_string(operands[0]));
         break;
