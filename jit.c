@@ -4,7 +4,8 @@
 #include <dlfcn.h>
 #include "internal.h"
 #include "vm_core.h"
-
+#include "insns.inc"
+#include "insns_info.inc"
 #include "jit.h"
 
 /* If "-j" is specified, this becomes TRUE */
@@ -12,6 +13,33 @@ int jit_enabled = FALSE;
 
 /* Total count of scheduled ISeqs to generate unique identifier */
 static unsigned long jit_scheduled_iseqs;
+
+/* Emulates rb_control_frame's stack pointer */
+struct jit_stack {
+  unsigned int size;
+  unsigned int max;
+  const char **body;
+};
+
+static void
+jit_stack_push(struct jit_stack *stack, const char *value)
+{
+    if (stack->size >= stack->max) {
+	fprintf(stderr, "JIT internal stack overflow: max=%d, next size=%d", stack->max, stack->size+1);
+    }
+    stack->body[stack->size] = value;
+    stack->size++;
+}
+
+static const char*
+jit_stack_pop(struct jit_stack *stack)
+{
+    if (stack->size <= 0) {
+	fprintf(stderr, "JIT internal stack underflow: next size=%d", stack->size-1);
+    }
+    stack->size--;
+    return stack->body[stack->size];
+}
 
 static void
 execute_command(const char *path, char *const argv[])
@@ -67,15 +95,240 @@ get_func_ptr(const char *so_fname, const char *funcname)
 }
 
 static void
-jit_compile_iseq_to_c(const rb_iseq_t *iseq, FILE *f, const char *funcname)
+compile_insn(FILE *f, struct jit_stack *stack, const int insn)
 {
+    switch (insn) {
+      //case YARVINSN_nop:
+      //  break;
+      //case YARVINSN_getlocal:
+      //  break;
+      //case YARVINSN_setlocal:
+      //  break;
+      //case YARVINSN_getspecial:
+      //  break;
+      //case YARVINSN_setspecial:
+      //  break;
+      //case YARVINSN_getinstancevariable:
+      //  break;
+      //case YARVINSN_setinstancevariable:
+      //  break;
+      //case YARVINSN_getclassvariable:
+      //  break;
+      //case YARVINSN_setclassvariable:
+      //  break;
+      //case YARVINSN_getconstant:
+      //  break;
+      //case YARVINSN_setconstant:
+      //  break;
+      //case YARVINSN_getglobal:
+      //  break;
+      //case YARVINSN_setglobal:
+      //  break;
+      //case YARVINSN_putnil:
+      //  break;
+      //case YARVINSN_putself:
+      //  break;
+      case YARVINSN_putobject:
+	jit_stack_push(stack, "INT2FIX(42)");
+        break;
+      //case YARVINSN_putspecialobject:
+      //  break;
+      //case YARVINSN_putiseq:
+      //  break;
+      //case YARVINSN_putstring:
+      //  break;
+      //case YARVINSN_concatstrings:
+      //  break;
+      //case YARVINSN_tostring:
+      //  break;
+      //case YARVINSN_freezestring:
+      //  break;
+      //case YARVINSN_toregexp:
+      //  break;
+      //case YARVINSN_intern:
+      //  break;
+      //case YARVINSN_newarray:
+      //  break;
+      //case YARVINSN_duparray:
+      //  break;
+      //case YARVINSN_expandarray:
+      //  break;
+      //case YARVINSN_concatarray:
+      //  break;
+      //case YARVINSN_splatarray:
+      //  break;
+      //case YARVINSN_newhash:
+      //  break;
+      //case YARVINSN_newrange:
+      //  break;
+      //case YARVINSN_pop:
+      //  break;
+      //case YARVINSN_dup:
+      //  break;
+      //case YARVINSN_dupn:
+      //  break;
+      //case YARVINSN_swap:
+      //  break;
+      //case YARVINSN_reverse:
+      //  break;
+      //case YARVINSN_reput:
+      //  break;
+      //case YARVINSN_topn:
+      //  break;
+      //case YARVINSN_setn:
+      //  break;
+      //case YARVINSN_adjuststack:
+      //  break;
+      //case YARVINSN_defined:
+      //  break;
+      //case YARVINSN_checkmatch:
+      //  break;
+      //case YARVINSN_checkkeyword:
+      //  break;
+      case YARVINSN_trace:
+	/* TODO: implement this */
+        break;
+      //case YARVINSN_trace2:
+      //  break;
+      //case YARVINSN_defineclass:
+      //  break;
+      //case YARVINSN_send:
+      //  break;
+      //case YARVINSN_opt_str_freeze:
+      //  break;
+      //case YARVINSN_opt_str_uminus:
+      //  break;
+      //case YARVINSN_opt_newarray_max:
+      //  break;
+      //case YARVINSN_opt_newarray_min:
+      //  break;
+      //case YARVINSN_opt_send_without_block:
+      //  break;
+      //case YARVINSN_invokesuper:
+      //  break;
+      //case YARVINSN_invokeblock:
+      //  break;
+      case YARVINSN_leave:
+	fprintf(f, "  th->ec.cfp = cfp+1;\n"); /* vm_pop_frame */
+	fprintf(f, "  return %s;\n", jit_stack_pop(stack));
+	break;
+      //case YARVINSN_throw:
+      //  break;
+      //case YARVINSN_jump:
+      //  break;
+      //case YARVINSN_branchif:
+      //  break;
+      //case YARVINSN_branchunless:
+      //  break;
+      //case YARVINSN_branchnil:
+      //  break;
+      //case YARVINSN_branchiftype:
+      //  break;
+      //case YARVINSN_getinlinecache:
+      //  break;
+      //case YARVINSN_setinlinecache:
+      //  break;
+      //case YARVINSN_once:
+      //  break;
+      //case YARVINSN_opt_case_dispatch:
+      //  break;
+      //case YARVINSN_opt_plus:
+      //  break;
+      //case YARVINSN_opt_minus:
+      //  break;
+      //case YARVINSN_opt_mult:
+      //  break;
+      //case YARVINSN_opt_div:
+      //  break;
+      //case YARVINSN_opt_mod:
+      //  break;
+      //case YARVINSN_opt_eq:
+      //  break;
+      //case YARVINSN_opt_neq:
+      //  break;
+      //case YARVINSN_opt_lt:
+      //  break;
+      //case YARVINSN_opt_le:
+      //  break;
+      //case YARVINSN_opt_gt:
+      //  break;
+      //case YARVINSN_opt_ge:
+      //  break;
+      //case YARVINSN_opt_ltlt:
+      //  break;
+      //case YARVINSN_opt_aref:
+      //  break;
+      //case YARVINSN_opt_aset:
+      //  break;
+      //case YARVINSN_opt_aset_with:
+      //  break;
+      //case YARVINSN_opt_aref_with:
+      //  break;
+      //case YARVINSN_opt_length:
+      //  break;
+      //case YARVINSN_opt_size:
+      //  break;
+      //case YARVINSN_opt_empty_p:
+      //  break;
+      //case YARVINSN_opt_succ:
+      //  break;
+      //case YARVINSN_opt_not:
+      //  break;
+      //case YARVINSN_opt_regexpmatch1:
+      //  break;
+      //case YARVINSN_opt_regexpmatch2:
+      //  break;
+      //case YARVINSN_opt_call_c_function:
+      //  break;
+      //case YARVINSN_bitblt:
+      //  break;
+      //case YARVINSN_answer:
+      //  break;
+      //case YARVINSN_getlocal_OP__WC__0:
+      //  break;
+      //case YARVINSN_getlocal_OP__WC__1:
+      //  break;
+      //case YARVINSN_setlocal_OP__WC__0:
+      //  break;
+      //case YARVINSN_setlocal_OP__WC__1:
+      //  break;
+      //case YARVINSN_putobject_OP_INT2FIX_O_0_C_:
+      //  break;
+      //case YARVINSN_putobject_OP_INT2FIX_O_1_C_:
+      //  break;
+      default:
+	fprintf(stderr, "Failed to compile instruction: %s\n", insn_name(insn));
+	break;
+    }
+}
+
+static void
+compile_iseq_to_c(const struct rb_iseq_constant_body *body, FILE *f, const char *funcname)
+{
+    unsigned int i;
+    int insn;
+    struct jit_stack stack;
+
+    stack.size = 0;
+    stack.max  = body->stack_max;
+    stack.body = ALLOC_N(const char *, body->stack_max);
+
     fprintf(f, "#include \"internal.h\"\n");
     fprintf(f, "#include \"vm_core.h\"\n");
 
     fprintf(f, "VALUE %s(rb_thread_t *th, rb_control_frame_t *cfp) {\n", funcname);
-    fprintf(f, "  th->ec.cfp = cfp+1;\n"); /* vm_pop_frame */
-    fprintf(f, "  return INT2FIX(42);\n");
+    for (i = 0; i < body->iseq_size;) {
+#if OPT_DIRECT_THREADED_CODE || OPT_CALL_THREADED_CODE
+	insn = rb_vm_insn_addr2insn((void *)body->iseq_encoded[i]);
+#else
+	insn = (int)body->iseq_encoded[i];
+#endif
+	compile_insn(f, &stack, insn);
+	i += insn_len(insn);
+    }
     fprintf(f, "}\n");
+
+    xfree(stack.body);
 }
 
 void *
@@ -87,7 +340,7 @@ jit_compile(const rb_iseq_t *iseq)
     void *func_ptr;
 
     /* temporary stub for testing */
-    if (strcmp(RSTRING_PTR(iseq->body->location.label), "jit_compiled")) {
+    if (strcmp(RSTRING_PTR(iseq->body->location.label), "_jit")) {
 	return (void *)NOT_ADDED_JIT_ISEQ_FUNC;
     }
 
@@ -99,7 +352,7 @@ jit_compile(const rb_iseq_t *iseq)
     fprintf(stderr, "compile: %s -> %s\n", RSTRING_PTR(iseq->body->location.label), c_fname); /* debug */
 
     f = fopen(c_fname, "w");
-    jit_compile_iseq_to_c(iseq, f, funcname);
+    compile_iseq_to_c(iseq->body, f, funcname);
     fclose(f);
 
     compile_c_to_so(c_fname, so_fname);

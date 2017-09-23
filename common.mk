@@ -1925,10 +1925,12 @@ iseq.$(OBJEXT): {$(VPATH)}util.h
 iseq.$(OBJEXT): {$(VPATH)}vm_core.h
 iseq.$(OBJEXT): {$(VPATH)}vm_debug.h
 iseq.$(OBJEXT): {$(VPATH)}vm_opts.h
+jit.$(OBJEXT): {$(VPATH)}insns.inc
+jit.$(OBJEXT): {$(VPATH)}insns_info.inc
 jit.$(OBJEXT): {$(VPATH)}internal.h
-jit.$(OBJEXT): {$(VPATH)}vm_core.h
 jit.$(OBJEXT): {$(VPATH)}jit.c
 jit.$(OBJEXT): {$(VPATH)}jit.h
+jit.$(OBJEXT): {$(VPATH)}vm_core.h
 load.$(OBJEXT): $(CCAN_DIR)/check_type/check_type.h
 load.$(OBJEXT): $(CCAN_DIR)/container_of/container_of.h
 load.$(OBJEXT): $(CCAN_DIR)/list/list.h
