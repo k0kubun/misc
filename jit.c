@@ -114,12 +114,23 @@ get_string(const char *str)
     return result;
 }
 
+PRINTF_ARGS(static char *, 1, 0)
+get_stringf(const char *format, ...)
+{
+    char buf[128];
+    va_list va;
+
+    va_start(va, format);
+    vsprintf(buf, format, va);
+    va_end(va);
+
+    return get_string(buf);
+}
+
 static char *
 get_value_string(VALUE value)
 {
-    char buf[64];
-    sprintf(buf, "(VALUE)0x%"PRIxVALUE, value);
-    return get_string(buf);
+    return get_stringf("(VALUE)0x%"PRIxVALUE, value);
 }
 
 static void
@@ -168,8 +179,9 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       //  break;
       //case YARVINSN_putiseq:
       //  break;
-      //case YARVINSN_putstring:
-      //  break;
+      case YARVINSN_putstring:
+	jit_stack_push(stack, get_stringf("rb_str_resurrect(0x%"PRIxVALUE")", operands[0]));
+        break;
       //case YARVINSN_concatstrings:
       //  break;
       //case YARVINSN_tostring:
