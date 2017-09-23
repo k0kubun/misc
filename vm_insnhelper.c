@@ -18,6 +18,8 @@
 #include "ruby/config.h"
 #include "debug_counter.h"
 
+#ifndef CJIT_HEADER
+
 /* control stack frame */
 
 static rb_control_frame_t *vm_get_ruby_level_caller_cfp(const rb_thread_t *th, const rb_control_frame_t *cfp);
@@ -3365,6 +3367,8 @@ vm_stack_consistency_error(rb_thread_t *th,
 #endif
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 enum binop_operands_type {
     bot_others = 0,
     bot_fixnum,
@@ -3432,6 +3436,8 @@ vm_opt_minus(VALUE recv, VALUE obj)
       default:         return Qundef;
     }
 }
+
+#ifndef CJIT_HEADER
 
 static VALUE
 vm_opt_mult(VALUE recv, VALUE obj)
@@ -3740,3 +3746,5 @@ vm_opt_regexpmatch2(VALUE recv, VALUE obj)
 	return Qundef;
     }
 }
+
+#endif /* #ifndef CJIT_HEADER */

@@ -93,7 +93,7 @@ get_func_ptr(const char *so_fname, const char *funcname)
 
     handle = dlopen(so_fname, RTLD_NOW);
     if (handle == NULL) {
-	fprintf(stderr, "failed to open so...\n"); /* debug */
+	fprintf(stderr, "failed to open so: %s\n", dlerror()); /* debug */
 	return (void *)NOT_ADDED_JIT_ISEQ_FUNC;
     }
 
@@ -114,7 +114,7 @@ get_string(const char *str)
     return result;
 }
 
-PRINTF_ARGS(static char *, 1, 0)
+PRINTF_ARGS(static char *, 1, 2)
 get_stringf(const char *format, ...)
 {
     char buf[128];
@@ -131,6 +131,20 @@ static char *
 get_value_string(VALUE value)
 {
     return get_stringf("(VALUE)0x%"PRIxVALUE, value);
+}
+
+static char *
+get_call2_string(struct jit_stack *stack, const char *func)
+{
+    char *ret, *recv, *obj;
+
+    obj = jit_stack_pop(stack);
+    recv = jit_stack_pop(stack);
+    ret = get_stringf("%s(%s, %s)", func, recv, obj);
+
+    xfree(obj);
+    xfree(recv);
+    return ret;
 }
 
 static void
@@ -279,10 +293,12 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       //  break;
       //case YARVINSN_opt_case_dispatch:
       //  break;
-      //case YARVINSN_opt_plus:
-      //  break;
-      //case YARVINSN_opt_minus:
-      //  break;
+      case YARVINSN_opt_plus:
+	jit_stack_push(stack, get_call2_string(stack, "vm_opt_plus")); /* TODO: handle Qundef */
+        break;
+      case YARVINSN_opt_minus:
+	jit_stack_push(stack, get_call2_string(stack, "vm_opt_minus")); /* TODO: handle Qundef */
+        break;
       //case YARVINSN_opt_mult:
       //  break;
       //case YARVINSN_opt_div:
@@ -360,14 +376,13 @@ compile_iseq_to_c(const struct rb_iseq_constant_body *body, FILE *f, const char 
     int insn;
     struct jit_stack stack;
 
+    fprintf(f, "#include \"jit_header.h\"\n");
+    fprintf(f, "VALUE %s(rb_thread_t *th, rb_control_frame_t *cfp) {\n", funcname);
+
     stack.size = 0;
     stack.max  = body->stack_max;
     stack.body = ALLOC_N(char *, body->stack_max);
 
-    fprintf(f, "#include \"internal.h\"\n");
-    fprintf(f, "#include \"vm_core.h\"\n");
-
-    fprintf(f, "VALUE %s(rb_thread_t *th, rb_control_frame_t *cfp) {\n", funcname);
     for (i = 0; i < body->iseq_size;) {
 #if OPT_DIRECT_THREADED_CODE || OPT_CALL_THREADED_CODE
 	insn = rb_vm_insn_addr2insn((void *)body->iseq_encoded[i]);
