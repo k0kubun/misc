@@ -1,3 +1,12 @@
+/**********************************************************************
+
+  jit.c - Method JIT compiler
+
+  Copyright (C) 2017 Vladimir Makarov <vmakarov@redhat.com>.
+  Copyright (C) 2017 Takashi Kokubun
+
+**********************************************************************/
+
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/time.h>
@@ -18,11 +27,11 @@ static unsigned long jit_scheduled_iseqs;
 struct jit_stack {
   unsigned int size;
   unsigned int max;
-  const char **body;
+  char **body;
 };
 
 static void
-jit_stack_push(struct jit_stack *stack, const char *value)
+jit_stack_push(struct jit_stack *stack, char *value)
 {
     if (stack->size >= stack->max) {
 	fprintf(stderr, "JIT internal stack overflow: max=%d, next size=%d", stack->max, stack->size+1);
@@ -31,7 +40,7 @@ jit_stack_push(struct jit_stack *stack, const char *value)
     stack->size++;
 }
 
-static const char*
+static char*
 jit_stack_pop(struct jit_stack *stack)
 {
     if (stack->size <= 0) {
@@ -94,9 +103,30 @@ get_func_ptr(const char *so_fname, const char *funcname)
     return func_ptr;
 }
 
-static void
-compile_insn(FILE *f, struct jit_stack *stack, const int insn)
+/* Duplicates argument string in heap */
+static char *
+get_string(const char *str)
 {
+    char *result;
+    if ((result = xmalloc(strlen(str) + 1)) != NULL) {
+	strcpy(result, str);
+    }
+    return result;
+}
+
+static char *
+get_value_string(VALUE value)
+{
+    char buf[64];
+    sprintf(buf, "(VALUE)0x%"PRIxVALUE, value);
+    return get_string(buf);
+}
+
+static void
+compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *operands)
+{
+    char *value;
+
     switch (insn) {
       //case YARVINSN_nop:
       //  break;
@@ -129,7 +159,7 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn)
       //case YARVINSN_putself:
       //  break;
       case YARVINSN_putobject:
-	jit_stack_push(stack, "INT2FIX(42)");
+	jit_stack_push(stack, get_value_string(operands[0]));
         break;
       //case YARVINSN_putspecialobject:
       //  break;
@@ -209,8 +239,10 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn)
       //case YARVINSN_invokeblock:
       //  break;
       case YARVINSN_leave:
+	value = jit_stack_pop(stack);
 	fprintf(f, "  th->ec.cfp = cfp+1;\n"); /* vm_pop_frame */
-	fprintf(f, "  return %s;\n", jit_stack_pop(stack));
+	fprintf(f, "  return %s;\n", value);
+	xfree(value);
 	break;
       //case YARVINSN_throw:
       //  break;
@@ -292,10 +324,12 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn)
       //  break;
       //case YARVINSN_setlocal_OP__WC__1:
       //  break;
-      //case YARVINSN_putobject_OP_INT2FIX_O_0_C_:
-      //  break;
-      //case YARVINSN_putobject_OP_INT2FIX_O_1_C_:
-      //  break;
+      case YARVINSN_putobject_OP_INT2FIX_O_0_C_:
+	jit_stack_push(stack, get_value_string(INT2FIX(0)));
+        break;
+      case YARVINSN_putobject_OP_INT2FIX_O_1_C_:
+	jit_stack_push(stack, get_value_string(INT2FIX(1)));
+        break;
       default:
 	fprintf(stderr, "Failed to compile instruction: %s\n", insn_name(insn));
 	break;
@@ -311,7 +345,7 @@ compile_iseq_to_c(const struct rb_iseq_constant_body *body, FILE *f, const char 
 
     stack.size = 0;
     stack.max  = body->stack_max;
-    stack.body = ALLOC_N(const char *, body->stack_max);
+    stack.body = ALLOC_N(char *, body->stack_max);
 
     fprintf(f, "#include \"internal.h\"\n");
     fprintf(f, "#include \"vm_core.h\"\n");
@@ -323,7 +357,7 @@ compile_iseq_to_c(const struct rb_iseq_constant_body *body, FILE *f, const char 
 #else
 	insn = (int)body->iseq_encoded[i];
 #endif
-	compile_insn(f, &stack, insn);
+	compile_insn(f, &stack, insn, body->iseq_encoded + (i+1));
 	i += insn_len(insn);
     }
     fprintf(f, "}\n");
