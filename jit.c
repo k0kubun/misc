@@ -327,10 +327,12 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       //  break;
       //case YARVINSN_opt_call_c_function:
       //  break;
-      //case YARVINSN_bitblt:
-      //  break;
-      //case YARVINSN_answer:
-      //  break;
+      case YARVINSN_bitblt:
+	jit_stack_push(stack, get_string("rb_str_new2(\"a bit of bacon, lettuce and tomato\")"));
+        break;
+      case YARVINSN_answer:
+	jit_stack_push(stack, get_string("INT2FIX(42)"));
+        break;
       //case YARVINSN_getlocal_OP__WC__0:
       //  break;
       //case YARVINSN_getlocal_OP__WC__1:
@@ -340,10 +342,10 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       //case YARVINSN_setlocal_OP__WC__1:
       //  break;
       case YARVINSN_putobject_OP_INT2FIX_O_0_C_:
-	jit_stack_push(stack, get_value_string(INT2FIX(0)));
+	jit_stack_push(stack, get_string("INT2FIX(0)"));
         break;
       case YARVINSN_putobject_OP_INT2FIX_O_1_C_:
-	jit_stack_push(stack, get_value_string(INT2FIX(1)));
+	jit_stack_push(stack, get_string("INT2FIX(1)"));
         break;
       default:
 	fprintf(stderr, "Failed to compile instruction: %s\n", insn_name(insn));
