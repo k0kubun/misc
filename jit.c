@@ -305,22 +305,28 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       case YARVINSN_opt_div:
 	jit_stack_push(stack, get_call2_string(stack, "vm_opt_div")); /* TODO: handle Qundef */
         break;
-      //case YARVINSN_opt_mod:
-      //  break;
+      case YARVINSN_opt_mod:
+	jit_stack_push(stack, get_call2_string(stack, "vm_opt_mod")); /* TODO: handle Qundef */
+        break;
       //case YARVINSN_opt_eq:
       //  break;
       //case YARVINSN_opt_neq:
       //  break;
-      //case YARVINSN_opt_lt:
-      //  break;
-      //case YARVINSN_opt_le:
-      //  break;
-      //case YARVINSN_opt_gt:
-      //  break;
-      //case YARVINSN_opt_ge:
-      //  break;
-      //case YARVINSN_opt_ltlt:
-      //  break;
+      case YARVINSN_opt_lt:
+	jit_stack_push(stack, get_call2_string(stack, "vm_opt_lt")); /* TODO: handle Qundef */
+        break;
+      case YARVINSN_opt_le:
+	jit_stack_push(stack, get_call2_string(stack, "vm_opt_le")); /* TODO: handle Qundef */
+        break;
+      case YARVINSN_opt_gt:
+	jit_stack_push(stack, get_call2_string(stack, "vm_opt_gt")); /* TODO: handle Qundef */
+        break;
+      case YARVINSN_opt_ge:
+	jit_stack_push(stack, get_call2_string(stack, "vm_opt_ge")); /* TODO: handle Qundef */
+        break;
+      case YARVINSN_opt_ltlt:
+	jit_stack_push(stack, get_call2_string(stack, "vm_opt_ltlt")); /* TODO: handle Qundef */
+        break;
       //case YARVINSN_opt_aref:
       //  break;
       //case YARVINSN_opt_aset:

@@ -103,14 +103,41 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; 12 / 2; end }
   end
 
-  # def test_opt_mod
+  def test_opt_mod
+    test_results { |k| def k._jit; 5 % 2; end }
+  end
+
   # def test_opt_eq
   # def test_opt_neq
-  # def test_opt_lt
-  # def test_opt_le
-  # def test_opt_gt
-  # def test_opt_ge
-  # def test_opt_ltlt
+
+  def test_opt_lt
+    test_results { |k| def k._jit; 1 < 2; end }
+    test_results { |k| def k._jit; 1 < 1; end }
+    test_results { |k| def k._jit; 2 < 1; end }
+  end
+
+  def test_opt_le
+    test_results { |k| def k._jit; 1 <= 2; end }
+    test_results { |k| def k._jit; 1 <= 1; end }
+    test_results { |k| def k._jit; 2 <= 1; end }
+  end
+
+  def test_opt_gt
+    test_results { |k| def k._jit; 1 > 2; end }
+    test_results { |k| def k._jit; 1 > 1; end }
+    test_results { |k| def k._jit; 2 > 1; end }
+  end
+
+  def test_opt_ge
+    test_results { |k| def k._jit; 1 >= 2; end }
+    test_results { |k| def k._jit; 1 >= 1; end }
+    test_results { |k| def k._jit; 2 >= 1; end }
+  end
+
+  def test_opt_ltlt
+    test_results { |k| def k._jit; 'hello' << 'world'; end }
+  end
+
   # def test_opt_aref
   # def test_opt_aset
   # def test_opt_aset_with
