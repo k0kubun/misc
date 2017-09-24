@@ -3437,8 +3437,6 @@ vm_opt_minus(VALUE recv, VALUE obj)
     }
 }
 
-#ifndef CJIT_HEADER
-
 static VALUE
 vm_opt_mult(VALUE recv, VALUE obj)
 {
@@ -3463,6 +3461,8 @@ vm_opt_div(VALUE recv, VALUE obj)
 	return Qundef;
     }
 }
+
+#ifndef CJIT_HEADER
 
 static VALUE
 vm_opt_mod(VALUE recv, VALUE obj)

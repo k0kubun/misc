@@ -269,7 +269,7 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       //  break;
       case YARVINSN_leave:
 	value = jit_stack_pop(stack);
-	fprintf(f, "  th->ec.cfp = cfp+1;\n"); /* vm_pop_frame */
+	fprintf(f, "  th->ec.cfp = cfp+1;\n"); /* TODO: properly implement vm_pop_frame */
 	fprintf(f, "  return %s;\n", value);
 	xfree(value);
 	break;
@@ -299,10 +299,12 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       case YARVINSN_opt_minus:
 	jit_stack_push(stack, get_call2_string(stack, "vm_opt_minus")); /* TODO: handle Qundef */
         break;
-      //case YARVINSN_opt_mult:
-      //  break;
-      //case YARVINSN_opt_div:
-      //  break;
+      case YARVINSN_opt_mult:
+	jit_stack_push(stack, get_call2_string(stack, "vm_opt_mult")); /* TODO: handle Qundef */
+        break;
+      case YARVINSN_opt_div:
+	jit_stack_push(stack, get_call2_string(stack, "vm_opt_div")); /* TODO: handle Qundef */
+        break;
       //case YARVINSN_opt_mod:
       //  break;
       //case YARVINSN_opt_eq:

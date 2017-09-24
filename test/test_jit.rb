@@ -95,8 +95,14 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; 5-3; end }
   end
 
-  # def test_opt_mult
-  # def test_opt_div
+  def test_opt_mult
+    test_results { |k| def k._jit; 3 * 4 * 5; end }
+  end
+
+  def test_opt_div
+    test_results { |k| def k._jit; 12 / 2; end }
+  end
+
   # def test_opt_mod
   # def test_opt_eq
   # def test_opt_neq
