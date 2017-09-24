@@ -369,7 +369,9 @@ ntz_intptr(uintptr_t x)
 #elif defined(HAVE_INT128_T)
 # define DLONG int128_t
 # define DL2NUM(x) (RB_FIXABLE(x) ? LONG2FIX(x) : rb_int128t2big(x))
+RUBY_SYMBOL_EXPORT_BEGIN
 VALUE rb_int128t2big(int128_t n);
+RUBY_SYMBOL_EXPORT_END
 #endif
 
 static inline long
@@ -1441,14 +1443,18 @@ rb_float_new_inline(double d)
 
 /* object.c */
 void rb_obj_copy_ivar(VALUE dest, VALUE obj);
+RUBY_SYMBOL_EXPORT_BEGIN
 CONSTFUNC(VALUE rb_obj_equal(VALUE obj1, VALUE obj2));
 CONSTFUNC(VALUE rb_obj_not(VALUE obj));
+RUBY_SYMBOL_EXPORT_END
 VALUE rb_class_search_ancestor(VALUE klass, VALUE super);
 NORETURN(void rb_undefined_alloc(VALUE klass));
 double rb_num_to_dbl(VALUE val);
 VALUE rb_obj_dig(int argc, VALUE *argv, VALUE self, VALUE notfound);
 VALUE rb_immutable_obj_clone(int, VALUE *, VALUE);
+RUBY_SYMBOL_EXPORT_BEGIN
 VALUE rb_obj_not_equal(VALUE obj1, VALUE obj2);
+RUBY_SYMBOL_EXPORT_END
 VALUE rb_convert_type_with_id(VALUE,int,const char*,ID);
 VALUE rb_check_convert_type_with_id(VALUE,int,const char*,ID);
 

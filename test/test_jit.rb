@@ -107,8 +107,15 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; 5 % 2; end }
   end
 
-  # def test_opt_eq
-  # def test_opt_neq
+  def test_opt_eq
+    test_results { |k| def k._jit; 1 == 2; end }
+    test_results { |k| def k._jit; 2 == 2; end }
+  end
+
+  def test_opt_neq
+    test_results { |k| def k._jit; 1 != 2; end }
+    test_results { |k| def k._jit; 2 != 2; end }
+  end
 
   def test_opt_lt
     test_results { |k| def k._jit; 1 < 2; end }
@@ -145,13 +152,35 @@ class TestJIT < Test::Unit::TestCase
   # def test_opt_length
   # def test_opt_size
   # def test_opt_empty_p
-  # def test_opt_succ
-  # def test_opt_not
-  # def test_opt_regexpmatch1
-  # def test_opt_regexpmatch2
+
+  def test_opt_succ
+    test_results { |k| def k._jit; 1.succ; end }
+  end
+
+  def test_opt_not
+    test_results { |k| def k._jit; !!1; end }
+    test_results { |k| def k._jit; !!nil; end }
+    test_results { |k| def k._jit; !false; end }
+  end
+
+  def test_opt_regexpmatch1
+    test_results { |k| def k._jit; /true/ =~ 'true'; end }
+  end
+
+  def test_opt_regexpmatch2
+    test_results { |k| def k._jit; 'true' =~ /true/; end }
+  end
+
   # def test_opt_call_c_function
-  # def test_bitblt
-  # def test_answer
+
+  def test_bitblt
+    # no test
+  end
+
+  def test_answer
+    # no test
+  end
+
   # def test_getlocal_OP__WC__0
   # def test_getlocal_OP__WC__1
   # def test_setlocal_OP__WC__0

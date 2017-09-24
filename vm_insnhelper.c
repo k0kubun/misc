@@ -1295,7 +1295,8 @@ vm_expandarray(rb_control_frame_t *cfp, VALUE ary, rb_num_t num, int flag)
 
 static VALUE vm_call_general(rb_thread_t *th, rb_control_frame_t *reg_cfp, struct rb_calling_info *calling, const struct rb_call_info *ci, struct rb_call_cache *cc);
 
-static void
+RUBY_SYMBOL_EXPORT_BEGIN
+void
 vm_search_method(const struct rb_call_info *ci, struct rb_call_cache *cc, VALUE recv)
 {
     VALUE klass = CLASS_OF(recv);
@@ -1320,6 +1321,14 @@ vm_search_method(const struct rb_call_info *ci, struct rb_call_cache *cc, VALUE 
     cc->class_serial = RCLASS_SERIAL(klass);
 #endif
 }
+RUBY_SYMBOL_EXPORT_END
+
+#else /* #ifndef CJIT_HEADER */
+
+/* TODO: inline this */
+extern void vm_search_method(const struct rb_call_info *ci, struct rb_call_cache *cc, VALUE recv);
+
+#endif /* #ifndef CJIT_HEADER */
 
 static inline int
 check_cfunc(const rb_callable_method_entry_t *me, VALUE (*func)())
@@ -1399,6 +1408,8 @@ opt_eq_func(VALUE recv, VALUE obj, CALL_INFO ci, CALL_CACHE cc)
   fallback:
     return opt_equal_fallback(recv, obj, ci, cc);
 }
+
+#ifndef CJIT_HEADER
 
 static
 #ifndef NO_BIG_INLINE
@@ -3688,6 +3699,8 @@ vm_opt_empty_p(VALUE recv)
     }
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 static VALUE
 vm_opt_succ(VALUE recv)
 {
@@ -3746,5 +3759,3 @@ vm_opt_regexpmatch2(VALUE recv, VALUE obj)
 	return Qundef;
     }
 }
-
-#endif /* #ifndef CJIT_HEADER */

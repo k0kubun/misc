@@ -93,7 +93,7 @@ get_func_ptr(const char *so_fname, const char *funcname)
 
     handle = dlopen(so_fname, RTLD_NOW);
     if (handle == NULL) {
-	fprintf(stderr, "failed to open so: %s\n", dlerror()); /* debug */
+	fprintf(stderr, "  => Failed to open so: %s\n", dlerror()); /* debug */
 	return (void *)NOT_ADDED_JIT_ISEQ_FUNC;
     }
 
@@ -117,7 +117,7 @@ get_string(const char *str)
 PRINTF_ARGS(static char *, 1, 2)
 get_stringf(const char *format, ...)
 {
-    char buf[128];
+    char buf[1024];
     va_list va;
 
     va_start(va, format);
@@ -134,10 +134,20 @@ get_value_string(VALUE value)
 }
 
 static char *
+get_call1_string(struct jit_stack *stack, const char *func)
+{
+    char *ret, *recv;
+    recv = jit_stack_pop(stack);
+    ret = get_stringf("%s(%s)", func, recv);
+
+    xfree(recv);
+    return ret;
+}
+
+static char *
 get_call2_string(struct jit_stack *stack, const char *func)
 {
     char *ret, *recv, *obj;
-
     obj = jit_stack_pop(stack);
     recv = jit_stack_pop(stack);
     ret = get_stringf("%s(%s, %s)", func, recv, obj);
@@ -150,7 +160,7 @@ get_call2_string(struct jit_stack *stack, const char *func)
 static void
 compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *operands)
 {
-    char *value;
+    char *value1, *value2;
 
     switch (insn) {
       case YARVINSN_nop:
@@ -268,10 +278,10 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       //case YARVINSN_invokeblock:
       //  break;
       case YARVINSN_leave:
-	value = jit_stack_pop(stack);
+	value1 = jit_stack_pop(stack);
 	fprintf(f, "  th->ec.cfp = cfp+1;\n"); /* TODO: properly implement vm_pop_frame */
-	fprintf(f, "  return %s;\n", value);
-	xfree(value);
+	fprintf(f, "  return %s;\n", value1);
+	xfree(value1);
 	break;
       //case YARVINSN_throw:
       //  break;
@@ -308,10 +318,23 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       case YARVINSN_opt_mod:
 	jit_stack_push(stack, get_call2_string(stack, "vm_opt_mod")); /* TODO: handle Qundef */
         break;
-      //case YARVINSN_opt_eq:
-      //  break;
-      //case YARVINSN_opt_neq:
-      //  break;
+      case YARVINSN_opt_eq:
+        value2 = jit_stack_pop(stack);
+        value1 = jit_stack_pop(stack);
+        jit_stack_push(stack, get_stringf("opt_eq_func(%s, %s, (CALL_INFO)0x%"PRIxVALUE", (CALL_CACHE)0x%"PRIxVALUE")",
+        	    value1, value2, operands[0], operands[1]));
+	xfree(value1);
+	xfree(value2);
+        break;
+      case YARVINSN_opt_neq:
+        value2 = jit_stack_pop(stack);
+        value1 = jit_stack_pop(stack);
+        jit_stack_push(stack,
+		get_stringf("vm_opt_neq((CALL_INFO)0x%"PRIxVALUE", (CALL_CACHE)0x%"PRIxVALUE", (CALL_INFO)0x%"PRIxVALUE", (CALL_CACHE)0x%"PRIxVALUE", %s, %s)",
+		    operands[0], operands[1], operands[2], operands[3], value1, value2));
+	xfree(value1);
+	xfree(value2);
+        break;
       case YARVINSN_opt_lt:
 	jit_stack_push(stack, get_call2_string(stack, "vm_opt_lt")); /* TODO: handle Qundef */
         break;
@@ -341,14 +364,24 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       //  break;
       //case YARVINSN_opt_empty_p:
       //  break;
-      //case YARVINSN_opt_succ:
-      //  break;
-      //case YARVINSN_opt_not:
-      //  break;
-      //case YARVINSN_opt_regexpmatch1:
-      //  break;
-      //case YARVINSN_opt_regexpmatch2:
-      //  break;
+      case YARVINSN_opt_succ:
+	jit_stack_push(stack, get_call1_string(stack, "vm_opt_succ")); /* TODO: handle Qundef */
+        break;
+      case YARVINSN_opt_not:
+        value1 = jit_stack_pop(stack);
+        jit_stack_push(stack, get_stringf("vm_opt_not((CALL_INFO)0x%"PRIxVALUE", (CALL_CACHE)0x%"PRIxVALUE", %s)",
+        	    operands[0], operands[1], value1));
+        xfree(value1);
+        break;
+      case YARVINSN_opt_regexpmatch1:
+        value1 = jit_stack_pop(stack);
+        jit_stack_push(stack,
+		get_stringf("vm_opt_regexpmatch1((VALUE)0x%"PRIxVALUE", %s)", operands[0], value1));
+        xfree(value1);
+        break;
+      case YARVINSN_opt_regexpmatch2:
+	jit_stack_push(stack, get_call2_string(stack, "vm_opt_regexpmatch2")); /* TODO: handle Qundef */
+        break;
       //case YARVINSN_opt_call_c_function:
       //  break;
       case YARVINSN_bitblt:
@@ -372,7 +405,8 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
 	jit_stack_push(stack, get_string("INT2FIX(1)"));
         break;
       default:
-	fprintf(stderr, "Failed to compile instruction: %s\n", insn_name(insn));
+	/* passing excessive arguments to suppress warning in insns_info.inc... */
+	fprintf(stderr, "Failed to compile instruction: %s (%s: %d...)\n", insn_name(insn), insn_op_types(insn), insn_len(insn) > 0 ? insn_op_type(insn, 0) : 0);
 	break;
     }
 }
