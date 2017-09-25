@@ -50,6 +50,13 @@ jit_stack_pop(struct jit_stack *stack)
     return stack->body[stack->size];
 }
 
+static char*
+jit_stack_topn(struct jit_stack *stack, unsigned int n)
+{
+  unsigned int last = stack->size - 1;
+  return stack->body[last - n];
+}
+
 static void
 execute_command(const char *path, char *const argv[])
 {
@@ -255,7 +262,9 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       //case YARVINSN_checkkeyword:
       //  break;
       case YARVINSN_trace:
-	/* TODO: implement this */
+	fprintf(f, "  vm_dtrace((rb_event_flag_t)0x%"PRIxVALUE", th);\n", operands[0]);
+	fprintf(f, "  EXEC_EVENT_HOOK(th, (rb_event_flag_t)0x%"PRIxVALUE", cfp->self, 0, 0, 0, %s);\n", operands[0],
+		((rb_event_flag_t)operands[0] & (RUBY_EVENT_RETURN | RUBY_EVENT_B_RETURN)) ? jit_stack_topn(stack, 0) : "Qundef");
         break;
       //case YARVINSN_trace2:
       //  break;

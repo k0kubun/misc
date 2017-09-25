@@ -3047,6 +3047,8 @@ vm_check_keyword(lindex_t bits, lindex_t idx, const VALUE *ep)
     }
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 static void
 vm_dtrace(rb_event_flag_t flag, rb_thread_t *th)
 {
@@ -3071,6 +3073,8 @@ vm_dtrace(rb_event_flag_t flag, rb_thread_t *th)
 	}
     }
 }
+
+#ifndef CJIT_HEADER
 
 static VALUE
 vm_const_get_under(ID id, rb_num_t flags, VALUE cbase)
