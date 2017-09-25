@@ -52,7 +52,16 @@ class TestJIT < Test::Unit::TestCase
   # def test_splatarray
   # def test_newhash
   # def test_newrange
-  # def test_pop
+
+  def test_pop
+    test_results do |k|
+      def k._jit
+        1+2
+        3+4
+      end
+    end
+  end
+
   # def test_dup
   # def test_dupn
   # def test_swap
@@ -64,7 +73,16 @@ class TestJIT < Test::Unit::TestCase
   # def test_defined
   # def test_checkmatch
   # def test_checkkeyword
-  # def test_trace
+
+  def test_trace
+    test_results do |k|
+      def k._jit
+        1+2
+        3+4
+      end
+    end
+  end
+
   # def test_trace2
   # def test_defineclass
   # def test_send

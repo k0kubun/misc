@@ -237,8 +237,9 @@ compile_insn(FILE *f, struct jit_stack *stack, const int insn, const VALUE *oper
       //  break;
       //case YARVINSN_newrange:
       //  break;
-      //case YARVINSN_pop:
-      //  break;
+      case YARVINSN_pop:
+	xfree(jit_stack_pop(stack));
+        break;
       //case YARVINSN_dup:
       //  break;
       //case YARVINSN_dupn:
