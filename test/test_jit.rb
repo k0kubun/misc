@@ -127,7 +127,10 @@ class TestJIT < Test::Unit::TestCase
     end
   end
 
-  # def test_branchnil
+  def test_branchnil
+    test_results { |k| def k._jit; 1&.+(2); end }
+  end
+
   # def test_branchiftype
   # def test_getinlinecache
   # def test_setinlinecache
