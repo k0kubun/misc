@@ -62,7 +62,10 @@ class TestJIT < Test::Unit::TestCase
     end
   end
 
-  # def test_dup
+  def test_dup
+    test_results { |k| def k._jit; 1+2 || false; end }
+  end
+
   # def test_dupn
   # def test_swap
   # def test_reverse
@@ -95,8 +98,22 @@ class TestJIT < Test::Unit::TestCase
   # def test_invokeblock
   # def test_leave
   # def test_throw
-  # def test_jump
-  # def test_branchif
+
+  def test_jump
+    test_results do |k|
+      def k._jit
+        if 0+1
+          2
+        else
+          3
+        end
+      end
+    end
+  end
+
+  def test_branchif
+    test_results { |k| def k._jit; 1+2 || false; end }
+  end
 
   def test_branchunless
     test_results do |k|

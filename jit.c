@@ -163,8 +163,10 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_pop:
 	stack_size--;
         break;
-      //case YARVINSN_dup:
-      //  break;
+      case YARVINSN_dup:
+	fprintf(f, "  stack[%d] = stack[%d];\n", stack_size, stack_size-1);
+	stack_size++;
+        break;
       //case YARVINSN_dupn:
       //  break;
       //case YARVINSN_swap:
@@ -223,8 +225,11 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
 	fprintf(f, "  goto label_%d;\n", next_pos);
         break;
-      //case YARVINSN_branchif:
-      //  break;
+      case YARVINSN_branchif:
+	fprintf(f, "  if (RTEST(stack[%d])) goto label_%d;\n", --stack_size, pos + insn_len(insn) + (unsigned int)operands[0]);
+	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos);
+	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
+        break;
       case YARVINSN_branchunless:
 	fprintf(f, "  if (!RTEST(stack[%d])) goto label_%d;\n", --stack_size, pos + insn_len(insn) + (unsigned int)operands[0]);
 	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos);
