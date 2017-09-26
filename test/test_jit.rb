@@ -97,7 +97,19 @@ class TestJIT < Test::Unit::TestCase
   # def test_throw
   # def test_jump
   # def test_branchif
-  # def test_branchunless
+
+  def test_branchunless
+    test_results do |k|
+      def k._jit
+        if 0+1
+          2
+        else
+          3
+        end
+      end
+    end
+  end
+
   # def test_branchnil
   # def test_branchiftype
   # def test_getinlinecache

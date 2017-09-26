@@ -83,10 +83,14 @@ fprint_call2(FILE *f, const char *func, unsigned int *stack_size)
     (*stack_size)--;
 }
 
-static void
-compile_insn(FILE *f, unsigned int *stack_size_ptr, const int insn, const VALUE *operands)
+static void compile_insns(const struct rb_iseq_constant_body *body, FILE *f, unsigned int stack_size, unsigned int pos, bool *compiled_for_pos);
+
+/* Compiles insn to f, may modify stack_size_ptr and returns next position */
+static unsigned int
+compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *stack_size_ptr, const int insn, const VALUE *operands, unsigned int pos, bool *compiled_for_pos)
 {
     unsigned int stack_size = *stack_size_ptr;
+    unsigned int next_pos = pos + insn_len(insn);
 
     switch (insn) {
       case YARVINSN_nop:
@@ -215,12 +219,17 @@ compile_insn(FILE *f, unsigned int *stack_size_ptr, const int insn, const VALUE 
 	break;
       //case YARVINSN_throw:
       //  break;
-      //case YARVINSN_jump:
-      //  break;
+      case YARVINSN_jump:
+	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
+	fprintf(f, "  goto label_%d;\n", next_pos);
+        break;
       //case YARVINSN_branchif:
       //  break;
-      //case YARVINSN_branchunless:
-      //  break;
+      case YARVINSN_branchunless:
+	fprintf(f, "  if (!RTEST(stack[%d])) goto label_%d;\n", --stack_size, pos + insn_len(insn) + (unsigned int)operands[0]);
+	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos);
+	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
+        break;
       //case YARVINSN_branchnil:
       //  break;
       //case YARVINSN_branchiftype:
@@ -327,15 +336,35 @@ compile_insn(FILE *f, unsigned int *stack_size_ptr, const int insn, const VALUE 
 	fprintf(stderr, "Failed to compile instruction: %s (%s: %d...)\n", insn_name(insn), insn_op_types(insn), insn_len(insn) > 0 ? insn_op_type(insn, 0) : 0);
 	break;
     }
+
     *stack_size_ptr = stack_size;
+    return next_pos;
+}
+
+static void
+compile_insns(const struct rb_iseq_constant_body *body, FILE *f, unsigned int stack_size, unsigned int pos, bool *compiled_for_pos)
+{
+    int insn;
+
+    while (pos < body->iseq_size && !compiled_for_pos[pos]) {
+#if OPT_DIRECT_THREADED_CODE || OPT_CALL_THREADED_CODE
+	insn = rb_vm_insn_addr2insn((void *)body->iseq_encoded[pos]);
+#else
+	insn = (int)body->iseq_encoded[pos];
+#endif
+	compiled_for_pos[pos] = true;
+
+	fprintf(f, "\nlabel_%d: /* %s */\n", pos, insn_name(insn));
+	pos = compile_insn(body, f, &stack_size, insn, body->iseq_encoded + (pos+1), pos, compiled_for_pos);
+	/* TODO: check body->stack_max here */
+    }
 }
 
 static void
 compile_iseq_to_c(const struct rb_iseq_constant_body *body, FILE *f, const char *funcname)
 {
-    unsigned int i;
-    int insn;
-    unsigned int stack_size;
+    bool *compiled_for_pos;
+    compiled_for_pos = ZALLOC_N(bool, body->iseq_size);
 
     fprintf(f, "#include \"jit_header.h\"\n\n");
     fprintf(f, "VALUE %s(rb_thread_t *th, rb_control_frame_t *cfp) {\n", funcname);
@@ -343,20 +372,10 @@ compile_iseq_to_c(const struct rb_iseq_constant_body *body, FILE *f, const char 
     if (body->stack_max > 0) {
 	fprintf(f, "  VALUE stack[%d];\n", body->stack_max);
     }
+    compile_insns(body, f, 0, 0, compiled_for_pos);
 
-    stack_size = 0;
-    for (i = 0; i < body->iseq_size;) {
-#if OPT_DIRECT_THREADED_CODE || OPT_CALL_THREADED_CODE
-	insn = rb_vm_insn_addr2insn((void *)body->iseq_encoded[i]);
-#else
-	insn = (int)body->iseq_encoded[i];
-#endif
-	fprintf(f, "\n  /* %s */\n", insn_name(insn));
-	compile_insn(f, &stack_size, insn, body->iseq_encoded + (i+1));
-	/* TODO: check body->stack_max here */
-	i += insn_len(insn);
-    }
     fprintf(f, "}\n");
+    xfree(compiled_for_pos);
 }
 
 void *
