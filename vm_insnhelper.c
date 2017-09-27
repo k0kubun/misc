@@ -331,6 +331,8 @@ rb_error_arity(int argc, int min, int max)
 
 /* lvar */
 
+#endif /* #ifndef CJIT_HEADER */
+
 NOINLINE(static void vm_env_write_slowpath(const VALUE *ep, int index, VALUE v));
 
 static void
@@ -354,6 +356,8 @@ vm_env_write(const VALUE *ep, int index, VALUE v)
 	vm_env_write_slowpath(ep, index, v);
     }
 }
+
+#ifndef CJIT_HEADER
 
 void
 rb_vm_env_write(const VALUE *ep, int index, VALUE v)

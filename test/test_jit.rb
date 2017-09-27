@@ -234,10 +234,21 @@ class TestJIT < Test::Unit::TestCase
   def test_getlocal_OP__WC__0
     test_results(100) { |k| def k._jit(a); a; end }
     test_results(3, 1) { |k| def k._jit(a, b); b - a; end }
+    test_results do |k|
+      def k._jit
+        a = 1
+        b = 2
+        a + b
+      end
+    end
   end
 
   # def test_getlocal_OP__WC__1
-  # def test_setlocal_OP__WC__0
+
+  def test_setlocal_OP__WC__0
+    test_results { |k| def k._jit; a = 2; end }
+  end
+
   # def test_setlocal_OP__WC__1
 
   def test_putobject_OP_INT2FIX_O_0_C_

@@ -95,6 +95,17 @@ fprint_getlocal(FILE *f, unsigned int push_pos, lindex_t idx, rb_num_t level)
     }
 }
 
+static void
+fprint_setlocal(FILE *f, unsigned int pop_pos, lindex_t idx, rb_num_t level)
+{
+    /* COLLECT_USAGE_REGISTER_HELPER is necessary? */
+    fprintf(f, "  vm_env_write(vm_get_ep(cfp->ep, 0x%"PRIxVALUE"), -(int)0x%"PRIxVALUE", stack[%d]);\n", level, idx, pop_pos);
+    fprintf(f, "  RB_DEBUG_COUNTER_INC(lvar_set);\n");
+    if (level > 0) {
+	fprintf(f, "  RB_DEBUG_COUNTER_INC(lvar_set_dynamic);\n");
+    }
+}
+
 static void compile_insns(const struct rb_iseq_constant_body *body, FILE *f, unsigned int stack_size, unsigned int pos, bool *compiled_for_pos);
 
 /* Compiles insn to f, may modify stack_size_ptr and returns next position */
@@ -111,8 +122,9 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_getlocal:
 	fprint_getlocal(f, stack_size++, operands[0], operands[1]);
         break;
-      //case YARVINSN_setlocal:
-      //  break;
+      case YARVINSN_setlocal:
+	fprint_setlocal(f, --stack_size, operands[0], operands[1]);
+        break;
       //case YARVINSN_getspecial:
       //  break;
       //case YARVINSN_setspecial:
@@ -348,10 +360,12 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_getlocal_OP__WC__1:
 	fprint_getlocal(f, stack_size++, operands[0], 1);
         break;
-      //case YARVINSN_setlocal_OP__WC__0:
-      //  break;
-      //case YARVINSN_setlocal_OP__WC__1:
-      //  break;
+      case YARVINSN_setlocal_OP__WC__0:
+	fprint_setlocal(f, --stack_size, operands[0], 0);
+        break;
+      case YARVINSN_setlocal_OP__WC__1:
+	fprint_setlocal(f, --stack_size, operands[0], 1);
+        break;
       case YARVINSN_putobject_OP_INT2FIX_O_0_C_:
 	fprintf(f, "  stack[%d] = INT2FIX(0);\n", stack_size++);
         break;

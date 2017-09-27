@@ -1217,7 +1217,9 @@ void *ruby_mimmalloc(size_t size);
 void ruby_mimfree(void *ptr);
 void rb_objspace_set_event_hook(const rb_event_flag_t event);
 #if USE_RGENGC
+RUBY_SYMBOL_EXPORT_BEGIN
 void rb_gc_writebarrier_remember(VALUE obj);
+RUBY_SYMBOL_EXPORT_END
 #else
 #define rb_gc_writebarrier_remember(obj) 0
 #endif
