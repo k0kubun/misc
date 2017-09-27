@@ -11,8 +11,15 @@ class TestJIT < Test::Unit::TestCase
   # def test_setlocal
   # def test_getspecial
   # def test_setspecial
-  # def test_getinstancevariable
-  # def test_setinstancevariable
+
+  def test_getinstancevariable
+    test_results { |k| def k._jit; @a; end }
+  end
+
+  def test_setinstancevariable
+    test_results { |k| def k._jit; @a = 2; @a; end }
+  end
+
   # def test_getclassvariable
   # def test_setclassvariable
   # def test_getconstant

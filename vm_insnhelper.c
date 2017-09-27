@@ -930,6 +930,8 @@ vm_search_const_defined_class(const VALUE cbase, ID id)
 #define USE_IC_FOR_IVAR 1
 #endif
 
+#endif /* #ifndef CJIT_HEADER */
+
 ALWAYS_INLINE(static VALUE vm_getivar(VALUE, ID, IC, struct rb_call_cache *, int));
 static inline VALUE
 vm_getivar(VALUE obj, ID id, IC ic, struct rb_call_cache *cc, int is_attr)
@@ -1045,6 +1047,8 @@ vm_setinstancevariable(VALUE obj, ID id, VALUE val, IC ic)
 {
     vm_setivar(obj, id, val, ic, 0, 0);
 }
+
+#ifndef CJIT_HEADER
 
 static VALUE
 vm_throw_continue(rb_thread_t *th, VALUE err)

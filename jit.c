@@ -129,10 +129,12 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       //  break;
       //case YARVINSN_setspecial:
       //  break;
-      //case YARVINSN_getinstancevariable:
-      //  break;
-      //case YARVINSN_setinstancevariable:
-      //  break;
+      case YARVINSN_getinstancevariable:
+	fprintf(f, "  stack[%d] = vm_getinstancevariable(cfp->self, 0x%"PRIxVALUE", 0x%"PRIxVALUE");\n", stack_size++, operands[0], operands[1]);
+        break;
+      case YARVINSN_setinstancevariable:
+	fprintf(f, "  vm_setinstancevariable(cfp->self, 0x%"PRIxVALUE", stack[%d], 0x%"PRIxVALUE");\n", operands[0], --stack_size, operands[1]);
+        break;
       //case YARVINSN_getclassvariable:
       //  break;
       //case YARVINSN_setclassvariable:
