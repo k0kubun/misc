@@ -52,7 +52,14 @@ class TestJIT < Test::Unit::TestCase
   # def test_freezestring
   # def test_toregexp
   # def test_intern
-  # def test_newarray
+
+  def test_newarray
+    test_results { |k| def k._jit; []; end }
+    test_results(1) { |k| def k._jit(a); [a]; end }
+    test_results(1, 2) { |k| def k._jit(a, b); [a, b]; end }
+    test_results(1, 2, 3, 4) { |k| def k._jit(a, b, c, d); [a, b] + [c, d]; end }
+  end
+
   # def test_duparray
   # def test_expandarray
   # def test_concatarray
