@@ -346,12 +346,15 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       //  break;
       //case YARVINSN_opt_aref_with:
       //  break;
-      //case YARVINSN_opt_length:
-      //  break;
-      //case YARVINSN_opt_size:
-      //  break;
-      //case YARVINSN_opt_empty_p:
-      //  break;
+      case YARVINSN_opt_length:
+	fprintf(f, "stack[%d] = vm_opt_length(stack[%d], BOP_LENGTH);\n", stack_size-1, stack_size-1); /* TODO: handle Qundef */
+        break;
+      case YARVINSN_opt_size:
+	fprintf(f, "stack[%d] = vm_opt_length(stack[%d], BOP_SIZE);\n", stack_size-1, stack_size-1); /* TODO: handle Qundef */
+        break;
+      case YARVINSN_opt_empty_p:
+	fprintf(f, "stack[%d] = vm_opt_empty_p(stack[%d]);\n", stack_size-1, stack_size-1); /* TODO: handle Qundef */
+        break;
       case YARVINSN_opt_succ:
 	fprintf(f, "stack[%d] = vm_opt_succ(stack[%d]);\n", stack_size-1, stack_size-1); /* TODO: handle Qundef */
         break;

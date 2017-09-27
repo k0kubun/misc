@@ -3677,6 +3677,8 @@ vm_opt_aset_with(VALUE recv, VALUE key, VALUE val)
     }
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 static VALUE
 vm_opt_length(VALUE recv, int bop)
 {
@@ -3714,8 +3716,6 @@ vm_opt_empty_p(VALUE recv)
       default: return Qfalse;
     }
 }
-
-#endif /* #ifndef CJIT_HEADER */
 
 static VALUE
 vm_opt_succ(VALUE recv)

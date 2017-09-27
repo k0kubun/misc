@@ -240,9 +240,21 @@ class TestJIT < Test::Unit::TestCase
 
   # def test_opt_aset_with
   # def test_opt_aref_with
-  # def test_opt_length
-  # def test_opt_size
-  # def test_opt_empty_p
+
+  def test_opt_length
+    test_results { |k| def k._jit; [].length; end }
+    test_results { |k| def k._jit; [1, nil, false].length; end }
+  end
+
+  def test_opt_size
+    test_results { |k| def k._jit; [].size; end }
+    test_results { |k| def k._jit; [1, nil, false].size; end }
+  end
+
+  def test_opt_empty_p
+    test_results { |k| def k._jit; [].empty?; end }
+    test_results { |k| def k._jit; [1, nil, false].empty?; end }
+  end
 
   def test_opt_succ
     test_results { |k| def k._jit; 1.succ; end }
