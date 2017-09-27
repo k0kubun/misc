@@ -178,8 +178,9 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 		stack_size - (unsigned int)operands[0], operands[0], stack_size - (unsigned int)operands[0]);
 	stack_size += 1 - (unsigned int)operands[0];
         break;
-      //case YARVINSN_duparray:
-      //  break;
+      case YARVINSN_duparray:
+	fprintf(f, "  stack[%d] = rb_ary_resurrect(0x%"PRIxVALUE");\n", stack_size++, operands[0]);
+        break;
       //case YARVINSN_expandarray:
       //  break;
       //case YARVINSN_concatarray:

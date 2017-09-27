@@ -60,7 +60,11 @@ class TestJIT < Test::Unit::TestCase
     test_results(1, 2, 3, 4) { |k| def k._jit(a, b, c, d); [a, b] + [c, d]; end }
   end
 
-  # def test_duparray
+  def test_duparray
+    test_results { |k| def k._jit; [1]; end }
+    test_results { |k| def k._jit; [1, 2]; end }
+  end
+
   # def test_expandarray
   # def test_concatarray
   # def test_splatarray
