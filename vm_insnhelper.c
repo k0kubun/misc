@@ -3607,8 +3607,6 @@ vm_opt_ltlt(VALUE recv, VALUE obj)
     }
 }
 
-#ifndef CJIT_HEADER
-
 static VALUE
 vm_opt_aref(VALUE recv, VALUE obj)
 {
@@ -3650,6 +3648,8 @@ vm_opt_aset(VALUE recv, VALUE obj, VALUE set)
 	return Qundef;
     }
 }
+
+#ifndef CJIT_HEADER
 
 static VALUE
 vm_opt_aref_with(VALUE recv, VALUE key)

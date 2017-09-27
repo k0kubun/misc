@@ -216,8 +216,9 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       //  break;
       //case YARVINSN_topn:
       //  break;
-      //case YARVINSN_setn:
-      //  break;
+      case YARVINSN_setn:
+	fprintf(f, "  stack[%d] = stack[%d];\n", stack_size - 1 - (unsigned int)operands[0], stack_size-1);
+        break;
       //case YARVINSN_adjuststack:
       //  break;
       //case YARVINSN_defined:
@@ -333,10 +334,14 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_opt_ltlt:
 	fprint_call2(f, "vm_opt_ltlt", &stack_size); /* TODO: handle Qundef */
         break;
-      //case YARVINSN_opt_aref:
-      //  break;
-      //case YARVINSN_opt_aset:
-      //  break;
+      case YARVINSN_opt_aref:
+	fprint_call2(f, "vm_opt_aref", &stack_size); /* TODO: handle Qundef */
+        break;
+      case YARVINSN_opt_aset:
+	fprintf(f, "stack[%d] = vm_opt_aset(stack[%d], stack[%d], stack[%d]);\n",
+		stack_size-3, stack_size-3, stack_size-2, stack_size-1); /* TODO: handle Qundef */
+	stack_size -= 2;
+        break;
       //case YARVINSN_opt_aset_with:
       //  break;
       //case YARVINSN_opt_aref_with:

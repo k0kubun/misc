@@ -1249,7 +1249,9 @@ void ruby_sized_xfree(void *x, size_t size);
 
 /* hash.c */
 struct st_table *rb_hash_tbl_raw(VALUE hash);
+RUBY_SYMBOL_EXPORT_BEGIN
 VALUE rb_hash_new_with_size(st_index_t size);
+RUBY_SYMBOL_EXPORT_END
 VALUE rb_hash_has_key(VALUE hash, VALUE key);
 VALUE rb_hash_default_value(VALUE hash, VALUE key);
 VALUE rb_hash_set_default_proc(VALUE hash, VALUE proc);
@@ -1590,7 +1592,9 @@ int rb_get_next_signal(void);
 int rb_sigaltstack_size(void);
 
 /* st.c */
+RUBY_SYMBOL_EXPORT_BEGIN
 extern void rb_hash_bulk_insert(long, const VALUE *, VALUE);
+RUBY_SYMBOL_EXPORT_END
 
 /* strftime.c */
 #ifdef RUBY_ENCODING_H
