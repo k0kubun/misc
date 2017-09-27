@@ -195,8 +195,10 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	}
 	stack_size++;
         break;
-      //case YARVINSN_newrange:
-      //  break;
+      case YARVINSN_newrange:
+	fprintf(f, "  stack[%d] = rb_range_new(stack[%d], stack[%d], (int)0x%"PRIxVALUE");\n", stack_size-2, stack_size-2, stack_size-1, operands[0]);
+	stack_size--;
+        break;
       case YARVINSN_pop:
 	stack_size--;
         break;

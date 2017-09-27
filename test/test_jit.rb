@@ -79,7 +79,10 @@ class TestJIT < Test::Unit::TestCase
     end
   end
 
-  # def test_newrange
+  def test_newrange
+    test_results(2) { |k| def k._jit(a); (1..a); end }
+    test_results(2, 4) { |k| def k._jit(a, b); (a..b); end }
+  end
 
   def test_pop
     test_results do |k|
