@@ -68,7 +68,17 @@ class TestJIT < Test::Unit::TestCase
   # def test_expandarray
   # def test_concatarray
   # def test_splatarray
-  # def test_newhash
+
+  def test_newhash
+    test_results { |k| def k._jit; {}; end }
+    test_results(4) { |k| def k._jit(a); {a: a}; end }
+    test_results(1, 2, 3, 4) do |k|
+      def k._jit(a, b, c, d)
+        {a: a, b: b} && {c: c, d: d}
+      end
+    end
+  end
+
   # def test_newrange
 
   def test_pop

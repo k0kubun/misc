@@ -187,8 +187,14 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       //  break;
       //case YARVINSN_splatarray:
       //  break;
-      //case YARVINSN_newhash:
-      //  break;
+      case YARVINSN_newhash:
+	fprintf(f, "  RUBY_DTRACE_CREATE_HOOK(HASH, 0x%"PRIxVALUE");\n", operands[0]);
+	fprintf(f, "  stack[%d] = rb_hash_new_with_size(0x%"PRIxVALUE" / 2);\n", stack_size, operands[0]);
+	if (operands[0]) {
+	    fprintf(f, "  rb_hash_bulk_insert(0x%"PRIxVALUE", stack + %d, stack[%d]);\n", operands[0], stack_size - (unsigned int)operands[0], stack_size);
+	}
+	stack_size++;
+        break;
       //case YARVINSN_newrange:
       //  break;
       case YARVINSN_pop:
