@@ -231,7 +231,11 @@ class TestJIT < Test::Unit::TestCase
     # no test
   end
 
-  # def test_getlocal_OP__WC__0
+  def test_getlocal_OP__WC__0
+    test_results(100) { |k| def k._jit(a); a; end }
+    test_results(3, 1) { |k| def k._jit(a, b); b - a; end }
+  end
+
   # def test_getlocal_OP__WC__1
   # def test_setlocal_OP__WC__0
   # def test_setlocal_OP__WC__1
@@ -246,13 +250,13 @@ class TestJIT < Test::Unit::TestCase
 
   private
 
-  def test_results
+  def test_results(*args)
     klass = Class.new
     yield(klass) # This doesn't use block to define :_jit to make it JIT-ed
 
-    expected = klass._jit
+    expected = klass._jit(*args)
     TEST_ITERATIONS.times do
-      assert_equal expected, klass._jit
+      assert_equal expected, klass._jit(*args)
     end
   end
 end

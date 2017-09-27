@@ -1931,6 +1931,7 @@ jit.$(OBJEXT): {$(VPATH)}internal.h
 jit.$(OBJEXT): {$(VPATH)}jit.c
 jit.$(OBJEXT): {$(VPATH)}jit.h
 jit.$(OBJEXT): {$(VPATH)}vm_core.h
+jit.$(OBJEXT): {$(VPATH)}vm_exec.h
 load.$(OBJEXT): $(CCAN_DIR)/check_type/check_type.h
 load.$(OBJEXT): $(CCAN_DIR)/container_of/container_of.h
 load.$(OBJEXT): $(CCAN_DIR)/list/list.h

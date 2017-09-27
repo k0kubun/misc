@@ -13,6 +13,7 @@
 #include <dlfcn.h>
 #include "internal.h"
 #include "vm_core.h"
+#include "vm_exec.h"
 #include "insns.inc"
 #include "insns_info.inc"
 #include "jit.h"
@@ -83,6 +84,17 @@ fprint_call2(FILE *f, const char *func, unsigned int *stack_size)
     (*stack_size)--;
 }
 
+static void
+fprint_getlocal(FILE *f, unsigned int push_pos, lindex_t idx, rb_num_t level)
+{
+    /* COLLECT_USAGE_REGISTER_HELPER is necessary? */
+    fprintf(f, "  stack[%d] = *(vm_get_ep(cfp->ep, 0x%"PRIxVALUE") - 0x%"PRIxVALUE");\n", push_pos, level, idx);
+    fprintf(f, "  RB_DEBUG_COUNTER_INC(lvar_get);\n");
+    if (level > 0) {
+	fprintf(f, "  RB_DEBUG_COUNTER_INC(lvar_get_dynamic);\n");
+    }
+}
+
 static void compile_insns(const struct rb_iseq_constant_body *body, FILE *f, unsigned int stack_size, unsigned int pos, bool *compiled_for_pos);
 
 /* Compiles insn to f, may modify stack_size_ptr and returns next position */
@@ -96,8 +108,9 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_nop:
 	/* nop */
         break;
-      //case YARVINSN_getlocal:
-      //  break;
+      case YARVINSN_getlocal:
+	fprint_getlocal(f, stack_size++, operands[0], operands[1]);
+        break;
       //case YARVINSN_setlocal:
       //  break;
       //case YARVINSN_getspecial:
@@ -329,10 +342,12 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_answer:
 	fprintf(f, "  stack[%d] = INT2FIX(42);\n", stack_size++);
         break;
-      //case YARVINSN_getlocal_OP__WC__0:
-      //  break;
-      //case YARVINSN_getlocal_OP__WC__1:
-      //  break;
+      case YARVINSN_getlocal_OP__WC__0:
+	fprint_getlocal(f, stack_size++, operands[0], 0);
+        break;
+      case YARVINSN_getlocal_OP__WC__1:
+	fprint_getlocal(f, stack_size++, operands[0], 1);
+        break;
       //case YARVINSN_setlocal_OP__WC__0:
       //  break;
       //case YARVINSN_setlocal_OP__WC__1:
