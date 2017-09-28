@@ -254,10 +254,22 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       //  break;
       //case YARVINSN_send:
       //  break;
-      //case YARVINSN_opt_str_freeze:
-      //  break;
-      //case YARVINSN_opt_str_uminus:
-      //  break;
+      case YARVINSN_opt_str_freeze:
+	fprintf(f, "  if (BASIC_OP_UNREDEFINED_P(BOP_FREEZE, STRING_REDEFINED_OP_FLAG)) {\n");
+	fprintf(f, "    stack[%d] = 0x%"PRIxVALUE";\n", stack_size, operands[0]);
+	fprintf(f, "  } else {\n");
+	fprintf(f, "    stack[%d] = rb_funcall(rb_str_resurrect(0x%"PRIxVALUE"), idFreeze, 0);\n", stack_size, operands[0]);
+	fprintf(f, "  }\n");
+	stack_size++;
+        break;
+      case YARVINSN_opt_str_uminus:
+	fprintf(f, "  if (BASIC_OP_UNREDEFINED_P(BOP_UMINUS, STRING_REDEFINED_OP_FLAG)) {\n");
+	fprintf(f, "    stack[%d] = 0x%"PRIxVALUE";\n", stack_size, operands[0]);
+	fprintf(f, "  } else {\n");
+	fprintf(f, "    stack[%d] = rb_funcall(rb_str_resurrect(0x%"PRIxVALUE"), idUMinus, 0);\n", stack_size, operands[0]);
+	fprintf(f, "  }\n");
+	stack_size++;
+        break;
       //case YARVINSN_opt_newarray_max:
       //  break;
       //case YARVINSN_opt_newarray_min:

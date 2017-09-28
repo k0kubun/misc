@@ -137,8 +137,15 @@ class TestJIT < Test::Unit::TestCase
   # def test_trace2
   # def test_defineclass
   # def test_send
-  # def test_opt_str_freeze
-  # def test_opt_str_uminus
+
+  def test_opt_str_freeze
+    test_results { |k| def k._jit; 'str'.freeze; end }
+  end
+
+  def test_opt_str_uminus
+    test_results { |k| def k._jit; -'str'; end }
+  end
+
   # def test_opt_newarray_max
   # def test_opt_newarray_min
   # def test_opt_send_without_block
