@@ -1505,12 +1505,15 @@ check_match(VALUE pattern, VALUE target, enum vm_check_match_type type)
     }
 }
 
+#endif /* #ifndef CJIT_HEADER */
 
 #if defined(_MSC_VER) && _MSC_VER < 1300
 #define CHECK_CMP_NAN(a, b) if (isnan(a) || isnan(b)) return Qfalse;
 #else
 #define CHECK_CMP_NAN(a, b) /* do nothing */
 #endif
+
+#ifndef CJIT_HEADER
 
 static inline VALUE
 double_cmp_lt(double a, double b)

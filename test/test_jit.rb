@@ -185,10 +185,21 @@ class TestJIT < Test::Unit::TestCase
         end
       end
     end
+
+    test_results do |k|
+      def k._jit
+        i = 0
+        while i< 60
+          i += 1
+        end
+        i
+      end
+    end
   end
 
   def test_branchif
     test_results { |k| def k._jit; 1+2 || false; end }
+    test_results(false) { |k| def k._jit(a); 1+1 while a; end }
   end
 
   def test_branchunless

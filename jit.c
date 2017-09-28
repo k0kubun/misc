@@ -114,6 +114,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 {
     unsigned int stack_size = *stack_size_ptr;
     unsigned int next_pos = pos + insn_len(insn);
+    bool jumped = false; /* set true if `goto` or `return` is set in the end of compiled code */
 
     switch (insn) {
       case YARVINSN_nop:
@@ -322,6 +323,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_leave:
 	fprintf(f, "  th->ec.cfp = cfp+1;\n"); /* TODO: properly implement vm_pop_frame */
 	fprintf(f, "  return stack[%d];\n", stack_size-1); /* TODO: assert stack_size == 1 */
+	jumped = true;
 	break;
       //case YARVINSN_throw:
       //  break;
@@ -329,6 +331,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	/* TODO: RUBY_VM_CHECK_INTS(th) */
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
 	fprintf(f, "  goto label_%d;\n", next_pos);
+	jumped = true;
         break;
       case YARVINSN_branchif:
 	/* TODO: RUBY_VM_CHECK_INTS(th) */
@@ -470,6 +473,11 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	/* passing excessive arguments to suppress warning in insns_info.inc... */
 	fprintf(stderr, "Failed to compile instruction: %s (%s: %d...)\n", insn_name(insn), insn_op_types(insn), insn_len(insn) > 0 ? insn_op_type(insn, 0) : 0);
 	break;
+    }
+
+    /* if next_pos is already compiled, next instruction won't be compiled in C code and needs `goto`. */
+    if (next_pos < body->iseq_size && compiled_for_pos[next_pos] && !jumped) {
+	fprintf(f, "  goto label_%d;\n", next_pos);
     }
 
     *stack_size_ptr = stack_size;
