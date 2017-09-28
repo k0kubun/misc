@@ -1355,7 +1355,9 @@ VALUE rb_int2str(VALUE num, int base);
 VALUE rb_dbl_hash(double d);
 VALUE rb_fix_plus(VALUE x, VALUE y);
 VALUE rb_int_gt(VALUE x, VALUE y);
+RUBY_SYMBOL_EXPORT_BEGIN
 int rb_float_cmp(VALUE x, VALUE y);
+RUBY_SYMBOL_EXPORT_END
 VALUE rb_float_gt(VALUE x, VALUE y);
 VALUE rb_int_ge(VALUE x, VALUE y);
 enum ruby_num_rounding_mode rb_num_get_rounding_option(VALUE opts);

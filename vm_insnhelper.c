@@ -3228,6 +3228,8 @@ vm_find_or_create_class_by_id(ID id,
     }
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 /* this macro is mandatory to use OPTIMIZED_CMP. What a design! */
 #define id_cmp idCmp
 
@@ -3286,6 +3288,8 @@ vm_opt_newarray_min(rb_num_t num, const VALUE *ptr)
 }
 
 #undef id_cmp
+
+#ifndef CJIT_HEADER
 
 static VALUE
 vm_ic_hit_p(IC ic, const VALUE *reg_ep)

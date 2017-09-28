@@ -57,9 +57,11 @@ class TestJIT < Test::Unit::TestCase
   end
 
   # def test_toregexp
+  #   test_results { |k| def k._jit; /#{true}/ =~ "true"; end }
+  # end
 
   def test_intern
-    test_results('b') { |k| def k._jit(b); :"a#{2}"; end }
+    test_results { |k| def k._jit; :"a#{2}"; end }
   end
 
   def test_newarray
@@ -149,8 +151,14 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; -'str'; end }
   end
 
-  # def test_opt_newarray_max
-  # def test_opt_newarray_min
+  def test_opt_newarray_max
+    test_results(1, 2) { |k| def k._jit(a, b); [a, b].max; end }
+  end
+
+  def test_opt_newarray_min
+    test_results(1, 2) { |k| def k._jit(a, b); [a, b].min; end }
+    test_results(1, 2) { |k| def k._jit(a, b); [[a, b].min, [a, b, a].max].min; end }
+  end
 
   def test_opt_send_without_block
     test_results { |k| def k._jit; print; end }

@@ -271,10 +271,16 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "  }\n");
 	stack_size++;
         break;
-      //case YARVINSN_opt_newarray_max:
-      //  break;
-      //case YARVINSN_opt_newarray_min:
-      //  break;
+      case YARVINSN_opt_newarray_max:
+	fprintf(f, "  stack[%d] = vm_opt_newarray_max(0x%"PRIxVALUE", stack + %d);\n",
+		stack_size - (unsigned int)operands[0], operands[0], stack_size - (unsigned int)operands[0]);
+	stack_size += 1 - (unsigned int)operands[0];
+        break;
+      case YARVINSN_opt_newarray_min:
+	fprintf(f, "  stack[%d] = vm_opt_newarray_min(0x%"PRIxVALUE", stack + %d);\n",
+		stack_size - (unsigned int)operands[0], operands[0], stack_size - (unsigned int)operands[0]);
+	stack_size += 1 - (unsigned int)operands[0];
+        break;
       case YARVINSN_opt_send_without_block:
 	{
 	    CALL_INFO ci = (CALL_INFO)operands[0];
