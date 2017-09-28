@@ -208,14 +208,21 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
         break;
       //case YARVINSN_dupn:
       //  break;
-      //case YARVINSN_swap:
-      //  break;
+      case YARVINSN_swap:
+	fprintf(f, "  {\n");
+	fprintf(f, "    VALUE tmp = stack[%d];\n", stack_size-1);
+	fprintf(f, "    stack[%d] = stack[%d];\n", stack_size-1, stack_size-2);
+	fprintf(f, "    stack[%d] = tmp;\n", stack_size-2);
+	fprintf(f, "  }\n");
+        break;
       //case YARVINSN_reverse:
       //  break;
       //case YARVINSN_reput:
       //  break;
-      //case YARVINSN_topn:
-      //  break;
+      case YARVINSN_topn:
+	fprintf(f, "  stack[%d] = stack[%d];\n", stack_size, stack_size - (unsigned int)operands[0]);
+	stack_size++;
+        break;
       case YARVINSN_setn:
 	fprintf(f, "  stack[%d] = stack[%d];\n", stack_size - 1 - (unsigned int)operands[0], stack_size-1);
         break;
@@ -342,10 +349,15 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 		stack_size-3, stack_size-3, stack_size-2, stack_size-1); /* TODO: handle Qundef */
 	stack_size -= 2;
         break;
-      //case YARVINSN_opt_aset_with:
-      //  break;
-      //case YARVINSN_opt_aref_with:
-      //  break;
+      case YARVINSN_opt_aset_with:
+	fprintf(f, "stack[%d] = vm_opt_aset_with(stack[%d], 0x%"PRIxVALUE", stack[%d]);\n",
+		stack_size-2, stack_size-2, operands[2], stack_size-1); /* TODO: handle Qundef */
+	stack_size--;
+        break;
+      case YARVINSN_opt_aref_with:
+	fprintf(f, "stack[%d] = vm_opt_aref_with(stack[%d], 0x%"PRIxVALUE");\n",
+		stack_size-1, stack_size-1, operands[2]); /* TODO: handle Qundef */
+        break;
       case YARVINSN_opt_length:
 	fprintf(f, "stack[%d] = vm_opt_length(stack[%d], BOP_LENGTH);\n", stack_size-1, stack_size-1); /* TODO: handle Qundef */
         break;

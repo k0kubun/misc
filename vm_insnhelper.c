@@ -3649,8 +3649,6 @@ vm_opt_aset(VALUE recv, VALUE obj, VALUE set)
     }
 }
 
-#ifndef CJIT_HEADER
-
 static VALUE
 vm_opt_aref_with(VALUE recv, VALUE key)
 {
@@ -3676,8 +3674,6 @@ vm_opt_aset_with(VALUE recv, VALUE key, VALUE val)
 	return Qundef;
     }
 }
-
-#endif /* #ifndef CJIT_HEADER */
 
 static VALUE
 vm_opt_length(VALUE recv, int bop)

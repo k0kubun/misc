@@ -98,10 +98,17 @@ class TestJIT < Test::Unit::TestCase
   end
 
   # def test_dupn
-  # def test_swap
+
+  def test_swap
+    test_results { |k| def k._jit; {}['true'] = true; end }
+  end
+
   # def test_reverse
   # def test_reput
-  # def test_topn
+
+  def test_topn
+    test_results { |k| def k._jit; {}['true'] = true; end }
+  end
 
   def test_setn
     test_results { |k| def k._jit; [nil][0] = 1; end }
@@ -238,8 +245,17 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; [nil][0] = 1; end }
   end
 
-  # def test_opt_aset_with
-  # def test_opt_aref_with
+  def test_opt_aset_with
+    test_results { |k| def k._jit; {}['true'] = true; end }
+  end
+
+  def test_opt_aref_with
+    test_results(100) do |k|
+      def k._jit(x)
+        { 'true' => x }['true']
+      end
+    end
+  end
 
   def test_opt_length
     test_results { |k| def k._jit; [].length; end }
