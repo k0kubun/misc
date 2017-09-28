@@ -1782,7 +1782,7 @@ hook_before_rewind(rb_thread_t *th, const rb_control_frame_t *cfp, int will_fini
   };
  */
 
-static VALUE
+VALUE
 vm_exec(rb_thread_t *th)
 {
     enum ruby_tag_type state;

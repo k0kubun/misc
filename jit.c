@@ -274,8 +274,40 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       //  break;
       //case YARVINSN_opt_newarray_min:
       //  break;
-      //case YARVINSN_opt_send_without_block:
-      //  break;
+      case YARVINSN_opt_send_without_block:
+	{
+	    CALL_INFO ci = (CALL_INFO)operands[0];
+	    fprintf(f, "  {\n");
+	    fprintf(f, "    VALUE v;\n");
+	    fprintf(f, "    struct rb_calling_info calling;\n");
+
+	    fprintf(f, "    calling.block_handler = VM_BLOCK_HANDLER_NONE;\n");
+	    fprintf(f, "    calling.argc = %d;\n", ci->orig_argc);
+	    fprintf(f, "    vm_search_method(0x%"PRIxVALUE", 0x%"PRIxVALUE", calling.recv = stack[%d]);\n", operands[0], operands[1], stack_size - 1 - ci->orig_argc);
+
+	    /* push back stack in local variable to YARV stack */
+	    if (ci->orig_argc) {
+		int i;
+		/* TODO: use memmove or things like that, if not optimized by compiler */
+		for (i = 0; i < ci->orig_argc; i++) {
+		    fprintf(f, "    *(cfp->sp) = stack[%d];\n", stack_size - ci->orig_argc + i);
+		    fprintf(f, "    cfp->sp++;\n");
+		}
+	    }
+
+	    /* TODO: jit_exec */
+	    fprintf(f, "    v = (*((CALL_CACHE)0x%"PRIxVALUE")->call)(th, cfp, &calling, 0x%"PRIxVALUE", 0x%"PRIxVALUE");\n", operands[1], operands[0], operands[1]);
+	    fprintf(f, "    if (v == Qundef) {\n");
+	                      /* vm_call0_body's code after vm_call_iseq_setup */
+	    fprintf(f, "      VM_ENV_FLAGS_SET(th->ec.cfp->ep, VM_FRAME_FLAG_FINISH);\n");
+	    fprintf(f, "      stack[%d] = vm_exec(th);\n", stack_size - ci->orig_argc - 1);
+	    fprintf(f, "    } else {\n");
+	    fprintf(f, "      stack[%d] = v;\n", stack_size - ci->orig_argc - 1);
+	    fprintf(f, "    }\n");
+	    fprintf(f, "  }\n");
+	    stack_size -= ci->orig_argc;
+	}
+        break;
       //case YARVINSN_invokesuper:
       //  break;
       //case YARVINSN_invokeblock:

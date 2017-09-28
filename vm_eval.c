@@ -20,7 +20,9 @@ static inline VALUE vm_yield_with_cref(rb_thread_t *th, int argc, const VALUE *a
 static inline VALUE vm_yield(rb_thread_t *th, int argc, const VALUE *argv);
 static inline VALUE vm_yield_with_block(rb_thread_t *th, int argc, const VALUE *argv, VALUE block_handler);
 static inline VALUE vm_yield_force_blockarg(rb_thread_t *th, VALUE args);
-static VALUE vm_exec(rb_thread_t *th);
+RUBY_SYMBOL_EXPORT_BEGIN
+VALUE vm_exec(rb_thread_t *th);
+RUBY_SYMBOL_EXPORT_END
 static void vm_set_eval_stack(rb_thread_t * th, const rb_iseq_t *iseq, const rb_cref_t *cref, const struct rb_block *base_block);
 static int vm_collect_local_variables_in_heap(rb_thread_t *th, const VALUE *dfp, const struct local_var_list *vars);
 

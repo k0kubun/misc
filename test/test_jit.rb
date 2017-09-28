@@ -148,7 +148,17 @@ class TestJIT < Test::Unit::TestCase
 
   # def test_opt_newarray_max
   # def test_opt_newarray_min
-  # def test_opt_send_without_block
+
+  def test_opt_send_without_block
+    test_results { |k| def k._jit; print; end }
+    test_results { |k| def k._jit; [1, 2].reverse; end }
+    test_results { |k| def k._jit; 2 ** 3; end }
+    test_results { |k| def k._jit; false || 2.even?; end }
+    test_results { |k| def k._jit; [nil].push(3); end }
+    test_results { |k| def k._jit; [] + [nil].push(3); end }
+    test_results { |k| def k._jit; [0] + [].push(1,2,3).push(4,5,6); end }
+  end
+
   # def test_invokesuper
   # def test_invokeblock
   # def test_leave
