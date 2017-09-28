@@ -177,8 +177,9 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
         break;
       //case YARVINSN_toregexp:
       //  break;
-      //case YARVINSN_intern:
-      //  break;
+      case YARVINSN_intern:
+	fprintf(f, "  stack[%d] = rb_str_intern(stack[%d]);\n", stack_size-1, stack_size-1);
+        break;
       case YARVINSN_newarray:
 	fprintf(f, "  stack[%d] = rb_ary_new4(0x%"PRIxVALUE", stack + %d);\n",
 		stack_size - (unsigned int)operands[0], operands[0], stack_size - (unsigned int)operands[0]);

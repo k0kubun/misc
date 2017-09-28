@@ -57,7 +57,10 @@ class TestJIT < Test::Unit::TestCase
   end
 
   # def test_toregexp
-  # def test_intern
+
+  def test_intern
+    test_results('b') { |k| def k._jit(b); :"a#{2}"; end }
+  end
 
   def test_newarray
     test_results { |k| def k._jit; []; end }
