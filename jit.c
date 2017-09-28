@@ -163,12 +163,18 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_putstring:
 	fprintf(f, "  stack[%d] = rb_str_resurrect(0x%"PRIxVALUE");\n", stack_size++, operands[0]);
         break;
-      //case YARVINSN_concatstrings:
-      //  break;
-      //case YARVINSN_tostring:
-      //  break;
-      //case YARVINSN_freezestring:
-      //  break;
+      case YARVINSN_concatstrings:
+	fprintf(f, "  stack[%d] = rb_str_concat_literals(0x%"PRIxVALUE", stack + %d);\n",
+		stack_size - (unsigned int)operands[0], operands[0], stack_size - (unsigned int)operands[0]);
+	stack_size += 1 - (unsigned int)operands[0];
+        break;
+      case YARVINSN_tostring:
+	fprintf(f, "  stack[%d] = rb_obj_as_string_result(stack[%d], stack[%d]);\n", stack_size-2, stack_size-1, stack_size-2);
+	stack_size--;
+        break;
+      case YARVINSN_freezestring:
+	fprintf(f, "  vm_freezestring(stack[%d], 0x%"PRIxVALUE");\n", stack_size-1, operands[0]);
+        break;
       //case YARVINSN_toregexp:
       //  break;
       //case YARVINSN_intern:
@@ -286,13 +292,16 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
         break;
       case YARVINSN_branchnil:
-	/* TODO: RUBY_VM_CHECK_INTS(th) */
 	fprintf(f, "  if (NIL_P(stack[%d])) goto label_%d;\n", --stack_size, pos + insn_len(insn) + (unsigned int)operands[0]);
 	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos);
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
         break;
-      //case YARVINSN_branchiftype:
-      //  break;
+      case YARVINSN_branchiftype:
+	/* TODO: RUBY_VM_CHECK_INTS(th) */
+	fprintf(f, "  if (TYPE(stack[%d]) == (int)0x%"PRIxVALUE") {\n", --stack_size, operands[0]);
+	fprintf(f, "    goto label_%d;\n", pos + insn_len(insn) + (unsigned int)operands[1]);
+	fprintf(f, "  }\n");
+        break;
       //case YARVINSN_getinlinecache:
       //  break;
       //case YARVINSN_setinlinecache:

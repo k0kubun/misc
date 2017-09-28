@@ -2975,6 +2975,8 @@ vm_get_special_object(const VALUE *const reg_ep,
     }
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 static void
 vm_freezestring(VALUE str, VALUE debug)
 {
@@ -2983,6 +2985,8 @@ vm_freezestring(VALUE str, VALUE debug)
     }
     rb_str_freeze(str);
 }
+
+#ifndef CJIT_HEADER
 
 static VALUE
 vm_concat_array(VALUE ary1, VALUE ary2st)

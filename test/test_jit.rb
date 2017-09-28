@@ -47,9 +47,15 @@ class TestJIT < Test::Unit::TestCase
   # def test_putspecialobject
   # def test_putiseq
   # def test_putstring
-  # def test_concatstrings
-  # def test_tostring
-  # def test_freezestring
+
+  def test_concatstrings
+    test_results('b') { |k| def k._jit(b); "a#{b}"; end }
+  end
+
+  def test_tostring
+    test_results('b') { |k| def k._jit(b); "a#{b}"; end }
+  end
+
   # def test_toregexp
   # def test_intern
 
@@ -173,7 +179,10 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; 1&.+(2); end }
   end
 
-  # def test_branchiftype
+  def test_branchiftype
+    test_results('b') { |k| def k._jit(b); "a#{b}"; end }
+  end
+
   # def test_getinlinecache
   # def test_setinlinecache
   # def test_once

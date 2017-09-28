@@ -1898,6 +1898,10 @@ VALUE rb_gcd_gmp(VALUE x, VALUE y);
 /* internal use */
 VALUE rb_setup_fake_str(struct RString *fake_str, const char *name, long len, rb_encoding *enc);
 #endif
+RUBY_SYMBOL_EXPORT_BEGIN
+VALUE rb_obj_as_string_result(VALUE str, VALUE obj);
+VALUE rb_str_concat_literals(size_t num, const VALUE *strary);
+RUBY_SYMBOL_EXPORT_END
 
 /* thread.c (export) */
 int ruby_thread_has_gvl_p(void); /* for ext/fiddle/closure.c */
