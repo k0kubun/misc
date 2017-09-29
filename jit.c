@@ -166,10 +166,12 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_putobject:
 	fprintf(f, "  stack[%d] = (VALUE)0x%"PRIxVALUE";\n", stack_size++, operands[0]);
         break;
-      //case YARVINSN_putspecialobject:
-      //  break;
-      //case YARVINSN_putiseq:
-      //  break;
+      case YARVINSN_putspecialobject:
+	fprintf(f, "  stack[%d] = vm_get_special_object(cfp->ep, (enum vm_special_object_type)0x%"PRIxVALUE");\n", stack_size++, operands[0]);
+        break;
+      case YARVINSN_putiseq:
+	fprintf(f, "  stack[%d] = (VALUE)0x%"PRIxVALUE";\n", stack_size++, operands[0]);
+        break;
       case YARVINSN_putstring:
 	fprintf(f, "  stack[%d] = rb_str_resurrect(0x%"PRIxVALUE");\n", stack_size++, operands[0]);
         break;

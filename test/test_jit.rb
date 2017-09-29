@@ -50,9 +50,27 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; (1..2); end }
   end
 
-  # def test_putspecialobject
-  # def test_putiseq
-  # def test_putstring
+  def test_putspecialobject
+    test_results do |k|
+      def k._jit;
+        def __putspecialobject
+        end
+      end
+    end
+  end
+
+  def test_putiseq
+    test_results do |k|
+      def k._jit;
+        def __putiseq
+        end
+      end
+    end
+  end
+
+  def test_putstring
+    test_results { |k| def k._jit; 'hello'; end }
+  end
 
   def test_concatstrings
     test_results('b') { |k| def k._jit(b); "a#{b}"; end }

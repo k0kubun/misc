@@ -2964,8 +2964,6 @@ vm_get_ep(const VALUE *const reg_ep, rb_num_t lv)
     return ep;
 }
 
-#ifndef CJIT_HEADER
-
 static VALUE
 vm_get_special_object(const VALUE *const reg_ep,
 		      enum vm_special_object_type type)
@@ -2981,8 +2979,6 @@ vm_get_special_object(const VALUE *const reg_ep,
 	rb_bug("putspecialobject insn: unknown value_type %d", type);
     }
 }
-
-#endif /* #ifndef CJIT_HEADER */
 
 static void
 vm_freezestring(VALUE str, VALUE debug)
