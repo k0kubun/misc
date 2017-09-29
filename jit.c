@@ -248,8 +248,10 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
         break;
       //case YARVINSN_adjuststack:
       //  break;
-      //case YARVINSN_defined:
-      //  break;
+      case YARVINSN_defined:
+	fprintf(f, "  stack[%d] = vm_defined(th, cfp, 0x%"PRIxVALUE", 0x%"PRIxVALUE", 0x%"PRIxVALUE", stack[%d]);\n",
+		stack_size-1, operands[0], operands[1], operands[2], stack_size-1);
+        break;
       //case YARVINSN_checkmatch:
       //  break;
       //case YARVINSN_checkkeyword:

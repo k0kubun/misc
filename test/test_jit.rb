@@ -153,7 +153,12 @@ class TestJIT < Test::Unit::TestCase
   end
 
   # def test_adjuststack
-  # def test_defined
+
+  def test_defined
+    test_results { |k| def k._jit; defined?(@a); end }
+    test_results { |k| def k._jit; @a = 1; defined?(@a); end }
+  end
+
   # def test_checkmatch
   # def test_checkkeyword
 

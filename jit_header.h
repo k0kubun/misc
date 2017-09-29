@@ -3,6 +3,7 @@
 
 #include "internal.h"
 #include "vm_core.h"
+#include "iseq.h"
 
 /* vm.c */
 PUREFUNC(static inline const VALUE *VM_EP_LEP(const VALUE *));

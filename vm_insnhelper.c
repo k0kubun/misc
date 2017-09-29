@@ -2840,6 +2840,8 @@ check_respond_to_missing(VALUE obj, VALUE v)
     }
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 static VALUE
 vm_defined(rb_thread_t *th, rb_control_frame_t *reg_cfp, rb_num_t op_type, VALUE obj, VALUE needstr, VALUE v)
 {
@@ -2950,8 +2952,6 @@ vm_defined(rb_thread_t *th, rb_control_frame_t *reg_cfp, rb_num_t op_type, VALUE
 	return Qnil;
     }
 }
-
-#endif /* #ifndef CJIT_HEADER */
 
 static const VALUE *
 vm_get_ep(const VALUE *const reg_ep, rb_num_t lv)
