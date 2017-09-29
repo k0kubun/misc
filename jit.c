@@ -348,31 +348,38 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       //case YARVINSN_throw:
       //  break;
       case YARVINSN_jump:
-	/* TODO: RUBY_VM_CHECK_INTS(th) */
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
+	fprintf(f, "  RUBY_VM_CHECK_INTS(th);\n");
 	fprintf(f, "  goto label_%d;\n", next_pos);
 	jumped = true;
         break;
       case YARVINSN_branchif:
-	/* TODO: RUBY_VM_CHECK_INTS(th) */
-	fprintf(f, "  if (RTEST(stack[%d])) goto label_%d;\n", --stack_size, pos + insn_len(insn) + (unsigned int)operands[0]);
+	fprintf(f, "  if (RTEST(stack[%d])) {\n", --stack_size);
+	fprintf(f, "    RUBY_VM_CHECK_INTS(th);\n");
+	fprintf(f, "    goto label_%d;\n", pos + insn_len(insn) + (unsigned int)operands[0]);
+	fprintf(f, "  }\n");
 	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos);
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
         break;
       case YARVINSN_branchunless:
-	/* TODO: RUBY_VM_CHECK_INTS(th) */
-	fprintf(f, "  if (!RTEST(stack[%d])) goto label_%d;\n", --stack_size, pos + insn_len(insn) + (unsigned int)operands[0]);
+	fprintf(f, "  if (!RTEST(stack[%d])) {\n", --stack_size);
+	fprintf(f, "    RUBY_VM_CHECK_INTS(th);\n");
+	fprintf(f, "    goto label_%d;\n", pos + insn_len(insn) + (unsigned int)operands[0]);
+	fprintf(f, "  }\n");
 	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos);
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
         break;
       case YARVINSN_branchnil:
-	fprintf(f, "  if (NIL_P(stack[%d])) goto label_%d;\n", --stack_size, pos + insn_len(insn) + (unsigned int)operands[0]);
+	fprintf(f, "  if (NIL_P(stack[%d])) {\n", --stack_size);
+	fprintf(f, "    RUBY_VM_CHECK_INTS(th);\n");
+	fprintf(f, "    goto label_%d;\n", pos + insn_len(insn) + (unsigned int)operands[0]);
+	fprintf(f, "  }\n");
 	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos);
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
         break;
       case YARVINSN_branchiftype:
-	/* TODO: RUBY_VM_CHECK_INTS(th) */
 	fprintf(f, "  if (TYPE(stack[%d]) == (int)0x%"PRIxVALUE") {\n", --stack_size, operands[0]);
+	fprintf(f, "    RUBY_VM_CHECK_INTS(th);\n");
 	fprintf(f, "    goto label_%d;\n", pos + insn_len(insn) + (unsigned int)operands[1]);
 	fprintf(f, "  }\n");
         break;
