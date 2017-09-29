@@ -296,7 +296,9 @@ static VALUE vm_invoke_proc(rb_thread_t *th, rb_proc_t *proc, VALUE self,
 			    int argc, const VALUE *argv, VALUE block_handler);
 
 static rb_serial_t ruby_vm_global_method_state = 1;
-static rb_serial_t ruby_vm_global_constant_state = 1;
+RUBY_SYMBOL_EXPORT_BEGIN
+rb_serial_t ruby_vm_global_constant_state = 1;
+RUBY_SYMBOL_EXPORT_END
 static rb_serial_t ruby_vm_class_serial = 1;
 
 #include "jit.h"
@@ -321,9 +323,9 @@ VALUE rb_cThread;
 VALUE rb_mRubyVMFrozenCore;
 
 #define ruby_vm_redefined_flag GET_VM()->redefined_flag
+RUBY_SYMBOL_EXPORT_BEGIN
 VALUE ruby_vm_const_missing_count = 0;
 rb_thread_t *ruby_current_thread = 0;
-RUBY_SYMBOL_EXPORT_BEGIN
 rb_vm_t *ruby_current_vm = 0;
 rb_event_flag_t ruby_vm_event_flags;
 RUBY_SYMBOL_EXPORT_END

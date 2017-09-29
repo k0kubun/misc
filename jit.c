@@ -149,10 +149,14 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       //  break;
       //case YARVINSN_setclassvariable:
       //  break;
-      //case YARVINSN_getconstant:
-      //  break;
-      //case YARVINSN_setconstant:
-      //  break;
+      case YARVINSN_getconstant:
+	fprintf(f, "  stack[%d] = vm_get_ev_const(th, stack[%d], 0x%"PRIxVALUE", 0);\n", stack_size-1, stack_size-1, operands[0]);
+        break;
+      case YARVINSN_setconstant:
+	fprintf(f, "  vm_check_if_namespace(stack[%d]);\n", stack_size-2);
+	fprintf(f, "  vm_ensure_not_refinement_module(cfp->self);\n");
+	fprintf(f, "  rb_const_set(stack[%d], 0x%"PRIxVALUE", stack[%d]);\n", stack_size-2, operands[0], stack_size-1);
+        break;
       //case YARVINSN_getglobal:
       //  break;
       //case YARVINSN_setglobal:
@@ -383,10 +387,16 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "    goto label_%d;\n", pos + insn_len(insn) + (unsigned int)operands[1]);
 	fprintf(f, "  }\n");
         break;
-      //case YARVINSN_getinlinecache:
-      //  break;
-      //case YARVINSN_setinlinecache:
-      //  break;
+      case YARVINSN_getinlinecache:
+	fprintf(f, "  stack[%d] = vm_ic_hit_p(0x%"PRIxVALUE", cfp->ep);", stack_size, operands[1]);
+	fprintf(f, "  if (stack[%d] != Qnil) {\n", stack_size);
+	fprintf(f, "    goto label_%d;\n", pos + insn_len(insn) + (unsigned int)operands[0]);
+	fprintf(f, "  }\n");
+	stack_size++;
+        break;
+      case YARVINSN_setinlinecache:
+	fprintf(f, "  vm_ic_update(0x%"PRIxVALUE", stack[%d], cfp->ep);\n", operands[0], stack_size-1);
+        break;
       //case YARVINSN_once:
       //  break;
       //case YARVINSN_opt_case_dispatch:

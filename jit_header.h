@@ -4,6 +4,7 @@
 #include "internal.h"
 #include "vm_core.h"
 #include "iseq.h"
+#include "eval_intern.h"
 
 /* vm.c */
 PUREFUNC(static inline const VALUE *VM_EP_LEP(const VALUE *));
@@ -15,6 +16,7 @@ VM_EP_LEP(const VALUE *ep)
     }
     return ep;
 }
+extern rb_serial_t ruby_vm_global_constant_state;
 
 /* vm_eval.c */
 extern VALUE vm_exec(rb_thread_t *th);

@@ -28,8 +28,16 @@ class TestJIT < Test::Unit::TestCase
 
   # def test_getclassvariable
   # def test_setclassvariable
-  # def test_getconstant
-  # def test_setconstant
+
+  def test_getconstant
+    test_results { |k| def k._jit; RubyVM::InstructionSequence; end }
+  end
+
+  def test_setconstant
+    # unable to test... due to dynamic constant assignment
+    # test_results { |k| def k._jit; Class.new::X = true; end }
+  end
+
   # def test_getglobal
   # def test_setglobal
 
@@ -283,8 +291,14 @@ class TestJIT < Test::Unit::TestCase
     test_results('b') { |k| def k._jit(b); "a#{b}"; end }
   end
 
-  # def test_getinlinecache
-  # def test_setinlinecache
+  def test_getinlinecache
+    test_results { |k| def k._jit; Struct; end }
+  end
+
+  def test_setinlinecache
+    test_results { |k| def k._jit; Struct; end }
+  end
+
   # def test_once
   # def test_opt_case_dispatch
 

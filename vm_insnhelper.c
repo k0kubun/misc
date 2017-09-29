@@ -513,8 +513,6 @@ vm_getspecial(rb_thread_t *th, const VALUE *lep, rb_num_t key, rb_num_t type)
     return val;
 }
 
-#ifndef CJIT_HEADER
-
 PUREFUNC(static rb_callable_method_entry_t *check_method_entry(VALUE obj, int can_be_svar));
 static rb_callable_method_entry_t *
 check_method_entry(VALUE obj, int can_be_svar)
@@ -609,6 +607,8 @@ vm_env_cref(const VALUE *ep)
     return check_cref(ep[VM_ENV_DATA_INDEX_ME_CREF], TRUE);
 }
 
+#ifndef CJIT_HEADER
+
 static int
 is_cref(const VALUE v, int can_be_svar)
 {
@@ -688,6 +688,7 @@ vm_cref_replace_with_duplicated_cref(const VALUE *ep)
     }
 }
 
+#endif /* #ifndef CJIT_HEADER */
 
 static rb_cref_t *
 rb_vm_get_cref(const VALUE *ep)
@@ -718,6 +719,8 @@ vm_get_const_key_cref(const VALUE *ep)
     /* does not include singleton class */
     return NULL;
 }
+
+#ifndef CJIT_HEADER
 
 void
 rb_vm_rewrite_cref(rb_cref_t *cref, VALUE old_klass, VALUE new_klass, rb_cref_t **new_cref_ptr)
@@ -756,6 +759,8 @@ vm_cref_push(rb_thread_t *th, VALUE klass, const VALUE *ep, int pushed_by_eval)
 
     return vm_cref_new(klass, METHOD_VISI_PUBLIC, FALSE, prev_cref, pushed_by_eval);
 }
+
+#endif /* #ifndef CJIT_HEADER */
 
 static inline VALUE
 vm_get_cbase(const VALUE *ep)
@@ -915,6 +920,8 @@ vm_get_cvar_base(const rb_cref_t *cref, rb_control_frame_t *cfp)
     }
     return klass;
 }
+
+#ifndef CJIT_HEADER
 
 static VALUE
 vm_search_const_defined_class(const VALUE cbase, ID id)
@@ -2434,6 +2441,8 @@ vm_call_super_method(rb_thread_t *th, rb_control_frame_t *reg_cfp, struct rb_cal
 
 /* super */
 
+#endif /* #ifndef CJIT_HEADER */
+
 static inline VALUE
 vm_search_normal_superclass(VALUE klass)
 {
@@ -2444,6 +2453,8 @@ vm_search_normal_superclass(VALUE klass)
     klass = RCLASS_ORIGIN(klass);
     return RCLASS_SUPER(klass);
 }
+
+#ifndef CJIT_HEADER
 
 static void
 vm_super_outside(void)
@@ -2824,6 +2835,8 @@ FUNC_FASTCALL(rb_vm_opt_struct_aset)(rb_thread_t *th, rb_control_frame_t *reg_cf
 
 /* defined insn */
 
+#endif /* #ifndef CJIT_HEADER */
+
 static enum defined_type
 check_respond_to_missing(VALUE obj, VALUE v)
 {
@@ -2839,8 +2852,6 @@ check_respond_to_missing(VALUE obj, VALUE v)
 	return 0;
     }
 }
-
-#endif /* #ifndef CJIT_HEADER */
 
 static VALUE
 vm_defined(rb_thread_t *th, rb_control_frame_t *reg_cfp, rb_num_t op_type, VALUE obj, VALUE needstr, VALUE v)
@@ -3292,8 +3303,6 @@ vm_opt_newarray_min(rb_num_t num, const VALUE *ptr)
 
 #undef id_cmp
 
-#ifndef CJIT_HEADER
-
 static VALUE
 vm_ic_hit_p(IC ic, const VALUE *reg_ep)
 {
@@ -3315,6 +3324,8 @@ vm_ic_update(IC ic, VALUE val, const VALUE *reg_ep)
     ic->ic_cref = vm_get_const_key_cref(reg_ep);
     ruby_vm_const_missing_count = 0;
 }
+
+#ifndef CJIT_HEADER
 
 static VALUE
 vm_once_dispatch(ISEQ iseq, IC ic, rb_thread_t *th)

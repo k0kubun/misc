@@ -41,7 +41,9 @@ VALUE rb_mod_deprecate_constant(int argc, const VALUE *argv, VALUE obj);
 void rb_free_const_table(struct rb_id_table *tbl);
 VALUE rb_public_const_get(VALUE klass, ID id);
 VALUE rb_public_const_get_at(VALUE klass, ID id);
+RUBY_SYMBOL_EXPORT_BEGIN
 VALUE rb_public_const_get_from(VALUE klass, ID id);
+RUBY_SYMBOL_EXPORT_END
 int rb_public_const_defined(VALUE klass, ID id);
 int rb_public_const_defined_at(VALUE klass, ID id);
 int rb_public_const_defined_from(VALUE klass, ID id);
