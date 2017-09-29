@@ -132,7 +132,14 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; 1+2 || false; end }
   end
 
-  # def test_dupn
+  def test_dupn
+    test_results([true]) do |k|
+      def k._jit(x);
+        x[0] ||= nil
+        x[0]
+      end
+    end
+  end
 
   def test_swap
     test_results { |k| def k._jit; {}['true'] = true; end }
@@ -152,7 +159,14 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; [nil][0] = 1; end }
   end
 
-  # def test_adjuststack
+  def test_adjuststack
+    test_results([true]) do |k|
+      def k._jit(x);
+        x[0] ||= nil
+        x[0]
+      end
+    end
+  end
 
   def test_defined
     test_results { |k| def k._jit; defined?(@a); end }

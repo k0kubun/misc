@@ -225,8 +225,11 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "  stack[%d] = stack[%d];\n", stack_size, stack_size-1);
 	stack_size++;
         break;
-      //case YARVINSN_dupn:
-      //  break;
+      case YARVINSN_dupn:
+	fprintf(f, "  MEMCPY(stack + %d, stack + %d, VALUE, 0x%"PRIxVALUE");\n",
+		stack_size, stack_size - (unsigned int)operands[0], operands[0]);
+	stack_size += (unsigned int)operands[0];
+        break;
       case YARVINSN_swap:
 	fprintf(f, "  {\n");
 	fprintf(f, "    VALUE tmp = stack[%d];\n", stack_size-1);
@@ -246,8 +249,9 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_setn:
 	fprintf(f, "  stack[%d] = stack[%d];\n", stack_size - 1 - (unsigned int)operands[0], stack_size-1);
         break;
-      //case YARVINSN_adjuststack:
-      //  break;
+      case YARVINSN_adjuststack:
+	stack_size -= (unsigned int)operands[0];
+        break;
       case YARVINSN_defined:
 	fprintf(f, "  stack[%d] = vm_defined(th, cfp, 0x%"PRIxVALUE", 0x%"PRIxVALUE", 0x%"PRIxVALUE", stack[%d]);\n",
 		stack_size-1, operands[0], operands[1], operands[2], stack_size-1);
