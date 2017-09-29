@@ -232,8 +232,9 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
         break;
       //case YARVINSN_reverse:
       //  break;
-      //case YARVINSN_reput:
-      //  break;
+      case YARVINSN_reput:
+	fprintf(f, "  stack[%d] = stack[%d];\n", stack_size-1, stack_size-1);
+        break;
       case YARVINSN_topn:
 	fprintf(f, "  stack[%d] = stack[%d];\n", stack_size, stack_size - (unsigned int)operands[0]);
 	stack_size++;
