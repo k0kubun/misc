@@ -37,18 +37,24 @@ execute_command(const char *path, char *const argv[])
     }
 
     waitpid(pid, &stat, 0);
-    // TODO: check stat
+    /* TODO: check stat */
 }
 
 static void
 compile_c_to_so(const char *c_fname, const char *so_fname)
 {
     char **argv;
-    static int common_argv_len = 13;
+    //static int common_argv_len = 13;
+    //static const char *common_argv[] = {
+    //    "gcc", "-O2", "-fPIC", "-shared", "-Wfatal-errors", "-w",
+    //    "-I./include", "-I./.ext/include/x86_64-linux", /* TODO: fix -I options */
+    //    "-pipe", "-nostartfiles", "-nodefaultlibs", "-nostdlib", "-o"
+    //};
+    static int common_argv_len = 11;
     static const char *common_argv[] = {
-	"gcc", "-O2", "-fPIC", "-shared", "-Wfatal-errors", "-w",
-	"-I./include", "-I./.ext/include/x86_64-linux", // TODO: fix this
-	"-pipe", "-nostartfiles", "-nodefaultlibs", "-nostdlib", "-o"
+	"clang", "-O2", "-fPIC", "-shared", "-I/usr/local/include", "-L/usr/local/lib",
+        "-I./include", "-I./.ext/include/x86_64-linux", /* TODO: fix -I options */
+	"-w", "-bundle", "-o"
     };
     const char *dynamic_argv[] = { so_fname, c_fname, NULL };
 
@@ -56,7 +62,8 @@ compile_c_to_so(const char *c_fname, const char *so_fname)
     memmove(argv, common_argv, common_argv_len * sizeof(char *));
     memmove(argv + common_argv_len, dynamic_argv, 3 * sizeof(char *));
 
-    execute_command("gcc", argv);
+    //execute_command("gcc", argv);
+    execute_command("clang", argv);
     xfree(argv);
 }
 
@@ -72,7 +79,7 @@ get_func_ptr(const char *so_fname, const char *funcname)
     }
 
     func_ptr = dlsym(handle, funcname);
-    // TODO: dlclose(handle); on deoptimization
+    /* TODO: dlclose(handle); on deoptimization */
 
     return func_ptr;
 }
