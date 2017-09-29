@@ -9,8 +9,14 @@ class TestJIT < Test::Unit::TestCase
 
   # def test_getlocal
   # def test_setlocal
-  # def test_getspecial
+
+  def test_getspecial
+    test_results { |k| def k._jit; $1; end }
+  end
+
   # def test_setspecial
+  #   test_results { |k| def k._jit; true if nil.nil?..nil.nil?; end }
+  # end
 
   def test_getinstancevariable
     test_results { |k| def k._jit; @a; end }

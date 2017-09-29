@@ -1339,7 +1339,9 @@ enum ruby_num_rounding_mode {
 int rb_num_to_uint(VALUE val, unsigned int *ret);
 VALUE ruby_num_interval_step_size(VALUE from, VALUE to, VALUE step, int excl);
 int ruby_float_step(VALUE from, VALUE to, VALUE step, int excl);
+RUBY_SYMBOL_EXPORT_BEGIN
 double ruby_float_mod(double x, double y);
+RUBY_SYMBOL_EXPORT_END
 int rb_num_negative_p(VALUE);
 VALUE rb_int_succ(VALUE num);
 VALUE rb_int_pred(VALUE num);
@@ -1372,7 +1374,9 @@ VALUE rb_int_lshift(VALUE x, VALUE y);
 VALUE rb_int_div(VALUE x, VALUE y);
 VALUE rb_int_abs(VALUE num);
 VALUE rb_float_abs(VALUE flt);
+RUBY_SYMBOL_EXPORT_BEGIN
 VALUE rb_float_equal(VALUE x, VALUE y);
+RUBY_SYMBOL_EXPORT_END
 VALUE rb_float_eql(VALUE x, VALUE y);
 
 #if USE_FLONUM

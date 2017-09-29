@@ -133,9 +133,11 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_setlocal:
 	fprint_setlocal(f, --stack_size, operands[0], operands[1]);
         break;
-      //case YARVINSN_getspecial:
-      //  break;
+      case YARVINSN_getspecial:
+	fprintf(f, "  stack[%d] = vm_getspecial(th, VM_EP_LEP(cfp->ep), 0x%"PRIxVALUE", 0x%"PRIxVALUE");\n", stack_size++, operands[0], operands[1]);
+        break;
       //case YARVINSN_setspecial:
+      //  fprintf(f, "  lep_svar_set(th, VM_EP_LEP(cfp->ep), 0x%"PRIxVALUE", stack[%d]);\n", operands[0], --stack_size);
       //  break;
       case YARVINSN_getinstancevariable:
 	fprintf(f, "  stack[%d] = vm_getinstancevariable(cfp->self, 0x%"PRIxVALUE", 0x%"PRIxVALUE");\n", stack_size++, operands[0], operands[1]);
@@ -556,7 +558,7 @@ jit_compile(const rb_iseq_t *iseq)
     fclose(f);
 
     compile_c_to_so(c_fname, so_fname);
-    remove(c_fname);
+    //remove(c_fname);
 
     func_ptr = get_func_ptr(so_fname, funcname);
     remove(so_fname);

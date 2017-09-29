@@ -387,6 +387,8 @@ vm_svar_valid_p(VALUE svar)
 }
 #endif
 
+#endif /* #ifndef CJIT_HEADER */
+
 static inline struct vm_svar *
 lep_svar(rb_thread_t *th, const VALUE *lep)
 {
@@ -510,6 +512,8 @@ vm_getspecial(rb_thread_t *th, const VALUE *lep, rb_num_t key, rb_num_t type)
     }
     return val;
 }
+
+#ifndef CJIT_HEADER
 
 PUREFUNC(static rb_callable_method_entry_t *check_method_entry(VALUE obj, int can_be_svar));
 static rb_callable_method_entry_t *
