@@ -26,8 +26,13 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; @a = 2; @a; end }
   end
 
-  # def test_getclassvariable
-  # def test_setclassvariable
+  def test_getclassvariable
+    test_results { |k| def k._jit; @@a = 1; @@a; end }
+  end
+
+  def test_setclassvariable
+    test_results { |k| def k._jit; @@b = 2; end }
+  end
 
   def test_getconstant
     test_results { |k| def k._jit; RubyVM::InstructionSequence; end }

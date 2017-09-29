@@ -136,7 +136,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_getspecial:
 	fprintf(f, "  stack[%d] = vm_getspecial(th, VM_EP_LEP(cfp->ep), 0x%"PRIxVALUE", 0x%"PRIxVALUE");\n", stack_size++, operands[0], operands[1]);
         break;
-      //case YARVINSN_setspecial:
+      //case YARVINSN_setspecial: /* somehow SEGVs on test... */
       //  fprintf(f, "  lep_svar_set(th, VM_EP_LEP(cfp->ep), 0x%"PRIxVALUE", stack[%d]);\n", operands[0], --stack_size);
       //  break;
       case YARVINSN_getinstancevariable:
@@ -145,10 +145,13 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_setinstancevariable:
 	fprintf(f, "  vm_setinstancevariable(cfp->self, 0x%"PRIxVALUE", stack[%d], 0x%"PRIxVALUE");\n", operands[0], --stack_size, operands[1]);
         break;
-      //case YARVINSN_getclassvariable:
-      //  break;
-      //case YARVINSN_setclassvariable:
-      //  break;
+      case YARVINSN_getclassvariable:
+	fprintf(f, "  stack[%d] = rb_cvar_get(vm_get_cvar_base(rb_vm_get_cref(cfp->ep), cfp), 0x%"PRIxVALUE");\n", stack_size++, operands[0]);
+        break;
+      case YARVINSN_setclassvariable:
+	fprintf(f, "  vm_ensure_not_refinement_module(cfp->self);\n");
+	fprintf(f, "  rb_cvar_set(vm_get_cvar_base(rb_vm_get_cref(cfp->ep), cfp), 0x%"PRIxVALUE", stack[%d]);\n", operands[0], --stack_size);
+        break;
       case YARVINSN_getconstant:
 	fprintf(f, "  stack[%d] = vm_get_ev_const(th, stack[%d], 0x%"PRIxVALUE", 0);\n", stack_size-1, stack_size-1, operands[0]);
         break;
