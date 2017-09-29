@@ -139,7 +139,22 @@ class TestJIT < Test::Unit::TestCase
     end
   end
 
-  # def test_trace2
+  if ENV['TEST_TRACE2'] == '1'
+    def test_trace2
+      require 'coverage'
+      Coverage.start
+      RubyVM::InstructionSequence.compile(<<~RUBY).eval
+        module TestJIT::TestTrace2
+          def self._jit
+            1+2
+            3+4
+          end
+        end
+      RUBY
+      test_jit(TestTrace2)
+    end
+  end
+
   # def test_defineclass
   # def test_send
 
@@ -381,7 +396,10 @@ class TestJIT < Test::Unit::TestCase
   def test_results(*args)
     klass = Class.new
     yield(klass) # This doesn't use block to define :_jit to make it JIT-ed
+    test_jit(klass, *args)
+  end
 
+  def test_jit(klass, *args)
     expected = klass._jit(*args)
     TEST_ITERATIONS.times do
       assert_equal expected, klass._jit(*args)

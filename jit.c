@@ -44,26 +44,26 @@ static void
 compile_c_to_so(const char *c_fname, const char *so_fname)
 {
     char **argv;
-    //static int common_argv_len = 13;
-    //static const char *common_argv[] = {
-    //    "gcc", "-O2", "-fPIC", "-shared", "-Wfatal-errors", "-w",
-    //    "-I./include", "-I./.ext/include/x86_64-linux", /* TODO: fix -I options */
-    //    "-pipe", "-nostartfiles", "-nodefaultlibs", "-nostdlib", "-o"
-    //};
-    static int common_argv_len = 11;
+    static int common_argv_len = 13;
     static const char *common_argv[] = {
-	"clang", "-O2", "-fPIC", "-shared", "-I/usr/local/include", "-L/usr/local/lib",
+        "gcc", "-O2", "-fPIC", "-shared", "-Wfatal-errors", "-w",
         "-I./include", "-I./.ext/include/x86_64-linux", /* TODO: fix -I options */
-	"-w", "-bundle", "-o"
+        "-pipe", "-nostartfiles", "-nodefaultlibs", "-nostdlib", "-o"
     };
+    //static int common_argv_len = 11;
+    //static const char *common_argv[] = {
+    //    "clang", "-O2", "-fPIC", "-shared", "-I/usr/local/include", "-L/usr/local/lib",
+    //    "-I./include", "-I./.ext/include/x86_64-linux", /* TODO: fix -I options */
+    //    "-w", "-bundle", "-o"
+    //};
     const char *dynamic_argv[] = { so_fname, c_fname, NULL };
 
     argv = xmalloc((common_argv_len + 3) * sizeof(char *));
     memmove(argv, common_argv, common_argv_len * sizeof(char *));
     memmove(argv + common_argv_len, dynamic_argv, 3 * sizeof(char *));
 
-    //execute_command("gcc", argv);
-    execute_command("clang", argv);
+    execute_command("gcc", argv);
+    //execute_command("clang", argv);
     xfree(argv);
 }
 
@@ -257,8 +257,10 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	    fprintf(f, "  EXEC_EVENT_HOOK(th, (rb_event_flag_t)0x%"PRIxVALUE", cfp->self, 0, 0, 0, Qundef);\n", operands[0]);
 	}
         break;
-      //case YARVINSN_trace2:
-      //  break;
+      case YARVINSN_trace2:
+	fprintf(f, "  vm_dtrace((rb_event_flag_t)0x%"PRIxVALUE", th);\n", operands[0]);
+	fprintf(f, "  EXEC_EVENT_HOOK(th, (rb_event_flag_t)0x%"PRIxVALUE", cfp->self, 0, 0, 0, 0x%"PRIxVALUE");\n", operands[0], operands[1]);
+        break;
       //case YARVINSN_defineclass:
       //  break;
       //case YARVINSN_send:
