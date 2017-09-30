@@ -325,27 +325,7 @@ class TestJIT < Test::Unit::TestCase
   end
 
   def test_throw
-    test_results do |k|
-      def k._jit
-        if 1+1 == 1
-          return 3
-        else
-          return 4
-        end
-        5
-      end
-    end
-
-    test_results do |k|
-      def k._jit
-        if 1+1 == 2
-          4
-        else
-          return 3
-        end
-        5
-      end
-    end
+    # not sure how to test on method...
   end
 
   def test_jump
@@ -596,6 +576,17 @@ class TestJIT < Test::Unit::TestCase
 
   def test_putobject_OP_INT2FIX_O_1_C_
     test_results { |k| def k._jit; 1; end }
+  end
+
+  def test_catch_table
+    test_results do |k|
+      def k._jit
+        {}.fetch(:invalid)
+        false
+      rescue KeyError
+        true
+      end
+    end
   end
 
   private

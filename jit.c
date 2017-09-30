@@ -164,6 +164,78 @@ fprint_call_method(FILE *f, VALUE ci_v, VALUE cc_v, unsigned int result_pos)
     fprintf(f, "    }\n");
 }
 
+/* To let catch table work, this function moves program counter. */
+static void
+fprint_set_pc(FILE *f, const int insn, const VALUE *pc)
+{
+    switch (insn) {
+      /* List of safe insns that do NOT throw exception, to skip moving pc for optimization.
+	 Basically, any insn that may call method would raise exception in child control frame.
+	 For future maintainability, this list is built as whitelist of optimizable insns. */
+      case YARVINSN_nop:
+      case YARVINSN_getlocal:
+      case YARVINSN_setlocal:
+      case YARVINSN_getspecial:
+      case YARVINSN_setspecial:
+      case YARVINSN_getinstancevariable:
+      case YARVINSN_setinstancevariable:
+      case YARVINSN_getclassvariable:
+      case YARVINSN_setclassvariable:
+      case YARVINSN_getconstant:
+      case YARVINSN_setconstant:
+      case YARVINSN_getglobal:
+      case YARVINSN_setglobal:
+      case YARVINSN_putnil:
+      case YARVINSN_putself:
+      case YARVINSN_putobject:
+      case YARVINSN_putspecialobject:
+      case YARVINSN_putiseq:
+      case YARVINSN_putstring:
+      case YARVINSN_concatstrings:
+      case YARVINSN_freezestring:
+      case YARVINSN_toregexp:
+      case YARVINSN_intern:
+      case YARVINSN_newarray:
+      case YARVINSN_duparray:
+      case YARVINSN_expandarray:
+      case YARVINSN_concatarray:
+      case YARVINSN_splatarray:
+      case YARVINSN_newhash:
+      case YARVINSN_newrange:
+      case YARVINSN_pop:
+      case YARVINSN_dup:
+      case YARVINSN_dupn:
+      case YARVINSN_swap:
+      case YARVINSN_reverse:
+      case YARVINSN_reput:
+      case YARVINSN_topn:
+      case YARVINSN_setn:
+      case YARVINSN_adjuststack:
+      case YARVINSN_defined:
+      case YARVINSN_trace:
+      case YARVINSN_trace2:
+      case YARVINSN_leave:
+      case YARVINSN_jump:
+      case YARVINSN_branchif:
+      case YARVINSN_branchunless:
+      case YARVINSN_branchnil:
+      case YARVINSN_branchiftype:
+      case YARVINSN_getinlinecache:
+      case YARVINSN_setinlinecache:
+      case YARVINSN_answer:
+      case YARVINSN_getlocal_OP__WC__0:
+      case YARVINSN_getlocal_OP__WC__1:
+      case YARVINSN_setlocal_OP__WC__0:
+      case YARVINSN_setlocal_OP__WC__1:
+      case YARVINSN_putobject_OP_INT2FIX_O_0_C_:
+      case YARVINSN_putobject_OP_INT2FIX_O_1_C_:
+        return;
+      default:
+	break;
+    }
+    fprintf(f, "  cfp->pc = (VALUE *)0x%"PRIxVALUE";\n", (VALUE)pc);
+}
+
 /* Compiles insn to f, may modify stack_size_ptr and returns next position */
 static unsigned int
 compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *stack_size_ptr, const int insn, const VALUE *operands, unsigned int pos, bool *compiled_for_pos)
@@ -172,6 +244,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
     unsigned int next_pos = pos + insn_len(insn);
     bool jumped = false; /* set true if `goto` or `return` is set in the end of compiled code */
 
+    fprint_set_pc(f, insn, body->iseq_encoded + pos);
     switch (insn) {
       case YARVINSN_nop:
 	/* nop */
