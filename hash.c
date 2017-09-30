@@ -2106,7 +2106,7 @@ keys_i(VALUE key, VALUE value, VALUE ary)
  *
  */
 
-VALUE
+RUBY_FUNC_EXPORTED VALUE
 rb_hash_keys(VALUE hash)
 {
     VALUE keys;

@@ -11,6 +11,8 @@
 
 **********************************************************************/
 
+#ifndef CJIT_HEADER
+
 struct local_var_list {
     VALUE tbl;
 };
@@ -20,9 +22,11 @@ static inline VALUE vm_yield_with_cref(rb_thread_t *th, int argc, const VALUE *a
 static inline VALUE vm_yield(rb_thread_t *th, int argc, const VALUE *argv);
 static inline VALUE vm_yield_with_block(rb_thread_t *th, int argc, const VALUE *argv, VALUE block_handler);
 static inline VALUE vm_yield_force_blockarg(rb_thread_t *th, VALUE args);
+#endif /* #ifndef CJIT_HEADER */
 RUBY_SYMBOL_EXPORT_BEGIN
 VALUE vm_exec(rb_thread_t *th);
 RUBY_SYMBOL_EXPORT_END
+#ifndef CJIT_HEADER
 static void vm_set_eval_stack(rb_thread_t * th, const rb_iseq_t *iseq, const rb_cref_t *cref, const struct rb_block *base_block);
 static int vm_collect_local_variables_in_heap(rb_thread_t *th, const VALUE *dfp, const struct local_var_list *vars);
 
@@ -254,6 +258,8 @@ rb_current_receiver(void)
     return cfp->self;
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 static inline void
 stack_check(rb_thread_t *th)
 {
@@ -263,6 +269,8 @@ stack_check(rb_thread_t *th)
 	rb_threadptr_stack_overflow(th, FALSE);
     }
 }
+
+#ifndef CJIT_HEADER
 
 static inline const rb_callable_method_entry_t *rb_search_method_entry(VALUE recv, ID mid);
 static inline enum method_missing_reason rb_method_call_status(rb_thread_t *th, const rb_callable_method_entry_t *me, call_type scope, VALUE self);
@@ -583,8 +591,12 @@ rb_call(VALUE recv, ID mid, int argc, const VALUE *argv, call_type scope)
     return rb_call0(recv, mid, argc, argv, scope, th->ec.cfp->self);
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 NORETURN(static void raise_method_missing(rb_thread_t *th, int argc, const VALUE *argv,
 					  VALUE obj, enum method_missing_reason call_status));
+
+#ifndef CJIT_HEADER
 
 /*
  *  call-seq:
@@ -627,7 +639,7 @@ rb_method_missing(int argc, const VALUE *argv, VALUE obj)
     UNREACHABLE;
 }
 
-static VALUE
+RUBY_FUNC_EXPORTED VALUE
 make_no_method_exception(VALUE exc, VALUE format, VALUE obj,
 			 int argc, const VALUE *argv, int priv)
 {
@@ -652,6 +664,8 @@ make_no_method_exception(VALUE exc, VALUE format, VALUE obj,
     }
     return rb_class_new_instance(n, args, exc);
 }
+
+#endif /* #ifndef CJIT_HEADER */
 
 static void
 raise_method_missing(rb_thread_t *th, int argc, const VALUE *argv, VALUE obj,
@@ -726,7 +740,9 @@ method_missing(VALUE obj, ID id, int argc, const VALUE *argv, enum method_missin
     return result;
 }
 
-void
+#ifndef CJIT_HEADER
+
+RUBY_FUNC_EXPORTED void
 rb_raise_method_missing(rb_thread_t *th, int argc, const VALUE *argv,
 			VALUE obj, int call_status)
 {
@@ -2196,3 +2212,5 @@ Init_vm_eval(void)
     id_tag = rb_intern_const("tag");
     id_value = rb_intern_const("value");
 }
+
+#endif /* #ifndef CJIT_HEADER */

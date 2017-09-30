@@ -279,7 +279,22 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; [0] + [].push(1,2,3).push(4,5,6); end }
   end
 
-  # def test_invokesuper
+  def test_invokesuper
+    mod = Module.new {
+      def _jit
+        super + 2
+      end
+    }
+    klass = Class.new {
+      prepend mod
+      def _jit
+        1
+      end
+    }
+    obj = klass.new
+    test_jit(obj)
+  end
+
   # def test_invokeblock
   # def test_leave
   # def test_throw

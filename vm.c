@@ -290,7 +290,7 @@ static void vm_collect_usage_register(int reg, int isset);
 
 static VALUE vm_make_env_object(rb_thread_t *th, rb_control_frame_t *cfp);
 
-static VALUE vm_invoke_bmethod(rb_thread_t *th, rb_proc_t *proc, VALUE self,
+VALUE vm_invoke_bmethod(rb_thread_t *th, rb_proc_t *proc, VALUE self,
 			       int argc, const VALUE *argv, VALUE block_handler);
 static VALUE vm_invoke_proc(rb_thread_t *th, rb_proc_t *proc, VALUE self,
 			    int argc, const VALUE *argv, VALUE block_handler);
@@ -1167,14 +1167,14 @@ vm_invoke_proc(rb_thread_t *th, rb_proc_t *proc, VALUE self,
     return val;
 }
 
-static VALUE
+RUBY_FUNC_EXPORTED VALUE
 vm_invoke_bmethod(rb_thread_t *th, rb_proc_t *proc, VALUE self,
 		  int argc, const VALUE *argv, VALUE block_handler)
 {
     return invoke_block_from_c_proc(th, proc, self, argc, argv, block_handler, TRUE);
 }
 
-VALUE
+RUBY_FUNC_EXPORTED VALUE
 rb_vm_invoke_proc(rb_thread_t *th, rb_proc_t *proc,
 		  int argc, const VALUE *argv, VALUE passed_block_handler)
 {

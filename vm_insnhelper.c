@@ -18,8 +18,6 @@
 #include "ruby/config.h"
 #include "debug_counter.h"
 
-#ifndef CJIT_HEADER
-
 /* control stack frame */
 
 static rb_control_frame_t *vm_get_ruby_level_caller_cfp(const rb_thread_t *th, const rb_control_frame_t *cfp);
@@ -31,6 +29,10 @@ ruby_vm_special_exception_copy(VALUE exc)
     rb_obj_copy_ivar(e, exc);
     return e;
 }
+
+#ifndef CJIT_HEADER
+
+#endif /* #ifndef CJIT_HEADER */
 
 NORETURN(static void threadptr_stack_overflow(rb_thread_t *, int));
 static void
@@ -69,7 +71,6 @@ rb_threadptr_stack_overflow(rb_thread_t *th, int crit)
     threadptr_stack_overflow(th, FALSE);
 #endif
 }
-
 
 #if VM_CHECK_MODE > 0
 static int
@@ -322,6 +323,8 @@ rb_arity_error_new(int argc, int min, int max)
     }
     return rb_exc_new3(rb_eArgError, err_mess);
 }
+
+#ifndef CJIT_HEADER
 
 void
 rb_error_arity(int argc, int min, int max)
@@ -1528,8 +1531,6 @@ check_match(VALUE pattern, VALUE target, enum vm_check_match_type type)
 #define CHECK_CMP_NAN(a, b) /* do nothing */
 #endif
 
-#ifndef CJIT_HEADER
-
 static inline VALUE
 double_cmp_lt(double a, double b)
 {
@@ -1598,9 +1599,9 @@ static inline VALUE vm_call_method(rb_thread_t *th, rb_control_frame_t *cfp, str
 
 static vm_call_handler vm_call_iseq_setup_func(const struct rb_call_info *ci, const int param_size, const int local_size);
 
-static rb_method_definition_t *method_definition_create(rb_method_type_t type, ID mid);
-static void method_definition_set(const rb_method_entry_t *me, rb_method_definition_t *def, void *opts);
-static int rb_method_definition_eq(const rb_method_definition_t *d1, const rb_method_definition_t *d2);
+extern rb_method_definition_t *method_definition_create(rb_method_type_t type, ID mid);
+extern void method_definition_set(const rb_method_entry_t *me, rb_method_definition_t *def, void *opts);
+extern int rb_method_definition_eq(const rb_method_definition_t *d1, const rb_method_definition_t *d2);
 
 static const rb_iseq_t *
 def_iseq_ptr(rb_method_definition_t *def)
@@ -1750,6 +1751,8 @@ vm_call_iseq_setup_tailcall(rb_thread_t *th, rb_control_frame_t *cfp, struct rb_
     return Qundef;
 }
 
+#ifndef CJIT_HEADER
+
 static VALUE
 call_cfunc_m2(VALUE (*func)(ANYARGS), VALUE recv, int argc, const VALUE *argv)
 {
@@ -1861,6 +1864,8 @@ call_cfunc_15(VALUE (*func)(ANYARGS), VALUE recv, int argc, const VALUE *argv)
 #ifndef VM_PROFILE
 #define VM_PROFILE 0
 #endif
+
+#endif /* #ifndef CJIT_HEADER */
 
 #if VM_PROFILE
 enum {
@@ -2445,8 +2450,6 @@ vm_call_super_method(rb_thread_t *th, rb_control_frame_t *reg_cfp, struct rb_cal
 
 /* super */
 
-#endif /* #ifndef CJIT_HEADER */
-
 static inline VALUE
 vm_search_normal_superclass(VALUE klass)
 {
@@ -2457,8 +2460,6 @@ vm_search_normal_superclass(VALUE klass)
     klass = RCLASS_ORIGIN(klass);
     return RCLASS_SUPER(klass);
 }
-
-#ifndef CJIT_HEADER
 
 static void
 vm_super_outside(void)
@@ -2518,6 +2519,8 @@ vm_search_super_method(rb_thread_t *th, rb_control_frame_t *reg_cfp,
 	CI_SET_FASTPATH(cc, vm_call_super_method, 1);
     }
 }
+
+#ifndef CJIT_HEADER
 
 /* yield */
 
