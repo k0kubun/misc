@@ -204,7 +204,14 @@ class TestJIT < Test::Unit::TestCase
   end
 
   # def test_checkmatch
-  # def test_checkkeyword
+
+  def test_checkkeyword
+    test_results(x: true) do |k|
+      def k._jit(x: rand)
+        x
+      end
+    end
+  end
 
   def test_trace
     test_results do |k|

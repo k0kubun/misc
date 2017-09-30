@@ -3066,6 +3066,8 @@ vm_check_match(VALUE target, VALUE pattern, rb_num_t flag)
     }
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 static VALUE
 vm_check_keyword(lindex_t bits, lindex_t idx, const VALUE *ep)
 {
@@ -3080,8 +3082,6 @@ vm_check_keyword(lindex_t bits, lindex_t idx, const VALUE *ep)
 	return rb_hash_has_key(kw_bits, INT2FIX(idx));
     }
 }
-
-#endif /* #ifndef CJIT_HEADER */
 
 static void
 vm_dtrace(rb_event_flag_t flag, rb_thread_t *th)

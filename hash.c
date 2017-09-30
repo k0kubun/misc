@@ -2194,7 +2194,7 @@ rb_hash_values(VALUE hash)
  *  See also Enumerable#include?
  */
 
-VALUE
+RUBY_FUNC_EXPORTED VALUE
 rb_hash_has_key(VALUE hash, VALUE key)
 {
     if (!RHASH(hash)->ntbl)

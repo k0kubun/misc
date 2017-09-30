@@ -3,6 +3,7 @@
 
 #include "internal.h"
 #include "vm_core.h"
+#include "vm_exec.h"
 #include "iseq.h"
 #include "eval_intern.h"
 

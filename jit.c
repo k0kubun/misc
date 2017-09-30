@@ -306,8 +306,10 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
         break;
       //case YARVINSN_checkmatch:
       //  break;
-      //case YARVINSN_checkkeyword:
-      //  break;
+      case YARVINSN_checkkeyword:
+	fprintf(f, "  stack[%d] = vm_check_keyword(0x%"PRIxVALUE", 0x%"PRIxVALUE", cfp->ep);\n",
+		stack_size++, operands[0], operands[1]);
+        break;
       case YARVINSN_trace:
 	fprintf(f, "  vm_dtrace((rb_event_flag_t)0x%"PRIxVALUE", th);\n", operands[0]);
 	if ((rb_event_flag_t)operands[0] & (RUBY_EVENT_RETURN | RUBY_EVENT_B_RETURN)) {
@@ -371,7 +373,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 		}
 	    }
 
-	    /* TODO: jit_exec */
+	    /* TODO: also use jit_exec */
 	    fprintf(f, "    v = (*((CALL_CACHE)0x%"PRIxVALUE")->call)(th, cfp, &calling, 0x%"PRIxVALUE", 0x%"PRIxVALUE");\n", operands[1], operands[0], operands[1]);
 	    fprintf(f, "    if (v == Qundef) {\n");
 	                      /* vm_call0_body's code after vm_call_iseq_setup */
