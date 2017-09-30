@@ -453,6 +453,28 @@ class TestJIT < Test::Unit::TestCase
 
   def test_opt_plus
     test_results { |k| def k._jit; 1+2; end }
+
+    klass = Class.new do
+      def initialize(a)
+        @a = a
+      end
+
+      def value
+        @a
+      end
+
+      def +(b)
+        @a += b.value
+      end
+    end
+
+    test_results(klass) do |k|
+      def k._jit(klass)
+        a = klass.new(1)
+        b = klass.new(2)
+        a+b
+      end
+    end
   end
 
   def test_opt_minus
