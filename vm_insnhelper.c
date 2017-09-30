@@ -1058,8 +1058,6 @@ vm_setinstancevariable(VALUE obj, ID id, VALUE val, IC ic)
     vm_setivar(obj, id, val, ic, 0, 0);
 }
 
-#ifndef CJIT_HEADER
-
 static VALUE
 vm_throw_continue(rb_thread_t *th, VALUE err)
 {
@@ -1249,8 +1247,6 @@ vm_throw(rb_thread_t *th, rb_control_frame_t *reg_cfp,
 	return vm_throw_continue(th, throwobj);
     }
 }
-
-#endif /* #ifndef CJIT_HEADER */
 
 static inline void
 vm_expandarray(rb_control_frame_t *cfp, VALUE ary, rb_num_t num, int flag)

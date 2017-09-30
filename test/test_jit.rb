@@ -324,7 +324,29 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; nil; end }
   end
 
-  # def test_throw
+  def test_throw
+    test_results do |k|
+      def k._jit
+        if 1+1 == 1
+          return 3
+        else
+          return 4
+        end
+        5
+      end
+    end
+
+    test_results do |k|
+      def k._jit
+        if 1+1 == 2
+          4
+        else
+          return 3
+        end
+        5
+      end
+    end
+  end
 
   def test_jump
     test_results do |k|

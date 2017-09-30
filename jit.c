@@ -479,8 +479,11 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 #endif
 	jumped = true;
 	break;
-      //case YARVINSN_throw:
-      //  break;
+      case YARVINSN_throw:
+	fprintf(f, "  RUBY_VM_CHECK_INTS(th);\n");
+	fprintf(f, "  THROW_EXCEPTION(vm_throw(th, cfp, 0x%"PRIxVALUE", stack[%d]));\n", operands[0], --stack_size);
+	jumped = true;
+        break;
       case YARVINSN_jump:
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
 	fprintf(f, "  RUBY_VM_CHECK_INTS(th);\n");
