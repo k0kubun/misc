@@ -123,7 +123,10 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; q, (w, e), r = 1, [2, 3], 4; e == 3; end }
   end
 
-  # def test_concatarray
+  def test_concatarray
+    test_results { |k| def k._jit; ["t", "r", *x = "u", "e"].join; end }
+  end
+
   # def test_splatarray
 
   def test_newhash

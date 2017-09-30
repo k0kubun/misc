@@ -3004,8 +3004,6 @@ vm_freezestring(VALUE str, VALUE debug)
     rb_str_freeze(str);
 }
 
-#ifndef CJIT_HEADER
-
 static VALUE
 vm_concat_array(VALUE ary1, VALUE ary2st)
 {
@@ -3026,6 +3024,8 @@ vm_concat_array(VALUE ary1, VALUE ary2st)
     }
     return rb_ary_concat(tmp1, tmp2);
 }
+
+#ifndef CJIT_HEADER
 
 static VALUE
 vm_splat_array(VALUE flag, VALUE ary)
