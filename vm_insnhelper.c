@@ -3025,8 +3025,6 @@ vm_concat_array(VALUE ary1, VALUE ary2st)
     return rb_ary_concat(tmp1, tmp2);
 }
 
-#ifndef CJIT_HEADER
-
 static VALUE
 vm_splat_array(VALUE flag, VALUE ary)
 {
@@ -3041,6 +3039,8 @@ vm_splat_array(VALUE flag, VALUE ary)
 	return tmp;
     }
 }
+
+#ifndef CJIT_HEADER
 
 static VALUE
 vm_check_match(VALUE target, VALUE pattern, rb_num_t flag)

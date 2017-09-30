@@ -236,6 +236,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	stack_size--;
         break;
       case YARVINSN_splatarray:
+	fprintf(f, "  stack[%d] = vm_splat_array(0x%"PRIxVALUE", stack[%d]);\n", stack_size-1, operands[0], stack_size-1);
         break;
       case YARVINSN_newhash:
 	fprintf(f, "  RUBY_DTRACE_CREATE_HOOK(HASH, 0x%"PRIxVALUE");\n", operands[0]);

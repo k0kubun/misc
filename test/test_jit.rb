@@ -127,7 +127,10 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; ["t", "r", *x = "u", "e"].join; end }
   end
 
-  # def test_splatarray
+  def test_splatarray
+    test_results { |k| def k._jit; [*(1..2)]; end }
+    test_results { |k| def k._jit; [*'']; end }
+  end
 
   def test_newhash
     test_results { |k| def k._jit; {}; end }
