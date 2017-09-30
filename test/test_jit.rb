@@ -43,8 +43,14 @@ class TestJIT < Test::Unit::TestCase
     # test_results { |k| def k._jit; Class.new::X = true; end }
   end
 
-  # def test_getglobal
-  # def test_setglobal
+  def test_getglobal
+    $jit_gvar_get = 1
+    test_results { |k| def k._jit; $jit_gvar_get; end }
+  end
+
+  def test_setglobal
+    test_results { |k| def k._jit; $jit_gvar_set = 2; end }
+  end
 
   def test_putnil
     test_results { |k| def k._jit; nil; end }

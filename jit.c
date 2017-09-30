@@ -160,10 +160,12 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "  vm_ensure_not_refinement_module(cfp->self);\n");
 	fprintf(f, "  rb_const_set(stack[%d], 0x%"PRIxVALUE", stack[%d]);\n", stack_size-2, operands[0], stack_size-1);
         break;
-      //case YARVINSN_getglobal:
-      //  break;
-      //case YARVINSN_setglobal:
-      //  break;
+      case YARVINSN_getglobal:
+	fprintf(f, "  stack[%d] = GET_GLOBAL((VALUE)0x%"PRIxVALUE");\n", stack_size++, operands[0]);
+        break;
+      case YARVINSN_setglobal:
+	fprintf(f, "  SET_GLOBAL((VALUE)0x%"PRIxVALUE", stack[%d]);\n", operands[0], --stack_size);
+        break;
       case YARVINSN_putnil:
 	fprintf(f, "  stack[%d] = Qnil;\n", stack_size++);
         break;

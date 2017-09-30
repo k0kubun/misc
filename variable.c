@@ -788,7 +788,7 @@ rb_f_untrace_var(int argc, const VALUE *argv)
     return Qnil;
 }
 
-VALUE
+RUBY_FUNC_EXPORTED VALUE
 rb_gvar_get(struct rb_global_entry *entry)
 {
     struct rb_global_variable *var = entry->var;
@@ -821,7 +821,7 @@ trace_en(struct rb_global_variable *var)
     return Qnil;		/* not reached */
 }
 
-VALUE
+RUBY_FUNC_EXPORTED VALUE
 rb_gvar_set(struct rb_global_entry *entry, VALUE val)
 {
     struct trace_data trace;
