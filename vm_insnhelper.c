@@ -2520,8 +2520,6 @@ vm_search_super_method(rb_thread_t *th, rb_control_frame_t *reg_cfp,
     }
 }
 
-#ifndef CJIT_HEADER
-
 /* yield */
 
 static inline int
@@ -2793,8 +2791,6 @@ vm_invoke_block(rb_thread_t *th, rb_control_frame_t *reg_cfp, struct rb_calling_
     VM_UNREACHABLE(vm_invoke_block: unreachable);
     return Qnil;
 }
-
-#endif /* #ifndef CJIT_HEADER */
 
 static VALUE
 vm_make_proc_with_iseq(const rb_iseq_t *blockiseq)

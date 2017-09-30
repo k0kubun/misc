@@ -291,11 +291,20 @@ class TestJIT < Test::Unit::TestCase
         1
       end
     }
-    obj = klass.new
-    test_jit(obj)
+    object = klass.new
+    test_jit(object)
   end
 
-  # def test_invokeblock
+  def test_invokeblock
+    klass = Class.new {
+      def _jit
+        1 + yield + 3
+      end
+    }
+    object = klass.new
+    test_jit(object) { 2 }
+  end
+
   # def test_leave
   # def test_throw
 
@@ -557,10 +566,10 @@ class TestJIT < Test::Unit::TestCase
     test_jit(klass, *args)
   end
 
-  def test_jit(klass, *args)
-    expected = klass._jit(*args)
+  def test_jit(klass, *args, &block)
+    expected = klass._jit(*args, &block)
     TEST_ITERATIONS.times do
-      assert_equal expected, klass._jit(*args)
+      assert_equal expected, klass._jit(*args, &block)
     end
   end
 end

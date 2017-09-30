@@ -1416,7 +1416,7 @@ make_localjump_error(const char *mesg, VALUE value, int reason)
     return exc;
 }
 
-void
+RUBY_FUNC_EXPORTED void
 rb_vm_localjump_error(const char *mesg, VALUE value, int reason)
 {
     VALUE exc = make_localjump_error(mesg, value, reason);

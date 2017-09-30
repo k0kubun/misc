@@ -132,21 +132,26 @@ compile_case_dispatch_each(VALUE key, VALUE value, VALUE arg)
     return ST_CONTINUE;
 }
 
+/* push back stack in local variable to YARV's stack pointer */
+static void
+fprint_args(FILE *f, unsigned int argc, unsigned int pos)
+{
+    if (argc) {
+	unsigned int i;
+	/* TODO: use memmove or things like that, if not optimized by compiler */
+	for (i = 0; i < argc; i++) {
+	    fprintf(f, "    *(cfp->sp) = stack[%d];\n", pos + i);
+	    fprintf(f, "    cfp->sp++;\n");
+	}
+    }
+}
+
 /* Compiles CALL_METHOD macro to f. `calling` should be already defined in `f`. `stack_size` should minus `ci->orig_argc` after this. */
 static void
 fprint_call_method(FILE *f, VALUE ci_v, VALUE cc_v, unsigned int result_pos)
 {
     CALL_INFO ci = (CALL_INFO)ci_v;
-
-    /* push back stack in local variable to YARV's stack pointer */
-    if (ci->orig_argc) {
-	int i;
-	/* TODO: use memmove or things like that, if not optimized by compiler */
-	for (i = 0; i < ci->orig_argc; i++) {
-	    fprintf(f, "    *(cfp->sp) = stack[%d];\n", result_pos + 1 + i);
-	    fprintf(f, "    cfp->sp++;\n");
-	}
-    }
+    fprint_args(f, ci->orig_argc, result_pos + 1);
 
     fprintf(f, "    {\n");
     fprintf(f, "      VALUE v = (*((CALL_CACHE)0x%"PRIxVALUE")->call)(th, cfp, &calling, 0x%"PRIxVALUE", 0x%"PRIxVALUE");\n", cc_v, ci_v, cc_v);
@@ -427,8 +432,25 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	    stack_size -= ci->orig_argc;
 	}
         break;
-      //case YARVINSN_invokeblock:
-      //  break;
+      case YARVINSN_invokeblock:
+	{
+	    CALL_INFO ci = (CALL_INFO)operands[0];
+	    fprintf(f, "  {\n");
+	    fprintf(f, "    struct rb_calling_info calling;\n");
+	    fprintf(f, "    calling.argc = %d;\n", ci->orig_argc);
+	    fprintf(f, "    calling.block_handler = VM_BLOCK_HANDLER_NONE;\n");
+	    fprintf(f, "    calling.recv = cfp->self;\n");
+
+	    fprint_args(f, ci->orig_argc, stack_size - ci->orig_argc);
+	    fprintf(f, "    stack[%d] = vm_invoke_block(th, cfp, &calling, 0x%"PRIxVALUE");\n", stack_size - ci->orig_argc, operands[0]);
+	    fprintf(f, "    if (stack[%d] == Qundef) {\n", stack_size - ci->orig_argc);
+	    fprintf(f, "      VM_ENV_FLAGS_SET(th->ec.cfp->ep, VM_FRAME_FLAG_FINISH);\n");
+	    fprintf(f, "      stack[%d] = vm_exec(th);\n", stack_size - ci->orig_argc);
+	    fprintf(f, "    }\n");
+	    fprintf(f, "  }\n");
+	    stack_size += 1 - ci->orig_argc;
+	}
+        break;
       case YARVINSN_leave:
 	fprintf(f, "  th->ec.cfp = cfp+1;\n"); /* TODO: properly implement vm_pop_frame */
 	fprintf(f, "  return stack[%d];\n", stack_size-1); /* TODO: assert stack_size == 1 */

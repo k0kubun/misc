@@ -44,6 +44,21 @@ vm_passed_block_handler(rb_thread_t *th)
     return block_handler;
 }
 
+PUREFUNC(static inline const VALUE *VM_CF_LEP(const rb_control_frame_t * const cfp));
+static inline const VALUE *
+VM_CF_LEP(const rb_control_frame_t * const cfp)
+{
+    return VM_EP_LEP(cfp->ep);
+}
+
+PUREFUNC(static inline VALUE VM_CF_BLOCK_HANDLER(const rb_control_frame_t * const cfp));
+static inline VALUE
+VM_CF_BLOCK_HANDLER(const rb_control_frame_t * const cfp)
+{
+    const VALUE *ep = VM_CF_LEP(cfp);
+    return VM_ENV_BLOCK_HANDLER(ep);
+}
+
 extern rb_serial_t ruby_vm_global_constant_state;
 
 #include "vm_insnhelper.h"
