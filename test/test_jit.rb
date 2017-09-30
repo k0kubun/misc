@@ -320,7 +320,10 @@ class TestJIT < Test::Unit::TestCase
     test_jit(object) { 2 }
   end
 
-  # def test_leave
+  def test_leave
+    test_results { |k| def k._jit; nil; end }
+  end
+
   # def test_throw
 
   def test_jump

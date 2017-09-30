@@ -465,8 +465,18 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	}
         break;
       case YARVINSN_leave:
-	fprintf(f, "  th->ec.cfp = cfp+1;\n"); /* TODO: properly implement vm_pop_frame */
-	fprintf(f, "  return stack[%d];\n", stack_size-1); /* TODO: assert stack_size == 1 */
+	/* NOTE: We don't use YARV's stack on JIT. So vm_stack_consistency_error shouldn't be checked. */
+	/* TODO: instead, assert stack_size == 1 */
+
+	fprintf(f, "  RUBY_VM_CHECK_INTS(th);\n");
+	/* TODO: is there a case that vm_pop_frame returns 0? */
+	fprintf(f, "  vm_pop_frame(th, cfp, cfp->ep);\n");
+#if OPT_CALL_THREADED_CODE
+	fprintf(f, "  th->retval = stack[%d];\n", stack_size-1);
+	fprintf(f, "  return 0;\n");
+#else
+	fprintf(f, "  return stack[%d];\n", stack_size-1);
+#endif
 	jumped = true;
 	break;
       //case YARVINSN_throw:

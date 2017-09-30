@@ -30,10 +30,6 @@ ruby_vm_special_exception_copy(VALUE exc)
     return e;
 }
 
-#ifndef CJIT_HEADER
-
-#endif /* #ifndef CJIT_HEADER */
-
 NORETURN(static void threadptr_stack_overflow(rb_thread_t *, int));
 static void
 threadptr_stack_overflow(rb_thread_t *th, int setup)
@@ -3394,8 +3390,6 @@ vm_case_dispatch(CDHASH hash, OFFSET else_offset, VALUE key)
     return 0;
 }
 
-#ifndef CJIT_HEADER
-
 NORETURN(static void
 	 vm_stack_consistency_error(rb_thread_t *,
 				    const rb_control_frame_t *,
@@ -3418,8 +3412,6 @@ vm_stack_consistency_error(rb_thread_t *th,
     rb_bug(stack_consistency_error, nsp, nbp);
 #endif
 }
-
-#endif /* #ifndef CJIT_HEADER */
 
 enum binop_operands_type {
     bot_others = 0,
