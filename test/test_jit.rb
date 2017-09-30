@@ -99,9 +99,9 @@ class TestJIT < Test::Unit::TestCase
     test_results('b') { |k| def k._jit(b); "a#{b}"; end }
   end
 
-  # def test_toregexp
-  #   test_results { |k| def k._jit; /#{true}/ =~ "true"; end }
-  # end
+  def test_toregexp
+    test_results { |k| def k._jit; /#{true}/; end }
+  end
 
   def test_intern
     test_results { |k| def k._jit; :"a#{2}"; end }

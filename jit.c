@@ -196,8 +196,16 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_freezestring:
 	fprintf(f, "  vm_freezestring(stack[%d], 0x%"PRIxVALUE");\n", stack_size-1, operands[0]);
         break;
-      //case YARVINSN_toregexp:
-      //  break;
+      case YARVINSN_toregexp:
+	fprintf(f, "  {\n");
+	fprintf(f, "    VALUE rb_reg_new_ary(VALUE ary, int options);\n");
+        fprintf(f, "    VALUE rb_ary_tmp_new_from_values(VALUE, long, const VALUE *);\n");
+	fprintf(f, "    const VALUE ary = rb_ary_tmp_new_from_values(0, 0x%"PRIxVALUE", stack + %d);\n", operands[1], stack_size - (unsigned int)operands[1]);
+	fprintf(f, "    stack[%d] = rb_reg_new_ary(ary, (int)0x%"PRIxVALUE");\n", stack_size - (unsigned int)operands[1], operands[0]);
+	fprintf(f, "    rb_ary_clear(ary);\n");
+	fprintf(f, "  }\n");
+	stack_size += 1 - (unsigned int)operands[1];
+        break;
       case YARVINSN_intern:
 	fprintf(f, "  stack[%d] = rb_str_intern(stack[%d]);\n", stack_size-1, stack_size-1);
         break;
