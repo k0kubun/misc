@@ -376,8 +376,21 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       //case YARVINSN_defineclass:
       //  /* use vm_exec? */
       //  break;
-      //case YARVINSN_send:
-      //  break;
+      case YARVINSN_send:
+	{
+	    CALL_INFO ci = (CALL_INFO)operands[0];
+	    fprintf(f, "  {\n");
+	    fprintf(f, "    struct rb_calling_info calling;\n");
+
+	    fprintf(f, "    vm_caller_setup_arg_block(th, cfp, &calling, 0x%"PRIxVALUE", 0x%"PRIxVALUE", FALSE);\n", operands[0], operands[2]);
+	    fprintf(f, "    calling.argc = %d;\n", ci->orig_argc);
+	    fprintf(f, "    vm_search_method(0x%"PRIxVALUE", 0x%"PRIxVALUE", calling.recv = stack[%d]);\n", operands[0], operands[1], stack_size - 1 - ci->orig_argc);
+	    /* TODO: VM_CALL_ARGS_BLOCKARG */
+	    fprint_call_method(f, operands[0], operands[1], stack_size - ci->orig_argc - 1);
+	    fprintf(f, "  }\n");
+	    stack_size -= ci->orig_argc + ((ci->flag & VM_CALL_ARGS_BLOCKARG) ? 1 : 0);
+	}
+        break;
       case YARVINSN_opt_str_freeze:
 	fprintf(f, "  if (BASIC_OP_UNREDEFINED_P(BOP_FREEZE, STRING_REDEFINED_OP_FLAG)) {\n");
 	fprintf(f, "    stack[%d] = 0x%"PRIxVALUE";\n", stack_size, operands[0]);

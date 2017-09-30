@@ -250,7 +250,22 @@ class TestJIT < Test::Unit::TestCase
   end
 
   # def test_defineclass
-  # def test_send
+
+  def test_send
+    test_results do |k|
+      def k._jit
+        1.times { 2 }
+      end
+    end
+
+    test_results do |k|
+      def k._jit
+        [1, 2].inject([]) do |ary, i|
+          ary << i
+        end
+      end
+    end
+  end
 
   def test_opt_str_freeze
     test_results { |k| def k._jit; 'str'.freeze; end }
