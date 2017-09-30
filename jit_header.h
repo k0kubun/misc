@@ -17,6 +17,14 @@ VM_EP_LEP(const VALUE *ep)
     }
     return ep;
 }
+
+static struct rb_captured_block *
+VM_CFP_TO_CAPTURED_BLOCK(const rb_control_frame_t *cfp)
+{
+    VM_ASSERT(!VM_CFP_IN_HEAP_P(GET_THREAD(), cfp));
+    return (struct rb_captured_block *)&cfp->self;
+}
+
 extern rb_serial_t ruby_vm_global_constant_state;
 
 /* vm_eval.c */

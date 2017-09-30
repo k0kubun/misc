@@ -500,7 +500,7 @@ rb_vm_get_binding_creatable_next_cfp(const rb_thread_t *th, const rb_control_fra
     return 0;
 }
 
-rb_control_frame_t *
+RUBY_FUNC_EXPORTED rb_control_frame_t *
 rb_vm_get_ruby_level_next_cfp(const rb_thread_t *th, const rb_control_frame_t *cfp)
 {
     while (!RUBY_VM_CONTROL_FRAME_STACK_OVERFLOW_P(th, cfp)) {
@@ -870,7 +870,7 @@ rb_proc_create(VALUE klass, const struct rb_block *block,
     return procval;
 }
 
-VALUE
+RUBY_FUNC_EXPORTED VALUE
 rb_vm_make_proc(rb_thread_t *th, const struct rb_captured_block *captured, VALUE klass)
 {
     return rb_vm_make_proc_lambda(th, captured, klass, FALSE);

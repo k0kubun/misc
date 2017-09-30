@@ -329,6 +329,9 @@ class TestJIT < Test::Unit::TestCase
   end
 
   # def test_once
+  #   test_results { |k| def k._jit; /#{true}/o =~ "true"; end }
+  # end
+
   # def test_opt_case_dispatch
 
   def test_opt_plus

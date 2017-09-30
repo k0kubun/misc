@@ -323,6 +323,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "  EXEC_EVENT_HOOK(th, (rb_event_flag_t)0x%"PRIxVALUE", cfp->self, 0, 0, 0, 0x%"PRIxVALUE");\n", operands[0], operands[1]);
         break;
       //case YARVINSN_defineclass:
+      //  /* use vm_exec? */
       //  break;
       //case YARVINSN_send:
       //  break;
@@ -444,6 +445,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "  vm_ic_update(0x%"PRIxVALUE", stack[%d], cfp->ep);\n", operands[0], stack_size-1);
         break;
       //case YARVINSN_once:
+      //  fprintf(f, "  stack[%d] = vm_once_dispatch(0x%"PRIxVALUE", 0x%"PRIxVALUE", th);\n", stack_size++, operands[0], operands[1]);
       //  break;
       //case YARVINSN_opt_case_dispatch:
       //  break;

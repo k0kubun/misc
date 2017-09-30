@@ -2791,6 +2791,8 @@ vm_invoke_block(rb_thread_t *th, rb_control_frame_t *reg_cfp, struct rb_calling_
     return Qnil;
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 static VALUE
 vm_make_proc_with_iseq(const rb_iseq_t *blockiseq)
 {
@@ -2822,6 +2824,8 @@ vm_once_clear(VALUE data)
     is->once.running_thread = NULL;
     return Qnil;
 }
+
+#ifndef CJIT_HEADER
 
 rb_control_frame_t *
 FUNC_FASTCALL(rb_vm_opt_struct_aref)(rb_thread_t *th, rb_control_frame_t *reg_cfp)
@@ -3329,8 +3333,6 @@ vm_ic_update(IC ic, VALUE val, const VALUE *reg_ep)
     ruby_vm_const_missing_count = 0;
 }
 
-#ifndef CJIT_HEADER
-
 static VALUE
 vm_once_dispatch(ISEQ iseq, IC ic, rb_thread_t *th)
 {
@@ -3361,6 +3363,8 @@ vm_once_dispatch(ISEQ iseq, IC ic, rb_thread_t *th)
 	goto again;
     }
 }
+
+#ifndef CJIT_HEADER
 
 static OFFSET
 vm_case_dispatch(CDHASH hash, OFFSET else_offset, VALUE key)
