@@ -1492,7 +1492,9 @@ rb_eql_opt(VALUE obj1, VALUE obj2)
     return opt_eql_func(obj1, obj2, &ci, &cc);
 }
 
-static VALUE vm_call0(rb_thread_t*, VALUE, ID, int, const VALUE*, const rb_callable_method_entry_t *);
+#endif /* #ifndef CJIT_HEADER */
+
+VALUE vm_call0(rb_thread_t*, VALUE, ID, int, const VALUE*, const rb_callable_method_entry_t *);
 
 static VALUE
 check_match(VALUE pattern, VALUE target, enum vm_check_match_type type)
@@ -1519,8 +1521,6 @@ check_match(VALUE pattern, VALUE target, enum vm_check_match_type type)
 	rb_bug("check_match: unreachable");
     }
 }
-
-#endif /* #ifndef CJIT_HEADER */
 
 #if defined(_MSC_VER) && _MSC_VER < 1300
 #define CHECK_CMP_NAN(a, b) if (isnan(a) || isnan(b)) return Qfalse;
@@ -3044,8 +3044,6 @@ vm_splat_array(VALUE flag, VALUE ary)
     }
 }
 
-#ifndef CJIT_HEADER
-
 static VALUE
 vm_check_match(VALUE target, VALUE pattern, rb_num_t flag)
 {
@@ -3069,8 +3067,6 @@ vm_check_match(VALUE target, VALUE pattern, rb_num_t flag)
 	return check_match(pattern, target, type);
     }
 }
-
-#endif /* #ifndef CJIT_HEADER */
 
 static VALUE
 vm_check_keyword(lindex_t bits, lindex_t idx, const VALUE *ep)
@@ -3364,8 +3360,6 @@ vm_once_dispatch(ISEQ iseq, IC ic, rb_thread_t *th)
     }
 }
 
-#ifndef CJIT_HEADER
-
 static OFFSET
 vm_case_dispatch(CDHASH hash, OFFSET else_offset, VALUE key)
 {
@@ -3400,6 +3394,8 @@ vm_case_dispatch(CDHASH hash, OFFSET else_offset, VALUE key)
     }
     return 0;
 }
+
+#ifndef CJIT_HEADER
 
 NORETURN(static void
 	 vm_stack_consistency_error(rb_thread_t *,

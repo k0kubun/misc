@@ -868,7 +868,7 @@ rb_method_entry_with_refinements(VALUE klass, ID id)
     return method_entry_resolve_refinement(klass, id, TRUE, NULL);
 }
 
-const rb_callable_method_entry_t *
+RUBY_FUNC_EXPORTED const rb_callable_method_entry_t *
 rb_callable_method_entry_with_refinements(VALUE klass, ID id)
 {
     VALUE defined_class;

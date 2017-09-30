@@ -203,7 +203,18 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; @a = 1; defined?(@a); end }
   end
 
-  # def test_checkmatch
+  def test_checkmatch
+    test_results(1) do |k|
+      def k._jit(a)
+        case a
+        when 1
+          2
+        else
+          3
+        end
+      end
+    end
+  end
 
   def test_checkkeyword
     test_results(x: true) do |k|
@@ -332,7 +343,47 @@ class TestJIT < Test::Unit::TestCase
   #   test_results { |k| def k._jit; /#{true}/o =~ "true"; end }
   # end
 
-  # def test_opt_case_dispatch
+  def test_opt_case_dispatch
+    [1, 2].each do |aa|
+      test_results(aa) do |k|
+        def k._jit(a)
+          case a
+          when 1
+            2
+          else
+            3
+          end
+        end
+      end
+    end
+
+    test_results(1) do |k|
+      def k._jit(a)
+        1000 + case a
+               when 1
+                 100
+               end
+      end
+    end
+
+    test_results(3, 2) do |k|
+      def k._jit(a, b)
+        1000 + case a
+               when 1
+                 100
+               when 2
+                 200
+               when 3
+                 300 + case b
+                       when 4
+                         400
+                       else
+                         500
+                       end + 600
+               end + 700
+      end
+    end
+  end
 
   def test_opt_plus
     test_results { |k| def k._jit; 1+2; end }

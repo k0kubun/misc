@@ -484,7 +484,7 @@ rb_hash_tbl(VALUE hash)
     return hash_tbl(hash);
 }
 
-struct st_table *
+RUBY_FUNC_EXPORTED struct st_table *
 rb_hash_tbl_raw(VALUE hash)
 {
     return hash_tbl(hash);

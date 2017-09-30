@@ -115,6 +115,23 @@ fprint_setlocal(FILE *f, unsigned int pop_pos, lindex_t idx, rb_num_t level)
 
 static void compile_insns(const struct rb_iseq_constant_body *body, FILE *f, unsigned int stack_size, unsigned int pos, bool *compiled_for_pos);
 
+struct case_dispatch_var {
+    FILE *f;
+    unsigned int base_pos;
+};
+
+static int
+compile_case_dispatch_each(VALUE key, VALUE value, VALUE arg)
+{
+    struct case_dispatch_var *var = (struct case_dispatch_var *)arg;
+    unsigned int offset = FIX2INT(value);
+
+    fprintf(var->f, "    case %d:\n", offset);
+    fprintf(var->f, "      goto label_%d;\n", var->base_pos + offset);
+    fprintf(var->f, "      break;\n");
+    return ST_CONTINUE;
+}
+
 /* Compiles insn to f, may modify stack_size_ptr and returns next position */
 static unsigned int
 compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *stack_size_ptr, const int insn, const VALUE *operands, unsigned int pos, bool *compiled_for_pos)
@@ -304,8 +321,10 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "  stack[%d] = vm_defined(th, cfp, 0x%"PRIxVALUE", 0x%"PRIxVALUE", 0x%"PRIxVALUE", stack[%d]);\n",
 		stack_size-1, operands[0], operands[1], operands[2], stack_size-1);
         break;
-      //case YARVINSN_checkmatch:
-      //  break;
+      case YARVINSN_checkmatch:
+	fprintf(f, "  stack[%d] = vm_check_match(stack[%d], stack[%d], 0x%"PRIxVALUE");\n", stack_size-2, stack_size-2, stack_size-1, operands[0]);
+	stack_size--;
+        break;
       case YARVINSN_checkkeyword:
 	fprintf(f, "  stack[%d] = vm_check_keyword(0x%"PRIxVALUE", 0x%"PRIxVALUE", cfp->ep);\n",
 		stack_size++, operands[0], operands[1]);
@@ -447,8 +466,17 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       //case YARVINSN_once:
       //  fprintf(f, "  stack[%d] = vm_once_dispatch(0x%"PRIxVALUE", 0x%"PRIxVALUE", th);\n", stack_size++, operands[0], operands[1]);
       //  break;
-      //case YARVINSN_opt_case_dispatch:
-      //  break;
+      case YARVINSN_opt_case_dispatch:
+	{
+	    struct case_dispatch_var arg;
+	    arg.f = f;
+	    arg.base_pos = pos + insn_len(insn);
+
+	    fprintf(f, "  switch (vm_case_dispatch(0x%"PRIxVALUE", 0x%"PRIxVALUE", stack[%d])) {\n", operands[0], operands[1], --stack_size);
+	    rb_hash_foreach(operands[0], compile_case_dispatch_each, (VALUE)&arg);
+	    fprintf(f, "  }\n");
+	}
+        break;
       case YARVINSN_opt_plus:
 	fprint_call2(f, "vm_opt_plus", &stack_size); /* TODO: handle Qundef */
         break;
