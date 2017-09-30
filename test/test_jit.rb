@@ -265,6 +265,13 @@ class TestJIT < Test::Unit::TestCase
         end
       end
     end
+
+    test_results do |k|
+      def k._jit
+        block = proc { 3 }
+        1.times.map(&block)
+      end
+    end
   end
 
   def test_opt_str_freeze
@@ -304,6 +311,21 @@ class TestJIT < Test::Unit::TestCase
       prepend mod
       def _jit
         1
+      end
+    }
+    object = klass.new
+    test_jit(object)
+
+    mod = Module.new {
+      def _jit
+        block = proc { 3 }
+        super(&block) + 2
+      end
+    }
+    klass = Class.new {
+      prepend mod
+      def _jit
+        1 + yield
       end
     }
     object = klass.new
