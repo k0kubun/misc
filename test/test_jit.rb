@@ -119,7 +119,10 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; [1, 2]; end }
   end
 
-  # def test_expandarray
+  def test_expandarray
+    test_results { |k| def k._jit; q, (w, e), r = 1, [2, 3], 4; e == 3; end }
+  end
+
   # def test_concatarray
   # def test_splatarray
 
@@ -164,7 +167,9 @@ class TestJIT < Test::Unit::TestCase
     test_results { |k| def k._jit; {}['true'] = true; end }
   end
 
-  # def test_reverse
+  def test_reverse
+    test_results { |k| def k._jit; q, (w, e), r = 1, [2, 3], 4; e == 3; end }
+  end
 
   def test_reput
     # TODO: I'm not sure how to generate this insn...

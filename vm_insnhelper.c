@@ -1251,6 +1251,8 @@ vm_throw(rb_thread_t *th, rb_control_frame_t *reg_cfp,
     }
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 static inline void
 vm_expandarray(rb_control_frame_t *cfp, VALUE ary, rb_num_t num, int flag)
 {
@@ -1311,6 +1313,8 @@ vm_expandarray(rb_control_frame_t *cfp, VALUE ary, rb_num_t num, int flag)
     }
     RB_GC_GUARD(ary);
 }
+
+#ifndef CJIT_HEADER
 
 static VALUE vm_call_general(rb_thread_t *th, rb_control_frame_t *reg_cfp, struct rb_calling_info *calling, const struct rb_call_info *ci, struct rb_call_cache *cc);
 

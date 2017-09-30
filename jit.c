@@ -217,8 +217,20 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       case YARVINSN_duparray:
 	fprintf(f, "  stack[%d] = rb_ary_resurrect(0x%"PRIxVALUE");\n", stack_size++, operands[0]);
         break;
-      //case YARVINSN_expandarray:
-      //  break;
+      case YARVINSN_expandarray:
+	{
+	    unsigned int i, space_size;
+	    space_size = (unsigned int)operands[0] + (unsigned int)((int)operands[1] & 0x01);
+
+	    /* probably vm_expandarray should be optimized for JIT */
+	    fprintf(f, "  vm_expandarray(cfp, stack[%d], 0x%"PRIxVALUE", (int)0x%"PRIxVALUE");\n", --stack_size, operands[0], operands[1]);
+	    for (i = 0; i < space_size; i++) {
+		fprintf(f, "  cfp->sp--;\n");
+		fprintf(f, "  stack[%d] = *(cfp->sp);\n", stack_size + space_size - 1 - i);
+	    }
+	    stack_size += space_size;
+	}
+        break;
       //case YARVINSN_concatarray:
       //  break;
       //case YARVINSN_splatarray:
@@ -254,8 +266,24 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "    stack[%d] = tmp;\n", stack_size-2);
 	fprintf(f, "  }\n");
         break;
-      //case YARVINSN_reverse:
-      //  break;
+      case YARVINSN_reverse:
+	{
+	    unsigned int n, i, base;
+	    n = (unsigned int)operands[0];
+	    base = stack_size - n;
+
+	    fprintf(f, "  {\n");
+	    fprintf(f, "    VALUE v0;\n");
+	    fprintf(f, "    VALUE v1;\n");
+	    for (i = 0; i < n/2; i++) {
+		fprintf(f, "    v0 = stack[%d];\n", base + i);
+		fprintf(f, "    v1 = stack[%d];\n", base + n - i - 1);
+		fprintf(f, "    stack[%d] = v1;\n", base + i);
+		fprintf(f, "    stack[%d] = v0;\n", base + n - i - 1);
+	    }
+	    fprintf(f, "  }\n");
+	}
+        break;
       case YARVINSN_reput:
 	fprintf(f, "  stack[%d] = stack[%d];\n", stack_size-1, stack_size-1);
         break;
@@ -596,7 +624,7 @@ jit_compile(const rb_iseq_t *iseq)
     fclose(f);
 
     compile_c_to_so(c_fname, so_fname);
-    //remove(c_fname);
+    remove(c_fname);
 
     func_ptr = get_func_ptr(so_fname, funcname);
     remove(so_fname);
