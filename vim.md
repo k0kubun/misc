@@ -1,4 +1,5 @@
-## Build vim/vim v8.0.0606
+## Build vim/vim
+v7.4.2367
 
 ```
 sudo apt install git build-essential ncurses-dev lua5.2 lua5.2-dev luajit python-dev ruby-dev
