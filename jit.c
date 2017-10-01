@@ -432,12 +432,16 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "  stack[%d] = vm_splat_array(0x%"PRIxVALUE", stack[%d]);\n", stack_size-1, operands[0], stack_size-1);
         break;
       case YARVINSN_newhash:
-	fprintf(f, "  RUBY_DTRACE_CREATE_HOOK(HASH, 0x%"PRIxVALUE");\n", operands[0]);
-	fprintf(f, "  stack[%d] = rb_hash_new_with_size(0x%"PRIxVALUE" / 2);\n", stack_size, operands[0]);
+	fprintf(f, "  {\n");
+	fprintf(f, "    VALUE val;\n");
+	fprintf(f, "    RUBY_DTRACE_CREATE_HOOK(HASH, 0x%"PRIxVALUE");\n", operands[0]);
+	fprintf(f, "    val = rb_hash_new_with_size(0x%"PRIxVALUE" / 2);\n", stack_size, operands[0]);
 	if (operands[0]) {
-	    fprintf(f, "  rb_hash_bulk_insert(0x%"PRIxVALUE", stack + %d, stack[%d]);\n", operands[0], stack_size - (unsigned int)operands[0], stack_size);
+	    fprintf(f, "    rb_hash_bulk_insert(0x%"PRIxVALUE", stack + %d, val);\n", operands[0], stack_size - (unsigned int)operands[0], stack_size);
 	}
-	stack_size++;
+	fprintf(f, "    stack[%d] = val;\n", stack_size - (unsigned int)operands[0]);
+	fprintf(f, "  }\n");
+	stack_size += 1 - (unsigned int)operands[0];
         break;
       case YARVINSN_newrange:
 	fprintf(f, "  stack[%d] = rb_range_new(stack[%d], stack[%d], (int)0x%"PRIxVALUE");\n", stack_size-2, stack_size-2, stack_size-1, operands[0]);
