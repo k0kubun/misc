@@ -18,11 +18,35 @@
 #include "insns_info.inc"
 #include "jit.h"
 
+/* A node for JIT waiting list */
+struct jit_waiting_node {
+    struct jit_waiting_node *next, *prev;
+    const rb_iseq_t *iseq;
+};
+
+/* Priority queue of iseqs waiting for JIT compilation.
+   This variable is a pointer to head node of the queue. */
+static struct jit_waiting_node *jit_waiting_queue;
+
 /* If "-j" is specified, this becomes TRUE */
 int jit_enabled = FALSE;
 
 /* Total count of scheduled ISeqs to generate unique identifier */
 static unsigned long jit_scheduled_iseqs;
+
+/* Thread ID of JIT compiling worker */
+static pthread_t worker_thread_id;
+
+/* Mutex for critical section */
+static pthread_mutex_t jit_engine_mutex;
+/* Thread conditional to wait for JIT compilation request */
+static pthread_cond_t jit_worker_wakeup;
+static pthread_cond_t jit_wakeup_gc;
+static pthread_cond_t jit_wakeup_jit;
+/* In `jit_compile` function or not. GC should not be executed. */
+static int in_jit;
+/* In GC or not. JIT should not be executed. */
+static int in_gc;
 
 static void
 execute_command(const char *path, char *const argv[])
@@ -860,6 +884,22 @@ compile_iseq_to_c(const struct rb_iseq_constant_body *body, FILE *f, const char 
     return succeeded;
 }
 
+static inline void
+CRITICAL_SECTION_START(const char *section_name)
+{
+    int err_code;
+    if ((err_code = pthread_mutex_lock(&jit_engine_mutex)) != 0) {
+	fprintf(stderr, "Critical section start failed at '%s': %s\n", section_name, strerror(err_code));
+    }
+}
+
+static inline void
+CRITICAL_SECTION_FINISH()
+{
+    pthread_mutex_unlock(&jit_engine_mutex);
+}
+
+//static void *
 void *
 jit_compile(const rb_iseq_t *iseq)
 {
@@ -870,9 +910,9 @@ jit_compile(const rb_iseq_t *iseq)
     bool succeeded;
 
     /* temporary stub for testing */
-    if (strcmp(RSTRING_PTR(iseq->body->location.label), "_jit")) {
-        return (void *)NOT_ADDED_JIT_ISEQ_FUNC;
-    }
+    //if (strcmp(RSTRING_PTR(iseq->body->location.label), "_jit")) {
+    //    return (void *)NOT_ADDED_JIT_ISEQ_FUNC;
+    //}
 
     unique_id = ++jit_scheduled_iseqs;
     sprintf(funcname, "_cjit_%lu", unique_id);
@@ -882,7 +922,23 @@ jit_compile(const rb_iseq_t *iseq)
     fprintf(stderr, "compile: %s@%s -> %s\n", RSTRING_PTR(iseq->body->location.label), RSTRING_PTR(rb_iseq_path(iseq)), c_fname); /* debug */
 
     f = fopen(c_fname, "w");
+
+    CRITICAL_SECTION_START("before jit compile");
+    while (in_gc) {
+	pthread_cond_wait(&jit_wakeup_jit, &jit_engine_mutex);
+    }
+    in_jit = TRUE;
+    CRITICAL_SECTION_FINISH();
+
     succeeded = compile_iseq_to_c(iseq->body, f, funcname);
+
+    CRITICAL_SECTION_START("after jit compile");
+    in_jit = FALSE;
+    if (pthread_cond_signal(&jit_wakeup_gc) != 0) {
+	fprintf(stderr, "Failed to wakeup GC...\n");
+    }
+    CRITICAL_SECTION_FINISH();
+
     fclose(f);
     if (!succeeded) {
 	remove(c_fname);
@@ -896,4 +952,173 @@ jit_compile(const rb_iseq_t *iseq)
     remove(so_fname);
 
     return func_ptr;
+}
+
+/* Add iseq to JIT waiting queue */
+void
+jit_enqueue(const rb_iseq_t *iseq)
+{
+    struct jit_waiting_node *node;
+
+    if (!jit_enabled) { /* recheck for jit_finalize */
+	return;
+    }
+    node = ZALLOC(struct jit_waiting_node);
+    node->iseq = iseq;
+
+    CRITICAL_SECTION_START("jit enqueue");
+
+    /* Append iseq to list */
+    if (jit_waiting_queue == NULL) {
+	jit_waiting_queue = node;
+    } else {
+	struct jit_waiting_node *tail = jit_waiting_queue;
+	while (tail->next != NULL) {
+	    tail = tail->next;
+	}
+	tail->next = node;
+	node->prev = tail;
+    }
+
+    if (pthread_cond_broadcast(&jit_worker_wakeup) != 0) {
+	fprintf(stderr, "Failed to send wakeup signal to worker...\n");
+    }
+    CRITICAL_SECTION_FINISH();
+}
+
+/* Pop most frequently called iseq from JIT waiting queue */
+static const rb_iseq_t *
+jit_dequeue()
+{
+    const rb_iseq_t *iseq;
+    struct jit_waiting_node *node, *dequeued = NULL;
+
+    CRITICAL_SECTION_START("jit dequeue");
+    while (jit_waiting_queue == NULL && jit_enabled) {
+	pthread_cond_wait(&jit_worker_wakeup, &jit_engine_mutex);
+    }
+
+    /* Find iseq with max total_calls */
+    for (node = jit_waiting_queue; node != NULL; node = node->next) {
+	if (dequeued == NULL || dequeued->iseq->body->total_calls < node->iseq->body->total_calls) {
+	    dequeued = node;
+	}
+    }
+
+    /* Remove `dequeued` node from list */
+    if (dequeued->prev && dequeued->next) {
+	dequeued->prev->next = dequeued->next;
+	dequeued->next->prev = dequeued->prev;
+    } else if (dequeued->prev == NULL && dequeued->next) {
+	jit_waiting_queue = dequeued->next;
+	dequeued->next->prev = NULL;
+    } else if (dequeued->prev && dequeued->next == NULL) {
+	dequeued->prev->next = NULL;
+    } else {
+	jit_waiting_queue = NULL;
+    }
+    CRITICAL_SECTION_FINISH();
+
+    iseq = dequeued->iseq;
+    xfree(dequeued);
+    return iseq;
+}
+
+static void *
+jit_worker(void *arg)
+{
+    if (pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL) != 0) {
+	fprintf(stderr, "Failed to enable cancelation in JIT thread...\n");
+    }
+
+    while (jit_enabled) {
+	const rb_iseq_t *iseq;
+	if ((iseq = jit_dequeue())) {
+	    void *func;
+	    func = jit_compile(iseq);
+
+	    CRITICAL_SECTION_START("jit replace");
+	    /* Usage of jit_code might be not in a critical section.  */
+	    ATOMIC_SET(iseq->body->jit_func, func);
+	    CRITICAL_SECTION_FINISH();
+	}
+    }
+    return NULL;
+}
+
+static void
+jit_worker_start()
+{
+    pthread_attr_t attr;
+
+    if (pthread_mutex_init(&jit_engine_mutex, NULL) != 0
+	|| pthread_cond_init(&jit_worker_wakeup, NULL) != 0
+	|| pthread_cond_init(&jit_wakeup_gc, NULL) != 0
+	|| pthread_cond_init(&jit_wakeup_jit, NULL) != 0) {
+	fprintf(stderr, "Failed to initialize JIT mutex...\n"); /* debug */
+	return;
+    }
+
+    if (pthread_attr_init(&attr) == 0
+	&& pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM) == 0
+	&& pthread_create(&worker_thread_id, &attr, jit_worker, NULL) == 0) {
+	/* jit_worker thread is not to be joined */
+	pthread_detach(worker_thread_id);
+
+	fprintf(stderr, "Succeeded to start JIT worker!\n"); /* debug */
+    } else {
+	fprintf(stderr, "Failed to create JIT worker...\n"); /* debug */
+    }
+}
+
+void
+jit_init()
+{
+    jit_waiting_queue = NULL;
+
+    jit_enabled = TRUE;
+    jit_worker_start();
+}
+
+void
+jit_finalize()
+{
+    if (!jit_enabled) {
+	return;
+    }
+
+    jit_enabled = FALSE;
+    /* TODO: free waiting_queue nodes */
+}
+
+/* GC waits until current JIT compilation is done */
+void
+jit_gc_start_hook()
+{
+    if (!jit_enabled) {
+	return;
+    }
+
+    CRITICAL_SECTION_START("jit gc start hook");
+    while (in_jit) {
+	pthread_cond_wait(&jit_wakeup_gc, &jit_engine_mutex);
+    }
+    in_gc = TRUE;
+    CRITICAL_SECTION_FINISH();
+}
+
+/* JIT waits until current GC is done */
+void
+jit_gc_finish_hook()
+{
+    if (!jit_enabled) {
+	return;
+    }
+
+    CRITICAL_SECTION_START("jit gc finish hook");
+    in_gc = FALSE;
+    if (pthread_cond_broadcast(&jit_wakeup_jit) != 0) {
+        fprintf(stderr, "Failed to wakeup JIT...\n");
+    }
+    CRITICAL_SECTION_FINISH();
 }

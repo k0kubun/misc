@@ -17,6 +17,7 @@
 #include "gc.h"
 #include "ruby/vm.h"
 #include "vm_core.h"
+#include "jit.h"
 #include "probes_helper.h"
 
 NORETURN(void rb_raise_jump(VALUE, VALUE));
@@ -220,6 +221,7 @@ ruby_cleanup(volatile int ex)
 	}
     }
 
+    jit_finalize();
     ruby_finalize_1();
 
     /* unlock again if finalizer took mutexes. */

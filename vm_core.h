@@ -415,7 +415,7 @@ struct rb_iseq_constant_body {
     unsigned int stack_max; /* for stack overflow check */
 
     void *jit_func;
-    long unsigned profile_calls; /* number of ISeq calls before JIT compilation */
+    long unsigned total_calls; /* number of total calls with `jit_exec()` */
 };
 
 /* T_IMEMO/iseq */

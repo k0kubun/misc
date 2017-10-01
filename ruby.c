@@ -1655,7 +1655,7 @@ process_options(int argc, char **argv, ruby_cmdline_options_t *opt)
      * may update after eval() */
 
     if (opt->jit_enabled)
-	jit_enabled = TRUE;
+	jit_init();
 
     if (opt->e_script) {
 	VALUE progname = rb_progname;
