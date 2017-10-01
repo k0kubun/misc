@@ -811,6 +811,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
     }
 
     *stack_size_ptr = stack_size;
+    /* fprintf(stderr, "AFTER %04d %-24s: stack_size=%d (max=%d)\n", pos, insn_name(insn), stack_size, body->stack_max); */
     return next_pos;
 }
 
