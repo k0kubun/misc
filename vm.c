@@ -534,7 +534,7 @@ vm_get_ruby_level_caller_cfp(const rb_thread_t *th, const rb_control_frame_t *cf
     return 0;
 }
 
-void
+RUBY_FUNC_EXPORTED void
 rb_vm_pop_cfunc_frame(void)
 {
     rb_thread_t *th = GET_THREAD();

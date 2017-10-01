@@ -59,6 +59,26 @@ VM_CF_BLOCK_HANDLER(const rb_control_frame_t * const cfp)
     return VM_ENV_BLOCK_HANDLER(ep);
 }
 
+static inline const rb_control_frame_t *
+rb_vm_search_cf_from_ep(const rb_thread_t * const th, const rb_control_frame_t *cfp, const VALUE * const ep)
+{
+    if (!ep) {
+	return NULL;
+    }
+    else {
+	const rb_control_frame_t * const eocfp = RUBY_VM_END_CONTROL_FRAME(th); /* end of control frame pointer */
+
+	while (cfp < eocfp) {
+	    if (cfp->ep == ep) {
+		return cfp;
+	    }
+	    cfp = RUBY_VM_PREVIOUS_CONTROL_FRAME(cfp);
+	}
+
+	return NULL;
+    }
+}
+
 extern rb_serial_t ruby_vm_global_constant_state;
 
 #include "vm_insnhelper.h"
