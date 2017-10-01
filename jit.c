@@ -313,7 +313,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 {
     unsigned int stack_size = *stack_size_ptr;
     unsigned int next_pos = pos + insn_len(insn);
-    bool jumped = false; /* set true if `goto` or `return` is set in the end of compiled code */
+    bool jumped = false;
 
     fprint_set_pc(f, insn, body->iseq_encoded + pos);
     switch (insn) {
@@ -630,13 +630,12 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 #else
 	fprintf(f, "  return stack[%d];\n", stack_size-1);
 #endif
-	jumped = true;
-	break;
+	return body->iseq_size; /* stop compilation in this branch. to simulate stack properly,
+				   remaining insns should be compiled from another branch */
       case YARVINSN_throw:
 	fprintf(f, "  RUBY_VM_CHECK_INTS(th);\n");
 	fprintf(f, "  THROW_EXCEPTION(vm_throw(th, cfp, 0x%"PRIxVALUE", stack[%d]));\n", operands[0], --stack_size);
-	jumped = true;
-        break;
+	return body->iseq_size;
       case YARVINSN_jump:
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
 	fprintf(f, "  RUBY_VM_CHECK_INTS(th);\n");
