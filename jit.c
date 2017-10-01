@@ -871,7 +871,7 @@ jit_compile(const rb_iseq_t *iseq)
 
     /* temporary stub for testing */
     if (strcmp(RSTRING_PTR(iseq->body->location.label), "_jit")) {
-	return (void *)NOT_ADDED_JIT_ISEQ_FUNC;
+        return (void *)NOT_ADDED_JIT_ISEQ_FUNC;
     }
 
     unique_id = ++jit_scheduled_iseqs;
@@ -879,7 +879,7 @@ jit_compile(const rb_iseq_t *iseq)
     sprintf(c_fname, "/tmp/_cjit_%lu_%lu.c", (unsigned long)getpid(), unique_id);
     sprintf(so_fname, "/tmp/_cjit_%lu_%lu.so", (unsigned long)getpid(), unique_id);
 
-    fprintf(stderr, "compile: %s -> %s\n", RSTRING_PTR(iseq->body->location.label), c_fname); /* debug */
+    fprintf(stderr, "compile: %s@%s -> %s\n", RSTRING_PTR(iseq->body->location.label), RSTRING_PTR(rb_iseq_path(iseq)), c_fname); /* debug */
 
     f = fopen(c_fname, "w");
     succeeded = compile_iseq_to_c(iseq->body, f, funcname);
