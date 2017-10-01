@@ -1,7 +1,8 @@
 enum rb_jit_iseq_func {
     NOT_ADDED_JIT_ISEQ_FUNC = 0,
     NOT_READY_JIT_ISEQ_FUNC = 1,
-    LAST_JIT_ISEQ_FUNC = 2,
+    NOT_COMPILABLE_JIT_ISEQ_FUNC = 2,
+    LAST_JIT_ISEQ_FUNC = 3,
 };
 
 #define JIT_MIN_PROFILE_CALLS 5
@@ -41,6 +42,7 @@ jit_exec(rb_thread_t *th)
 		return Qundef;
 	    }
 	  case NOT_READY_JIT_ISEQ_FUNC:
+	  case NOT_COMPILABLE_JIT_ISEQ_FUNC:
 	    return Qundef;
 	  default: /* to avoid warning with LAST_JIT_ISEQ_FUNC */
 	    break;

@@ -106,7 +106,7 @@ fprint_setlocal(FILE *f, unsigned int pop_pos, lindex_t idx, rb_num_t level)
     }
 }
 
-static void compile_insns(const struct rb_iseq_constant_body *body, FILE *f, unsigned int stack_size, unsigned int pos, bool *compiled_for_pos);
+static void compile_insns(const struct rb_iseq_constant_body *body, FILE *f, unsigned int stack_size, unsigned int pos, bool *compiled_for_pos, bool *succeeded_ptr);
 
 struct case_dispatch_var {
     FILE *f;
@@ -309,7 +309,7 @@ fprint_set_pc(FILE *f, const int insn, const VALUE *pc)
 
 /* Compiles insn to f, may modify stack_size_ptr and returns next position */
 static unsigned int
-compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *stack_size_ptr, const int insn, const VALUE *operands, unsigned int pos, bool *compiled_for_pos)
+compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *stack_size_ptr, const int insn, const VALUE *operands, unsigned int pos, bool *compiled_for_pos, bool *succeeded_ptr)
 {
     unsigned int stack_size = *stack_size_ptr;
     unsigned int next_pos = pos + insn_len(insn);
@@ -435,9 +435,9 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "  {\n");
 	fprintf(f, "    VALUE val;\n");
 	fprintf(f, "    RUBY_DTRACE_CREATE_HOOK(HASH, 0x%"PRIxVALUE");\n", operands[0]);
-	fprintf(f, "    val = rb_hash_new_with_size(0x%"PRIxVALUE" / 2);\n", stack_size, operands[0]);
+	fprintf(f, "    val = rb_hash_new_with_size(0x%"PRIxVALUE" / 2);\n", operands[0]);
 	if (operands[0]) {
-	    fprintf(f, "    rb_hash_bulk_insert(0x%"PRIxVALUE", stack + %d, val);\n", operands[0], stack_size - (unsigned int)operands[0], stack_size);
+	    fprintf(f, "    rb_hash_bulk_insert(0x%"PRIxVALUE", stack + %d, val);\n", operands[0], stack_size - (unsigned int)operands[0]);
 	}
 	fprintf(f, "    stack[%d] = val;\n", stack_size - (unsigned int)operands[0]);
 	fprintf(f, "  }\n");
@@ -648,7 +648,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "    RUBY_VM_CHECK_INTS(th);\n");
 	fprintf(f, "    goto label_%d;\n", pos + insn_len(insn) + (unsigned int)operands[0]);
 	fprintf(f, "  }\n");
-	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos);
+	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos, succeeded_ptr);
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
         break;
       case YARVINSN_branchunless:
@@ -656,7 +656,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "    RUBY_VM_CHECK_INTS(th);\n");
 	fprintf(f, "    goto label_%d;\n", pos + insn_len(insn) + (unsigned int)operands[0]);
 	fprintf(f, "  }\n");
-	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos);
+	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos, succeeded_ptr);
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
         break;
       case YARVINSN_branchnil:
@@ -664,7 +664,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	fprintf(f, "    RUBY_VM_CHECK_INTS(th);\n");
 	fprintf(f, "    goto label_%d;\n", pos + insn_len(insn) + (unsigned int)operands[0]);
 	fprintf(f, "  }\n");
-	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos);
+	compile_insns(body, f, stack_size, pos + insn_len(insn), compiled_for_pos, succeeded_ptr);
 	next_pos = pos + insn_len(insn) + (unsigned int)operands[0];
         break;
       case YARVINSN_branchiftype:
@@ -801,6 +801,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       default:
 	/* passing excessive arguments to suppress warning in insns_info.inc... */
 	fprintf(stderr, "Failed to compile instruction: %s (%s: %d...)\n", insn_name(insn), insn_op_types(insn), insn_len(insn) > 0 ? insn_op_type(insn, 0) : 0);
+	*succeeded_ptr = false;
 	break;
     }
 
@@ -814,7 +815,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 }
 
 static void
-compile_insns(const struct rb_iseq_constant_body *body, FILE *f, unsigned int stack_size, unsigned int pos, bool *compiled_for_pos)
+compile_insns(const struct rb_iseq_constant_body *body, FILE *f, unsigned int stack_size, unsigned int pos, bool *compiled_for_pos, bool *succeeded_ptr)
 {
     int insn;
 
@@ -827,14 +828,22 @@ compile_insns(const struct rb_iseq_constant_body *body, FILE *f, unsigned int st
 	compiled_for_pos[pos] = true;
 
 	fprintf(f, "\nlabel_%d: /* %s */\n", pos, insn_name(insn));
-	pos = compile_insn(body, f, &stack_size, insn, body->iseq_encoded + (pos+1), pos, compiled_for_pos);
-	/* TODO: check body->stack_max here */
+	pos = compile_insn(body, f, &stack_size, insn, body->iseq_encoded + (pos+1), pos, compiled_for_pos, succeeded_ptr);
+	if (*succeeded_ptr && stack_size > body->stack_max) {
+	    fprintf(stderr, "JIT stack exceeded its max...\n");
+	    *succeeded_ptr = false;
+	}
+	if (!*succeeded_ptr) {
+	    break;
+	}
     }
 }
 
-static void
+/* Compile iseq to C code. Return true if succeeded to compile. */
+static bool
 compile_iseq_to_c(const struct rb_iseq_constant_body *body, FILE *f, const char *funcname)
 {
+    bool succeeded = true; /* set false if failed to compile */
     bool *compiled_for_pos;
     compiled_for_pos = ZALLOC_N(bool, body->iseq_size);
 
@@ -844,10 +853,11 @@ compile_iseq_to_c(const struct rb_iseq_constant_body *body, FILE *f, const char 
     if (body->stack_max > 0) {
 	fprintf(f, "  VALUE stack[%d];\n", body->stack_max);
     }
-    compile_insns(body, f, 0, 0, compiled_for_pos);
+    compile_insns(body, f, 0, 0, compiled_for_pos, &succeeded);
 
     fprintf(f, "}\n");
     xfree(compiled_for_pos);
+    return succeeded;
 }
 
 void *
@@ -857,6 +867,7 @@ jit_compile(const rb_iseq_t *iseq)
     unsigned long unique_id;
     char c_fname[128], so_fname[128], funcname[128];
     void *func_ptr;
+    bool succeeded;
 
     /* temporary stub for testing */
     if (strcmp(RSTRING_PTR(iseq->body->location.label), "_jit")) {
@@ -871,8 +882,12 @@ jit_compile(const rb_iseq_t *iseq)
     fprintf(stderr, "compile: %s -> %s\n", RSTRING_PTR(iseq->body->location.label), c_fname); /* debug */
 
     f = fopen(c_fname, "w");
-    compile_iseq_to_c(iseq->body, f, funcname);
+    succeeded = compile_iseq_to_c(iseq->body, f, funcname);
     fclose(f);
+    if (!succeeded) {
+	remove(c_fname);
+	return (void *)NOT_COMPILABLE_JIT_ISEQ_FUNC;
+    }
 
     compile_c_to_so(c_fname, so_fname);
     remove(c_fname);
