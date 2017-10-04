@@ -575,7 +575,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	    fprintf(f, "    calling.block_handler = VM_BLOCK_HANDLER_NONE;\n");
 	    fprintf(f, "    calling.argc = %d;\n", ci->orig_argc);
 	    fprintf(f, "    vm_search_method(0x%"PRIxVALUE", 0x%"PRIxVALUE", calling.recv = stack[%d]);\n", operands[0], operands[1], stack_size - 1 - ci->orig_argc);
-	    fprint_args(f, ci->orig_argc, stack_size - ci->orig_argc);
+	    fprint_args(f, ci->orig_argc + 1, stack_size - ci->orig_argc - 1);
 	    fprint_call_method(f, operands[0], operands[1], stack_size - ci->orig_argc - 1);
 	    fprintf(f, "  }\n");
 	    stack_size -= ci->orig_argc;
