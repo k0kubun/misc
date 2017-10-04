@@ -589,7 +589,7 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	    fprintf(f, "  {\n");
 	    fprintf(f, "    struct rb_calling_info calling;\n");
 	    fprintf(f, "    calling.argc = %d;\n", ci->orig_argc);
-	    fprint_args(f, push_count, stack_size - push_count);
+	    fprint_args(f, push_count + 1, stack_size - push_count - 1);
 	    fprintf(f, "    vm_caller_setup_arg_block(th, cfp, &calling, 0x%"PRIxVALUE", 0x%"PRIxVALUE", TRUE);\n", operands[0], operands[2]);
 	    fprintf(f, "    calling.recv = cfp->self;\n");
 	    fprintf(f, "    vm_search_super_method(th, cfp, &calling, 0x%"PRIxVALUE", 0x%"PRIxVALUE");\n", operands[0], operands[1]);
