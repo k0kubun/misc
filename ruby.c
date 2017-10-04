@@ -146,6 +146,7 @@ struct ruby_cmdline_options {
     unsigned int do_split: 1;
     unsigned int do_search: 1;
     unsigned int setids: 2;
+    unsigned int jit_enabled: 1;
 };
 
 static void init_ids(ruby_cmdline_options_t *);
@@ -1075,7 +1076,7 @@ proc_options(long argc, char **argv, ruby_cmdline_options_t *opt, int envopt)
 	    break;
 
 	  case 'j':
-	    jit_enabled = TRUE;
+	    opt->jit_enabled = TRUE;
 	    break;
 
 	  case 'x':
@@ -1652,6 +1653,9 @@ process_options(int argc, char **argv, ruby_cmdline_options_t *opt)
 		  toplevel_binding);
     /* need to acquire env from toplevel_binding each time, since it
      * may update after eval() */
+
+    if (opt->jit_enabled)
+	jit_enabled = TRUE;
 
     if (opt->e_script) {
 	VALUE progname = rb_progname;
