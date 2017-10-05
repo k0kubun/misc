@@ -17,6 +17,7 @@ extern void jit_finalize();
 extern void jit_enqueue(const rb_iseq_t *iseq);
 extern void jit_gc_start_hook();
 extern void jit_gc_finish_hook();
+void jit_free_iseq(const rb_iseq_t *iseq);
 void * jit_compile(const rb_iseq_t *iseq); /* test*/
 
 static inline VALUE

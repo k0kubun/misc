@@ -1911,6 +1911,7 @@ iseq.$(OBJEXT): {$(VPATH)}internal.h
 iseq.$(OBJEXT): {$(VPATH)}io.h
 iseq.$(OBJEXT): {$(VPATH)}iseq.c
 iseq.$(OBJEXT): {$(VPATH)}iseq.h
+iseq.$(OBJEXT): {$(VPATH)}jit.h
 iseq.$(OBJEXT): {$(VPATH)}method.h
 iseq.$(OBJEXT): {$(VPATH)}missing.h
 iseq.$(OBJEXT): {$(VPATH)}node.h

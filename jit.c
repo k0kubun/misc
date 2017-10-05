@@ -19,14 +19,14 @@
 #include "jit.h"
 
 /* A node for JIT waiting list */
-struct jit_waiting_node {
-    struct jit_waiting_node *next, *prev;
+struct rb_jit_waiting_node {
+    struct rb_jit_waiting_node *next, *prev;
     const rb_iseq_t *iseq;
 };
 
 /* Priority queue of iseqs waiting for JIT compilation.
    This variable is a pointer to head node of the queue. */
-static struct jit_waiting_node *jit_waiting_queue;
+static struct rb_jit_waiting_node *jit_waiting_queue;
 
 /* If "-j" is specified, this becomes TRUE */
 int jit_enabled = FALSE;
@@ -958,13 +958,14 @@ jit_compile(const rb_iseq_t *iseq)
 void
 jit_enqueue(const rb_iseq_t *iseq)
 {
-    struct jit_waiting_node *node;
+    struct rb_jit_waiting_node *node;
 
     if (!jit_enabled) { /* recheck for jit_finalize */
 	return;
     }
-    node = ZALLOC(struct jit_waiting_node);
+    node = ZALLOC(struct rb_jit_waiting_node);
     node->iseq = iseq;
+    iseq->body->jit_node = node;
 
     CRITICAL_SECTION_START("jit enqueue");
 
@@ -972,7 +973,7 @@ jit_enqueue(const rb_iseq_t *iseq)
     if (jit_waiting_queue == NULL) {
 	jit_waiting_queue = node;
     } else {
-	struct jit_waiting_node *tail = jit_waiting_queue;
+	struct rb_jit_waiting_node *tail = jit_waiting_queue;
 	while (tail->next != NULL) {
 	    tail = tail->next;
 	}
@@ -986,12 +987,27 @@ jit_enqueue(const rb_iseq_t *iseq)
     CRITICAL_SECTION_FINISH();
 }
 
+static void
+jit_remove_waiting_node(struct rb_jit_waiting_node *node)
+{
+    if (node->prev && node->next) {
+	node->prev->next = node->next;
+	node->next->prev = node->prev;
+    } else if (node->prev == NULL && node->next) {
+	jit_waiting_queue = node->next;
+	node->next->prev = NULL;
+    } else if (node->prev && node->next == NULL) {
+	node->prev->next = NULL;
+    } else {
+	jit_waiting_queue = NULL;
+    }
+}
+
 /* Pop most frequently called iseq from JIT waiting queue */
-static const rb_iseq_t *
+static struct rb_jit_waiting_node *
 jit_dequeue()
 {
-    const rb_iseq_t *iseq;
-    struct jit_waiting_node *node, *dequeued = NULL;
+    struct rb_jit_waiting_node *node, *dequeued = NULL;
 
     CRITICAL_SECTION_START("jit dequeue");
     while (jit_waiting_queue == NULL && jit_enabled) {
@@ -1000,28 +1016,20 @@ jit_dequeue()
 
     /* Find iseq with max total_calls */
     for (node = jit_waiting_queue; node != NULL; node = node->next) {
+	if (!node->iseq) {
+	    continue; /* TODO: free this */
+	}
+
 	if (dequeued == NULL || dequeued->iseq->body->total_calls < node->iseq->body->total_calls) {
 	    dequeued = node;
 	}
     }
 
     /* Remove `dequeued` node from list */
-    if (dequeued->prev && dequeued->next) {
-	dequeued->prev->next = dequeued->next;
-	dequeued->next->prev = dequeued->prev;
-    } else if (dequeued->prev == NULL && dequeued->next) {
-	jit_waiting_queue = dequeued->next;
-	dequeued->next->prev = NULL;
-    } else if (dequeued->prev && dequeued->next == NULL) {
-	dequeued->prev->next = NULL;
-    } else {
-	jit_waiting_queue = NULL;
-    }
+    jit_remove_waiting_node(dequeued);
     CRITICAL_SECTION_FINISH();
 
-    iseq = dequeued->iseq;
-    xfree(dequeued);
-    return iseq;
+    return dequeued;
 }
 
 static void *
@@ -1032,15 +1040,18 @@ jit_worker(void *arg)
     }
 
     while (jit_enabled) {
-	const rb_iseq_t *iseq;
-	if ((iseq = jit_dequeue())) {
+	struct rb_jit_waiting_node *dequeued;
+	if ((dequeued = jit_dequeue())) {
 	    void *func;
-	    func = jit_compile(iseq);
+	    func = jit_compile(dequeued->iseq);
 
 	    CRITICAL_SECTION_START("jit replace");
-	    /* Usage of jit_code might be not in a critical section.  */
-	    ATOMIC_SET(iseq->body->jit_func, func);
+	    if (dequeued->iseq) { /* Check whether GCed or not */
+		/* Usage of jit_code might be not in a critical section.  */
+		ATOMIC_SET(dequeued->iseq->body->jit_func, func);
+	    }
 	    CRITICAL_SECTION_FINISH();
+	    xfree(dequeued);
 	}
     }
     return NULL;
@@ -1119,6 +1130,16 @@ jit_gc_finish_hook()
     in_gc = FALSE;
     if (pthread_cond_broadcast(&jit_wakeup_jit) != 0) {
         fprintf(stderr, "Failed to wakeup JIT...\n");
+    }
+    CRITICAL_SECTION_FINISH();
+}
+
+void
+jit_free_iseq(const rb_iseq_t *iseq)
+{
+    CRITICAL_SECTION_START("GCing iseq");
+    if (iseq->body->jit_node) {
+	iseq->body->jit_node->iseq = NULL;
     }
     CRITICAL_SECTION_FINISH();
 }

@@ -297,6 +297,8 @@ pathobj_realpath(VALUE pathobj)
     }
 }
 
+struct rb_jit_waiting_node;
+
 struct rb_iseq_constant_body {
     enum iseq_type {
 	ISEQ_TYPE_TOP,
@@ -416,6 +418,7 @@ struct rb_iseq_constant_body {
 
     void *jit_func;
     long unsigned total_calls; /* number of total calls with `jit_exec()` */
+    struct rb_jit_waiting_node *jit_node; /* pointer to JIT queue node for GC notification */
 };
 
 /* T_IMEMO/iseq */
