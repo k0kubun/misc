@@ -1,16 +1,16 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'benchmark_driver/version'
+require 'benchkit/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'benchmark_driver'
-  spec.version       = BenchmarkDriver::VERSION
+  spec.name          = 'benchkit'
+  spec.version       = Benchkit::VERSION
   spec.authors       = ['Takashi Kokubun']
   spec.email         = ['takashikkbn@gmail.com']
 
-  spec.summary       = %q{Benchmark driver for different Ruby executables}
-  spec.description   = %q{Benchmark driver for different Ruby executables}
+  spec.summary       = %q{Benchmark driver}
+  spec.description   = %q{Benchmark driver}
   spec.homepage      = 'https://github.com/k0kubun/benchmark_driver'
   spec.license       = 'MIT'
 

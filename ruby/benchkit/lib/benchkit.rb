@@ -1,8 +1,8 @@
-require 'benchmark_driver/version'
+require 'benchkit/version'
 require 'benchmark'
 require 'tempfile'
 
-class BenchmarkDriver
+class Benchkit
   MEASURE_TYPES = %w[loop_count ips]
   DEFAULT_LOOP_COUNT = 100_000
   DEFAULT_IPS_DURATION = 1
