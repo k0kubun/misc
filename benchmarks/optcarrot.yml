@@ -1,0 +1,80 @@
+benchmarks:
+  - name: CPU block
+    prelude: |
+      CONST = 12
+      def block(i)
+        CONST * 1
+      end
+    benchmark: block(8)
+    loop_count: 40000000
+
+  - name: PPU block
+    benchmark: |
+      attr = 0x4
+      (0..7).map do |j|
+        (0...0x10000).map do |i|
+          clr = i[15 - j] * 2 + i[7 - j]
+          clr != 0 ? attr | clr : 0
+        end
+      end
+    loop_count: 10
+
+  - name: add_mappings b
+    prelude: |
+      arr = [0x4]
+      @fetch = [nil] * 0x10000
+      @store = [nil] * 0x10000
+      peek = method(:to_s)
+      poke = nil
+      PokeNop = method(:object_id)
+    benchmark: |
+      arr.each do |a|
+        @fetch[a] = peek
+        @store[a] = poke || PokeNop
+      end
+    loop_count: 5000000
+
+  - name: wait_one_clock
+    prelude: |
+      @hclk = 685
+      @hclk_target = 685
+      def wait_one_clock
+        @hclk += 1
+        Fiber.to_s if @hclk_target <= @hclk
+      end
+    benchmark: wait_one_clock
+    loop_count: 5000000
+
+  - name: render_pixel
+    prelude: |
+      @any_show = false
+      @bg_enabled = false
+      @bg_pixels = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      @hclk = 148
+      @sp_active = false
+      @sp_map = [nil] * 264
+      @sp_zero_hit = false
+      @scroll_addr_5_14 = 0
+      @scroll_addr_0_4 = 0
+      @output_pixels = []
+      @output_color = [0] * 0x20
+
+      def render_pixel
+        if @any_show
+          pixel = @bg_enabled ? @bg_pixels[@hclk % 8] : 0
+          if @sp_active && (sprite = @sp_map[@hclk])
+            if pixel % 4 == 0
+              pixel = sprite[2]
+            else
+              @sp_zero_hit = true if sprite[1] && @hclk != 255
+              pixel = sprite[2] unless sprite[0]
+            end
+          end
+        else
+          pixel = @scroll_addr_5_14 & 0x3f00 == 0x3f00 ? @scroll_addr_0_4 : 0
+          @bg_pixels[@hclk % 8] = 0
+        end
+        @output_pixels << @output_color[pixel]
+      end
+    benchmark: render_pixel
+    loop_count: 10000000

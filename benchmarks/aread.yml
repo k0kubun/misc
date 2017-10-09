@@ -1,0 +1,21 @@
+benchmarks:
+  - name: aread
+    prelude: |
+      class C
+        attr_reader :a
+        def initialize
+          @a = 1
+        end
+      end
+
+      o = C.new
+
+      def l(o)
+        i = 0
+        while i < 200000
+          o.a
+          i += 1
+        end
+      end
+    benchmark: l(o)
+    loop_count: 500
