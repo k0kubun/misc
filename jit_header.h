@@ -89,3 +89,20 @@ extern rb_serial_t ruby_vm_global_constant_state;
 #include "vm_eval.c"
 
 #include "vm_call_iseq_optimized.inc"
+
+/* JIT-only helpers */
+
+/* Optimized version of `vm_getivar` to use IC values without pointer access from JIT-ed code.
+   This assumes ivar is already created and class is not changed. */
+ALWAYS_INLINE(static VALUE vm_cached_getivar(VALUE, rb_serial_t, size_t));
+static inline VALUE
+jit_getivar(VALUE self, rb_serial_t ic_serial, size_t index)
+{
+#if USE_IC_FOR_IVAR
+    if (LIKELY(RB_TYPE_P(self, T_OBJECT) && ic_serial == RCLASS_SERIAL(RBASIC(self)->klass))) {
+	if (LIKELY(index < ROBJECT_NUMIV(self)))
+	    return ROBJECT_IVPTR(self)[index];
+    }
+#endif	/* USE_IC_FOR_IVAR */
+    return Qundef; /* TODO: implement deoptimization */
+}

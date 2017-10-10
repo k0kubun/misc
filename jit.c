@@ -357,7 +357,11 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
       //  fprintf(f, "  lep_svar_set(th, VM_EP_LEP(cfp->ep), 0x%"PRIxVALUE", stack[%d]);\n", operands[0], --stack_size);
       //  break;
       case YARVINSN_getinstancevariable:
-	fprintf(f, "  stack[%d] = vm_getinstancevariable(cfp->self, 0x%"PRIxVALUE", 0x%"PRIxVALUE");\n", stack_size++, operands[0], operands[1]);
+	{
+	    IC ic = (IC)operands[1];
+	    fprintf(f, "  stack[%d] = jit_getivar(cfp->self, %llu, 0x%"PRIxVALUE");\n", stack_size++, ic->ic_serial, ic->ic_value.index);
+	    //fprintf(f, "  stack[%d] = vm_getinstancevariable(cfp->self, 0x%"PRIxVALUE", 0x%"PRIxVALUE");\n", stack_size++, operands[0], operands[1]);
+	}
         break;
       case YARVINSN_setinstancevariable:
 	fprintf(f, "  vm_setinstancevariable(cfp->self, 0x%"PRIxVALUE", stack[%d], 0x%"PRIxVALUE");\n", operands[0], --stack_size, operands[1]);
@@ -919,7 +923,7 @@ jit_compile(const rb_iseq_t *iseq)
     sprintf(c_fname, "/tmp/_cjit_%lu_%lu.c", (unsigned long)getpid(), unique_id);
     sprintf(so_fname, "/tmp/_cjit_%lu_%lu.so", (unsigned long)getpid(), unique_id);
 
-    fprintf(stderr, "compile: %s@%s -> %s\n", RSTRING_PTR(iseq->body->location.label), RSTRING_PTR(rb_iseq_path(iseq)), c_fname); /* debug */
+    fprintf(stderr, "compile: %s@%s:%d -> %s\n", RSTRING_PTR(iseq->body->location.label), RSTRING_PTR(rb_iseq_path(iseq)), FIX2INT(iseq->body->location.first_lineno), c_fname); /* debug */
 
     f = fopen(c_fname, "w");
 
@@ -1076,7 +1080,7 @@ jit_worker_start()
 	/* jit_worker thread is not to be joined */
 	pthread_detach(worker_thread_id);
 
-	fprintf(stderr, "Succeeded to start JIT worker!\n"); /* debug */
+	//fprintf(stderr, "Succeeded to start JIT worker!\n"); /* debug */
     } else {
 	fprintf(stderr, "Failed to create JIT worker...\n"); /* debug */
     }
