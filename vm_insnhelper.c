@@ -936,11 +936,11 @@ vm_search_const_defined_class(const VALUE cbase, ID id)
     return 0;
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 #ifndef USE_IC_FOR_IVAR
 #define USE_IC_FOR_IVAR 1
 #endif
-
-#endif /* #ifndef CJIT_HEADER */
 
 ALWAYS_INLINE(static VALUE vm_getivar(VALUE, ID, IC, struct rb_call_cache *, int));
 static inline VALUE
@@ -1853,11 +1853,11 @@ call_cfunc_15(VALUE (*func)(ANYARGS), VALUE recv, int argc, const VALUE *argv)
     return (*func)(recv, argv[0], argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], argv[11], argv[12], argv[13], argv[14]);
 }
 
+#endif /* #ifndef CJIT_HEADER */
+
 #ifndef VM_PROFILE
 #define VM_PROFILE 0
 #endif
-
-#endif /* #ifndef CJIT_HEADER */
 
 #if VM_PROFILE
 enum {
