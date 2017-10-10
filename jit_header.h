@@ -94,7 +94,7 @@ extern rb_serial_t ruby_vm_global_constant_state;
 
 /* Optimized version of `vm_getivar` to use IC values without pointer access from JIT-ed code.
    This assumes ivar is already created and class is not changed. */
-ALWAYS_INLINE(static VALUE vm_cached_getivar(VALUE, rb_serial_t, size_t));
+ALWAYS_INLINE(static VALUE jit_getivar(VALUE, rb_serial_t, size_t));
 static inline VALUE
 jit_getivar(VALUE self, rb_serial_t ic_serial, size_t index)
 {
@@ -105,4 +105,25 @@ jit_getivar(VALUE self, rb_serial_t ic_serial, size_t index)
     }
 #endif	/* USE_IC_FOR_IVAR */
     return Qundef; /* TODO: implement deoptimization */
+}
+
+/* Optimized version of `vm_setivar` to use IC values without pointer access from JIT-ed code.
+   This assumes ivar is already created and class is not changed. */
+ALWAYS_INLINE(static VALUE jit_setivar(VALUE, rb_serial_t, size_t, VALUE));
+static inline VALUE
+jit_setivar(VALUE self, rb_serial_t ic_serial, size_t index, VALUE val)
+{
+#if USE_IC_FOR_IVAR
+    rb_check_frozen(self);
+
+    if (LIKELY(RB_TYPE_P(self, T_OBJECT) && ic_serial == RCLASS_SERIAL(RBASIC(self)->klass))) {
+	VALUE *ptr = ROBJECT_IVPTR(self);
+
+	if (index < ROBJECT_NUMIV(self)) {
+	    RB_OBJ_WRITE(self, &ptr[index], val);
+	    return val; /* inline cache hit */
+	}
+    }
+#endif	/* USE_IC_FOR_IVAR */
+    return Qundef;
 }

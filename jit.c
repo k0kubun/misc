@@ -364,7 +364,11 @@ compile_insn(const struct rb_iseq_constant_body *body, FILE *f, unsigned int *st
 	}
         break;
       case YARVINSN_setinstancevariable:
-	fprintf(f, "  vm_setinstancevariable(cfp->self, 0x%"PRIxVALUE", stack[%d], 0x%"PRIxVALUE");\n", operands[0], --stack_size, operands[1]);
+	{
+	    IC ic = (IC)operands[1];
+	    fprintf(f, "  jit_setivar(cfp->self, %llu, 0x%"PRIxVALUE", stack[%d]);\n", ic->ic_serial, ic->ic_value.index, --stack_size);
+	    //fprintf(f, "  vm_setinstancevariable(cfp->self, 0x%"PRIxVALUE", stack[%d], 0x%"PRIxVALUE");\n", operands[0], --stack_size, operands[1]);
+	}
         break;
       case YARVINSN_getclassvariable:
 	fprintf(f, "  stack[%d] = rb_cvar_get(vm_get_cvar_base(rb_vm_get_cref(cfp->ep), cfp), 0x%"PRIxVALUE");\n", stack_size++, operands[0]);
