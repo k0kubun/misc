@@ -340,7 +340,7 @@ rb_vm_inc_const_missing_count(void)
 
 VALUE rb_class_path_no_cache(VALUE _klass);
 
-int
+RUBY_FUNC_EXPORTED int
 ruby_th_dtrace_setup(rb_thread_t *th, VALUE klass, ID id,
 		     struct ruby_dtrace_method_hook_args *args)
 {
