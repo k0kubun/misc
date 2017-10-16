@@ -16,6 +16,7 @@
 #include "vm_core.h"
 #include "iseq.h"
 #include "eval_intern.h"
+#ifndef MJIT_HEADER
 #include "probes.h"
 #include "probes_helper.h"
 
@@ -299,10 +300,15 @@ static rb_serial_t ruby_vm_global_method_state = 1;
 static rb_serial_t ruby_vm_global_constant_state = 1;
 static rb_serial_t ruby_vm_class_serial = 1;
 
+#endif /* #ifndef MJIT_HEADER */
+
 #include "mjit.h"
 #include "vm_insnhelper.h"
 #include "vm_exec.h"
 #include "vm_insnhelper.c"
+
+#ifndef MJIT_HEADER
+
 #include "vm_exec.c"
 
 #include "vm_method.c"
@@ -3429,3 +3435,5 @@ vm_collect_usage_register(int reg, int isset)
 #endif
 
 #include "vm_call_iseq_optimized.inc" /* required from vm_insnhelper.c */
+
+#endif /* #ifndef MJIT_HEADER */
