@@ -16,7 +16,6 @@
 #include "vm_core.h"
 #include "iseq.h"
 #include "eval_intern.h"
-#ifndef MJIT_HEADER
 #include "probes.h"
 #include "probes_helper.h"
 
@@ -166,6 +165,8 @@ VM_BH_FROM_CFP_P(VALUE block_handler, const rb_control_frame_t *cfp)
     return VM_TAGGED_PTR_REF(block_handler, 0x03) == captured;
 }
 
+#ifndef MJIT_HEADER
+
 static VALUE
 vm_passed_block_handler(rb_thread_t *th)
 {
@@ -283,6 +284,8 @@ vm_bind_update_env(VALUE bindval, rb_binding_t *bind, VALUE envval)
     rb_vm_block_ep_update(bindval, &bind->block, env->ep);
 }
 
+#endif /* #ifndef MJIT_HEADER */
+
 #if VM_COLLECT_USAGE_DETAILS
 static void vm_collect_usage_operand(int insn, int n, VALUE op);
 static void vm_collect_usage_insn(int insn);
@@ -296,11 +299,9 @@ static VALUE vm_invoke_bmethod(rb_thread_t *th, rb_proc_t *proc, VALUE self,
 static VALUE vm_invoke_proc(rb_thread_t *th, rb_proc_t *proc, VALUE self,
 			    int argc, const VALUE *argv, VALUE block_handler);
 
-static rb_serial_t ruby_vm_global_method_state = 1;
-static rb_serial_t ruby_vm_global_constant_state = 1;
-static rb_serial_t ruby_vm_class_serial = 1;
-
-#endif /* #ifndef MJIT_HEADER */
+extern rb_serial_t ruby_vm_global_method_state;
+extern rb_serial_t ruby_vm_global_constant_state;
+extern rb_serial_t ruby_vm_class_serial;
 
 #include "mjit.h"
 #include "vm_insnhelper.h"
@@ -309,10 +310,18 @@ static rb_serial_t ruby_vm_class_serial = 1;
 
 #ifndef MJIT_HEADER
 
+RUBY_SYMBOL_EXPORT_BEGIN
+rb_serial_t ruby_vm_global_method_state = 1;
+rb_serial_t ruby_vm_global_constant_state = 1;
+rb_serial_t ruby_vm_class_serial = 1;
+RUBY_SYMBOL_EXPORT_END
+
 #include "vm_exec.c"
 
 #include "vm_method.c"
+#endif /* #ifndef MJIT_HEADER */
 #include "vm_eval.c"
+#ifndef MJIT_HEADER
 
 #define PROCDEBUG 0
 
@@ -872,7 +881,7 @@ rb_proc_create(VALUE klass, const struct rb_block *block,
     return procval;
 }
 
-VALUE
+RUBY_FUNC_EXPORTED VALUE
 rb_vm_make_proc(rb_thread_t *th, const struct rb_captured_block *captured, VALUE klass)
 {
     return rb_vm_make_proc_lambda(th, captured, klass, FALSE);
@@ -972,6 +981,8 @@ rb_binding_add_dynavars(VALUE bindval, rb_binding_t *bind, int dyncount, const I
     env = (const rb_env_t *)envval;
     return env->env;
 }
+
+#endif /* #ifndef MJIT_HEADER */
 
 /* C -> Ruby: block */
 
@@ -1190,6 +1201,8 @@ rb_vm_invoke_proc(rb_thread_t *th, rb_proc_t *proc,
 	return vm_invoke_proc(th, proc, self, argc, argv, passed_block_handler);
     }
 }
+
+#ifndef MJIT_HEADER
 
 /* special variable */
 
@@ -1788,7 +1801,7 @@ hook_before_rewind(rb_thread_t *th, const rb_control_frame_t *cfp, int will_fini
   };
  */
 
-static VALUE
+RUBY_FUNC_EXPORTED VALUE
 vm_exec(rb_thread_t *th)
 {
     enum ruby_tag_type state;
@@ -3434,6 +3447,6 @@ vm_collect_usage_register(int reg, int isset)
 }
 #endif
 
-#include "vm_call_iseq_optimized.inc" /* required from vm_insnhelper.c */
-
 #endif /* #ifndef MJIT_HEADER */
+
+#include "vm_call_iseq_optimized.inc" /* required from vm_insnhelper.c */
