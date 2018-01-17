@@ -16,3 +16,6 @@ sudo docker run -d --net=host elasticsearch:2
 ```
 bundle config --global disable_version_check true
 ```
+
+## gnome
+gsettings set org.gnome.desktop.interface cursor-blink false
