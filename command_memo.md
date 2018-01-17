@@ -19,3 +19,5 @@ bundle config --global disable_version_check true
 
 ## gnome
 gsettings set org.gnome.desktop.interface cursor-blink false
+gsettings set org.gnome.shell disable-extension-version-validation true
+gsettings set org.gnome.desktop.interface clock-show-date true
