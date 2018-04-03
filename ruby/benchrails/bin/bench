@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+require_relative '../config/boot'
+require 'bundler/setup'
+require_relative '../config/environment'
+
+app = Rack::MockRequest.new(Rails.application)
+i = 0
+while i < 1000
+  app.get('/', {})
+  i += 1
+end
