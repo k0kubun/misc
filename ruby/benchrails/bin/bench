@@ -5,8 +5,19 @@ require 'bundler/setup'
 require_relative '../config/environment'
 
 app = Rack::MockRequest.new(Rails.application)
+
+i = 0
+while i < 100
+  app.get('/', {})
+  i += 1
+end
+
+StackProf.start(mode: :cpu, interval: 10, out: "#{RUBY_VERSION}.dump")
+before = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 i = 0
 while i < 1000
   app.get('/', {})
   i += 1
 end
+p(Process.clock_gettime(Process::CLOCK_MONOTONIC) - before)
+StackProf.stop
