@@ -2,6 +2,11 @@
 v7.4.2367
 8.0.1161
 
+/etc/apt/sources.list の deb-src の最初2つをアンコメント
+sudo apt build-dep vim-gtk
+
+--enable-gui のconfigureをチェック
+
 ```
 sudo apt install git build-essential ncurses-dev lua5.2 lua5.2-dev luajit python-dev ruby-dev
 make distclean
