@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ruboty
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ruboty
+  template:
+    metadata:
+      labels:
+        app: ruboty
+    spec:
+      containers:
+      - name: ruboty
+        image: k0kubun/ruboty:latest
+        imagePullPolicy: Always
+        env:
+        - name: SLACK_TOKEN
+          value: xoxb-xxx-yyy
+        - name: LANG
+          value: C.UTF-8
+        - name: GOOGLE_CSE_ID
+          value: xxx:yyy
+        - name: GOOGLE_CSE_KEY
+          value: zzz
+        resources:
+          limits:
+            cpu: 250m
+            memory: 256Mi

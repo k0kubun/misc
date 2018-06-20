@@ -1,0 +1,36 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: acmesmith
+spec:
+  # minute, hour, day, month, date
+  schedule: "34 7 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: acmesmith
+            image: k0kubun/acmesmith:latest
+            # I put this file from mitamae, but it should be in the container
+            command: ["/app/acmesmith/autorenew"]
+            env:
+            - name: KUBERNETES_HOST
+              value: "XXX.XXX.XXX.XXX:YYYY"
+            # While you should consider using more limited user's token, you can use:
+            # kubectl describe secret $(kubectl get secrets | grep default | cut -f1 -d ' ') | grep -E '^token' | cut -f2 -d':' | tr -d '\t'
+            - name: KUBERNETES_TOKEN
+              value: "xxx"
+            volumeMounts:
+            - name: acmesmith-root
+              mountPath: /app/acmesmith
+          restartPolicy: Never
+          # Probably you should use something like S3 for this purpose
+          volumes:
+          - name: acmesmith-root
+            hostPath:
+              path: /home/k0kubun/acmesmith
+              type: Directory
+          # kubectl label nodes <node name> type=acmesmith
+          nodeSelector:
+            type: acmesmith
