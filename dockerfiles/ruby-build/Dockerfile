@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 MAINTAINER k0kubun
 
 RUN apt-get update && apt-get install -y git
