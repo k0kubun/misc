@@ -29,7 +29,8 @@ spec:
     spec:
       containers:
       - image: "quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.15.0"
-        # kubectl create secret tls tls-certificate --key key.pem --cert fullchain.pem
+        # See: https://kubernetes.github.io/ingress-nginx/user-guide/cli-arguments/
+        # For tls-sertificate: kubectl create secret tls tls-certificate --key key.pem --cert fullchain.pem
         args:
           - /nginx-ingress-controller
           - "--default-backend-service=$(POD_NAMESPACE)/nginx-default-backend"
