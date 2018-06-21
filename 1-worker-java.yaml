@@ -17,6 +17,8 @@ spec:
         image: k0kubun/worker:latest
         imagePullPolicy: Always
         env:
+        - name: JAVA_OPTS
+          value: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
         - name: DATABASE_HOST
           value: mysql.default.svc.cluster.local
         - name: DATABASE_PORT
