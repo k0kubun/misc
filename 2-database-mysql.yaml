@@ -3,7 +3,6 @@ kind: Service
 metadata:
   name: mysql
 spec:
-  type: NodePort
   ports:
   - port: 3306
     protocol: TCP
