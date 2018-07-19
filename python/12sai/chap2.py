@@ -1,2 +1,4 @@
-print("Say \
-        Hello!")
+"""
+long comment
+"""
+print("Say Hello!")
