@@ -20,17 +20,22 @@ question.place(x=100, y=40)
 entry = tkinter.Entry(width=10, bd=4)
 entry.place(x=44, y=130)
 
-def ask_click():
-    print("ボタンがクリックされました!")
-
 # 質問ボタン表示
 askbutton = tkinter.Button(text="聞く")
 askbutton.place(x=258, y=128)
-askbutton["command"] = ask_click
 
 # 答え表示
 answer = tkinter.Label(text="……………", bg="white")
 answer.place(x=118, y=235)
+
+# クリックイベント
+def ask_click():
+    val = entry.get()
+    minutes = float(val)
+    hours = round(minutes/60, 2)
+    answer["text"] = str(hours) + "時間だね!"
+
+askbutton["command"] = ask_click
 
 # メインループ
 root.mainloop()
