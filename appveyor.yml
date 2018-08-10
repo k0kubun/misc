@@ -13,9 +13,9 @@ notifications:
       secure: WHfGy/gGheFHswUm9HsjNj3zDfbFX7UIGentpC1Z8eGcki1X0ow5ajdghoPBLjYyaTCoUiPXIiLNKYGKrClPJCemGdQfsCu0tldrZzSX+UQ=
     method: POST
     body: >-
-      {{#passed}}
+      {{#failed}}
       {"text": "Hello world"}
-      {{/passed}}
+      {{/failed}}
     on_build_success: true
     on_build_failure: true
     on_build_status_changed: true
