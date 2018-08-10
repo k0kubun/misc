@@ -4,11 +4,9 @@ platform:
   - x64
 environment:
   ruby_version: "24-%Platform%"
-  zlib_version: "1.2.11"
-  matrix:
-    - vs: "120"
-test_script:
-  - ruby -e "puts 'hello world'"
+version: 1.0.{build}
+build_script:
+- cmd: ruby -e "puts 'hello world'"
 notifications:
   - provider: Slack
     incoming_webhook:
