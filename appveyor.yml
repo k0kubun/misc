@@ -8,10 +8,12 @@ version: 1.0.{build}
 build_script:
 - cmd: ruby -e "puts 'hello world'"
 notifications:
-  - provider: Slack
-    incoming_webhook:
+  - provider: Webhook
+    url:
       secure: WHfGy/gGheFHswUm9HsjNj3zDfbFX7UIGentpC1Z8eGcki1X0ow5ajdghoPBLjYyaTCoUiPXIiLNKYGKrClPJCemGdQfsCu0tldrZzSX+UQ=
+    method: POST
+    body: >-
+      {"text": "Hello world"}
     on_build_success: true
     on_build_failure: true
     on_build_status_changed: true
-    template: ' '
