@@ -12,35 +12,27 @@ notifications:
     url:
       secure: WHfGy/gGheFHswUm9HsjNj3zDfbFX7UIGentpC1Z8eGcki1X0ow5ajdghoPBLjYyaTCoUiPXIiLNKYGKrClPJCemGdQfsCu0tldrZzSX+UQ=
     method: POST
+    # <{{buildUrl}}|Build {{projectName}} {{buildVersion}} {{status}}>
+    # Commit <{{commitUrl}}|{{commitId}}> by {{commitAuthor}} on {{commitDate}}:
+    # _{{commitMessage}}_
     body: >-
       {{^isPullRequest}}
-        {{#passed}}
         {
           "attachments": [
             {
-              "fallback": "AppVeyor succeeded",
-              "color": "#44ee44",
-              "title": "AppVeyor Succeeded",
-              "title_link": "https://api.slack.com/",
-              "text": "Commit"
+              "title": "AppVeyor Build {{projectName}} {{buildVersion}} {{status}}",
+              "fallback": "AppVeyor Build {{projectName}} {{buildVersion}} {{status}}",
+              "title_link": "{{buildUrl}}",
+              "text": "Commit <{{commitUrl}}|{{commitId}}> by {{commitAuthor}} on {{commitDate}}: _{{commitMessage}}_"
+              {{#passed}}
+                "color": "#44ee44"
+              {{/passed}}
+              {{#failed}}
+                "color": "#ee4444"
+              {{/failed}}
             }
           ]
         }
-        {{/passed}}
-
-        {{#failed}}
-        {
-          "attachments": [
-            {
-              "fallback": "AppVeyor failed",
-              "color": "#ee4444",
-              "title": "AppVeyor Failed",
-              "title_link": "https://api.slack.com/",
-              "text": "Commit"
-            }
-          ]
-        }
-        {{/failed}}
       {{/isPullRequest}}
     on_build_success: false
     on_build_failure: true
