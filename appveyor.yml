@@ -12,7 +12,7 @@ test_script:
 notifications:
   - provider: Slack
     incoming_webhook:
-      secure: iMINHMS0nZabaDsxN9omRDsekxzVvAAzEq5ev7lN6vZ6r9zNhl3/F/7POIVyahAwVFpRDeQT/iUugpAGWmOt3eGL/lZIdqiJFZ9DjPSkP68= # #alerts
-    on_build_success: false
+      secure: WHfGy/gGheFHswUm9HsjNj3zDfbFX7UIGentpC1Z8eGcki1X0ow5ajdghoPBLjYyaTCoUiPXIiLNKYGKrClPJCemGdQfsCu0tldrZzSX+UQ=
+    on_build_success: true
     on_build_failure: true
     on_build_status_changed: true
