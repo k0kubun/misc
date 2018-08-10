@@ -13,9 +13,32 @@ notifications:
       secure: WHfGy/gGheFHswUm9HsjNj3zDfbFX7UIGentpC1Z8eGcki1X0ow5ajdghoPBLjYyaTCoUiPXIiLNKYGKrClPJCemGdQfsCu0tldrZzSX+UQ=
     method: POST
     body: >-
+      {{#passed}}
+      {
+        "attachments": [
+          {
+            "fallback": "AppVeyor succeeded",
+            "color": "#44ee44",
+            "title": "AppVeyor Succeeded",
+            "title_link": "https://api.slack.com/",
+            "text": "Commit"
+          }
+        ]
+      }
+      {{/passed}}
       {{#failed}}
-      {"text": "Hello world"}
+      {
+        "attachments": [
+          {
+            "fallback": "AppVeyor failed",
+            "color": "#ee4444",
+            "title": "AppVeyor Failed",
+            "title_link": "https://api.slack.com/",
+            "text": "Commit"
+          }
+        ]
+      }
       {{/failed}}
-    on_build_success: true
+    on_build_success: false
     on_build_failure: true
     on_build_status_changed: true
