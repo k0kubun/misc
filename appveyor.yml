@@ -6,7 +6,7 @@ environment:
   ruby_version: "24-%Platform%"
 version: 1.0.{build}
 build_script:
-- cmd: ruby -e "exit 0"
+- cmd: ruby -e "exit 1"
 notifications:
   - provider: Webhook
     url:
