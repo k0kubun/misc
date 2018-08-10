@@ -23,7 +23,7 @@ notifications:
               "title": "AppVeyor Build {{projectName}} {{buildVersion}} {{status}}",
               "fallback": "AppVeyor Build {{projectName}} {{buildVersion}} {{status}}",
               "title_link": "{{buildUrl}}",
-              "text": "Commit <{{commitUrl}}|{{commitId}}> by {{commitAuthor}} on {{commitDate}}: _{{commitMessage}}_"
+              "text": "Commit <{{commitUrl}}|{{commitId}}> by {{commitAuthor}} on {{commitDate}}: _{{commitMessage}}_",
               {{#passed}}
                 "color": "#44ee44"
               {{/passed}}
