@@ -1,0 +1,24 @@
+# genminus2.rb plus_array_500k \[1\] \[2\] a\+b 500000 120
+prelude: |
+  def x
+    a = [1]
+    b = [2]
+    i = 500000
+    while i > 0
+      a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b
+      a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b
+      a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b
+      a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b;a+b
+      i -= 1
+    end
+  end
+
+  x # use --jit-min-calls=1
+  if RubyVM::MJIT.enabled?
+    RubyVM::MJIT.pause(wait: true) # use r64250+ [Feature #14954]
+  end
+
+benchmark:
+  plus_array_500k: x
+
+loop_count: 1
