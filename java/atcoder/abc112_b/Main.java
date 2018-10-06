@@ -16,10 +16,20 @@ public class Main {
         }
 
         int cost = new Main().minCost(n, t, cs, ts);
-        System.out.println(cost);
+        if (cost == 1001) {
+            System.out.println("TLE");
+        } else {
+            System.out.println(cost);
+        }
     }
 
     public int minCost(int n, int t, int costs[], int times[]) {
-        return 1;
+        int min = 1001;
+        for (int i = 0; i < n; i++) {
+            if (times[i] <= t && costs[i] < min) {
+                min = costs[i];
+            }
+        }
+        return min;
     }
 }
