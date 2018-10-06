@@ -6,13 +6,32 @@ public class Main {
         String firstLine[] = scanner.nextLine().split(" ", 2);
 
         int n = Integer.parseInt(firstLine[0]);
-        int m = Integer.parseInt(firstLine[1]);
+        long m = Long.parseLong(firstLine[1]);
 
-        int max = new Main().maxNum(n, m);
+        long max = new Main().maxNum(n, m);
         System.out.println(max);
     }
 
-    public int maxNum(int n, int m) {
-        return 1;
+    public long maxNum(int n, long m) {
+        long max = 1;
+        for (long i = 2; i <= m; i++) {
+            if (findM(i, n, m)) {
+                max = i;
+            }
+        }
+        return max;
+    }
+
+    public boolean findM(long base, long n, long m) {
+        long sum = n * base;
+        if (sum > m) {
+            return false;
+        }
+
+        if ((m - sum) % base == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
