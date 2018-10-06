@@ -8,30 +8,23 @@ public class Main {
         int n = Integer.parseInt(firstLine[0]);
         long m = Long.parseLong(firstLine[1]);
 
-        long max = new Main().maxNum(n, m);
+        long max;
+        if (m % n == 0) {
+            max = m / n;
+        } else {
+            max = new Main().maxNum(n, m);
+        }
         System.out.println(max);
     }
 
     public long maxNum(int n, long m) {
         long max = 1;
-        for (long i = 2; i <= m; i++) {
-            if (findM(i, n, m)) {
-                max = i;
+        for (long base = 2; base <= m; base++) {
+            long sum = n * base;
+            if (sum <= m && (m - sum) % base == 0) {
+                max = base;
             }
         }
         return max;
-    }
-
-    public boolean findM(long base, long n, long m) {
-        long sum = n * base;
-        if (sum > m) {
-            return false;
-        }
-
-        if ((m - sum) % base == 0) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }
