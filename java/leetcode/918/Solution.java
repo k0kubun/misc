@@ -10,34 +10,31 @@ class Solution {
 
     public int maxSubarraySumCircular(int[] A) {
         int max = A[0];
-        for (int start = 0; start < A.length; start++) {
-            int sub[] = new int[A.length];
-            int j = 0;
-            for (int i = start; i < A.length + start; i++) {
-                if (i < A.length) {
-                    sub[j] = A[i];
-                } else {
-                    sub[j] = A[i - A.length];
-                }
-                j++;
-            }
-            int subMax = subMax(sub);
-            if (max < subMax) {
-                max = subMax;
-            }
-        }
-        return max;
-    }
+        int cache[] = new int[A.length + 1];
+        int cacheInd = 0;
 
-    public int subMax(int[] sub) {
-        int max = sub[0];
-        int curSum = 0;
-        for (int i = 0; i < sub.length; i++) {
-            curSum += sub[i];
-            if (max < curSum) {
-                max = curSum;
+        for (int i = 0; i < 2 * A.length; i++) {
+            int index = i;
+            if (index >= A.length) {
+                index -= A.length;
+            }
+
+            for (int j = cacheInd - 1; j >= 0; j--) {
+                cache[j + 1] = cache[j] + A[index];
+            }
+            if (cacheInd < A.length) {
+                cacheInd++;
+            }
+
+            cache[0] = A[index];
+
+            for (int j = 0; j < cacheInd; j++) {
+                if (max < cache[j]) {
+                    max = cache[j];
+                }
             }
         }
+
         return max;
     }
 }
