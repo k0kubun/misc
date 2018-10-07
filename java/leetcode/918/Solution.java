@@ -9,7 +9,7 @@ class Solution {
     }
 
     public int maxSubarraySumCircular(int[] A) {
-        int max = 0;
+        int max = A[0];
         for (int start = 0; start < A.length; start++) {
             int sub[] = new int[A.length];
             int j = 0;
