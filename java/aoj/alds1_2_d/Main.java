@@ -35,22 +35,17 @@ public class Main {
     private void shellSort(int[] A, int n) {
         this.cnt = 0;
 
-        int[] G = new int[2];
-        int m = 0;
+        List<Integer> G = genG(n);
+        int m = G.size();
 
-        for (int i = 1; i <= n; i = i * 3 + 1) {
-            G[m] = i;
-            m++;
-        }
-
-        for (int i = m - 1; i >= 0; i--) {
-            insertionSort(A, n, G[i]);
+        for (int i = 0; i < m; i++) {
+            insertionSort(A, n, G.get(i));
         }
 
         System.out.println(m);
-        for (int i = m - 1; i >= 0; i--) {
-            System.out.print(G[i]);
-            if (i == 0) {
+        for (int i = 0; i < m; i++) {
+            System.out.print(G.get(i));
+            if (i == m - 1) {
                 System.out.print("\n");
             } else {
                 System.out.print(" ");
@@ -60,5 +55,16 @@ public class Main {
         for (int i = 0; i < n; i++) {
             System.out.println(A[i]);
         }
+    }
+
+    private List<Integer> genG(int n) {
+        List<Integer> list = new ArrayList<Integer>();
+        int cur = 1;
+        while (cur <= n) {
+            list.add(cur);
+            cur = 3 * cur + 1;
+        }
+        Collections.reverse(list);
+        return list;
     }
 }
