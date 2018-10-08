@@ -1,12 +1,29 @@
 import java.util.Scanner;
-import java.util.Stack;
+
+class Stack {
+    int stack[];
+    int valNum;
+
+    public Stack() {
+        this.stack = new int[1000];
+        this.valNum = 0;
+    }
+
+    public void push(int num) {
+        this.stack[this.valNum++] = num;
+    }
+
+    public Integer pop() {
+        return this.stack[--this.valNum];
+    }
+}
 
 class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String[] tokens = scanner.nextLine().split(" ", -1);
 
-        Stack<Integer> stack = new Stack<>();
+        Stack stack = new Stack();
         int lhs, rhs;
         for (String token : tokens) {
             switch (token) {
