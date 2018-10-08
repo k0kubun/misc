@@ -3,7 +3,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-class ALDS1_02d {
+class ALDS1_2d {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int n = Integer.parseInt(scanner.nextLine());

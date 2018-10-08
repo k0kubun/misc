@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-class ALDS1_02a {
+class ALDS1_2b {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int len = Integer.parseInt(scanner.nextLine());
@@ -11,30 +11,30 @@ class ALDS1_02a {
             numbers[i] = Integer.parseInt(inputs[i]);
         }
 
-        new Main().bubbleSort(numbers, len);
+        new Main().selectionSort(numbers, len);
     }
 
-    private void bubbleSort(int numbers[], int len) {
+    private void selectionSort(int numbers[], int len) {
         int times = 0;
         boolean sorted = true;
 
-        int i = 0; // count of sorted numbers
-        while (sorted) {
-            sorted = false;
-            for (int j = len - 1; j > i; j--) {
-                if (numbers[j - 1] > numbers[j]) {
-                    int temp = numbers[j - 1];
-                    numbers[j - 1] = numbers[j];
-                    numbers[j] = temp;
-
-                    times++;
-                    sorted = true;
+        for (int i = 0; i < len; i++) {
+            int minJ = i;
+            for (int j = i; j < len; j++) {
+                if (numbers[j] < numbers[minJ]) {
+                    minJ = j;
                 }
             }
-            i++;
+
+            if (i != minJ) {
+                int temp = numbers[i];
+                numbers[i] = numbers[minJ];
+                numbers[minJ] = temp;
+                times++;
+            }
         }
 
-        for (i = 0; i < len; i++) {
+        for (int i = 0; i < len; i++) {
             System.out.print(numbers[i]);
             if (i == len - 1) {
                 System.out.print("\n");

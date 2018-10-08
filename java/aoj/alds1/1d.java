@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-class ALDS1_01d {
+class ALDS1_1d {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int len = Integer.parseInt(scanner.nextLine());
