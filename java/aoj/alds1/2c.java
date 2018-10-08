@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-class ALDS1_2c {
+class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int len = Integer.parseInt(scanner.nextLine());
