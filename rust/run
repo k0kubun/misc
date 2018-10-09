@@ -1,5 +1,0 @@
-#!/bin/sh
-set -e
-
-rustc -o ./run.out $@
-exec ./run.out
