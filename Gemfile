@@ -9,6 +9,7 @@ gem 'puma'
 gem 'sass-rails'
 gem 'uglifier'
 gem 'coffee-rails'
+gem 'hamlit'
 
 group :development do
   gem 'listen'
