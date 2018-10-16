@@ -1,0 +1,6 @@
+5
+insert 7
+insert 3
+deleteFirst
+deleteLast
+insert 1
