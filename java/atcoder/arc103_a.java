@@ -67,12 +67,9 @@ class Main {
 
         int n2 = n / 2;
         if (v1top1num == v2top1num) {
-            if (v1top1count > v2top1count) {
-                System.out.println((n2 - v1top1count) + (n2 - v2top2count));
-            }
-            else {
-                System.out.println((n2 - v1top2count) + (n2 - v2top1count));
-            }
+            int a = (n2 - v1top1count) + (n2 - v2top2count);
+            int b = (n2 - v1top2count) + (n2 - v2top1count);
+            System.out.println(Math.min(a, b));
         }
         else {
             System.out.println((n2 - v1top1count) + (n2 - v2top1count));
