@@ -5,37 +5,37 @@ class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int N = Integer.parseInt(scanner.nextLine());
-        int[] A = new int[N];
+        long[] A = new long[N];
         for (int i = 0; i < N; i++) {
-            A[i] = Integer.parseInt(scanner.nextLine());
+            A[i] = Long.parseLong(scanner.nextLine());
         }
 
         Arrays.sort(A);
-        int sumMin = new Main().resultFromMin(A, N);
-        int sumMax = new Main().resultFromMax(A, N);
+        long sumMin = new Main().resultFromMin(A, N);
+        long sumMax = new Main().resultFromMax(A, N);
         System.out.println(Math.max(sumMin, sumMax));
     }
 
     // start from min.
-    public int resultFromMin(int[] A, int N) {
-        int sum = 0;
-        int left = A[0];
-        int right = A[0];
+    public long resultFromMin(long[] A, int N) {
+        long sum = 0;
+        long left = A[0];
+        long right = A[0];
         int minIndex = 1;
         int maxIndex = N - 1;
-        for (int i = 1; i < N; i++) {
+        for (long i = 1; i < N; i++) {
             if ((((i - 1) / 2) % 2) == 0) {
                 // left, right is small.
                 if (i % 2 == 0) {
                     // compare with right (second).
-                    int nextRight = A[maxIndex];
-                    sum += (nextRight - right);
+                    long nextRight = A[maxIndex];
+                    sum += Math.abs(nextRight - right);
                     maxIndex--;
                     right = nextRight;
                 } else {
                     // compare with left (first).
-                    int nextLeft = A[maxIndex];
-                    sum += (nextLeft - left);
+                    long nextLeft = A[maxIndex];
+                    sum += Math.abs(nextLeft - left);
                     maxIndex--;
                     left = nextLeft;
                 }
@@ -43,14 +43,14 @@ class Main {
                 // left, right is big.
                 if (i % 2 == 0) {
                     // compare with right (second).
-                    int nextRight = A[minIndex];
-                    sum += (right - nextRight);
+                    long nextRight = A[minIndex];
+                    sum += Math.abs(right - nextRight);
                     minIndex++;
                     right = nextRight;
                 } else {
                     // compare with left (first).
-                    int nextLeft = A[minIndex];
-                    sum += (left - nextLeft);
+                    long nextLeft = A[minIndex];
+                    sum += Math.abs(left - nextLeft);
                     minIndex++;
                     left = nextLeft;
                 }
@@ -59,25 +59,25 @@ class Main {
         return sum;
     }
 
-    public int resultFromMax(int[] A, int N) {
-        int sum = 0;
-        int left = A[N - 1];
-        int right = A[N - 1];
+    public long resultFromMax(long[] A, int N) {
+        long sum = 0;
+        long left = A[N - 1];
+        long right = A[N - 1];
         int minIndex = 0;
         int maxIndex = N - 2;
-        for (int i = 1; i < N; i++) {
+        for (long i = 1; i < N; i++) {
             if ((((i - 1) / 2) % 2) == 0) {
                 // left, right is big.
                 if (i % 2 == 0) {
                     // compare with right (second).
-                    int nextRight = A[minIndex];
-                    sum += (right - nextRight);
+                    long nextRight = A[minIndex];
+                    sum += Math.abs(right - nextRight);
                     minIndex++;
                     right = nextRight;
                 } else {
                     // compare with left (first).
-                    int nextLeft = A[minIndex];
-                    sum += (left - nextLeft);
+                    long nextLeft = A[minIndex];
+                    sum += Math.abs(left - nextLeft);
                     minIndex++;
                     left = nextLeft;
                 }
@@ -85,14 +85,14 @@ class Main {
                 // left, right is small.
                 if (i % 2 == 0) {
                     // compare with right (second).
-                    int nextRight = A[maxIndex];
-                    sum += (nextRight - right);
+                    long nextRight = A[maxIndex];
+                    sum += Math.abs(nextRight - right);
                     maxIndex--;
                     right = nextRight;
                 } else {
                     // compare with left (first).
-                    int nextLeft = A[maxIndex];
-                    sum += (nextLeft - left);
+                    long nextLeft = A[maxIndex];
+                    sum += Math.abs(nextLeft - left);
                     maxIndex--;
                     left = nextLeft;
                 }
