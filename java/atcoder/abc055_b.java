@@ -4,14 +4,15 @@ import java.util.*;
 class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        BigInteger n = scanner.nextBigInteger();
-        BigInteger x = new BigInteger("1");
-        BigInteger one = new BigInteger("1");
+        long n = Long.parseLong(scanner.nextLine());
 
-        for (BigInteger i = new BigInteger("1"); i.compareTo(n) <= 0; i = i.add(one)) {
-            x = x.multiply(i);
+        long result = 1;
+        for (long i = 2; i <= n; i++) {
+            result *= i;
+            if (result > 1000000007) {
+                result %= 1000000007;
+            }
         }
-        BigInteger mod = new BigInteger("100000007");
-        System.out.println(x.mod(mod).toString());
+        System.out.println(result);
     }
 }
