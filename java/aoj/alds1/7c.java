@@ -30,8 +30,6 @@ class Main {
         }
     }
 
-    boolean printing;
-
     public static void main(String[] args) {
         new Main().main();
     }
@@ -62,17 +60,14 @@ class Main {
         Node root = nodes[0].root();
 
         System.out.println("Preorder");
-        this.printing = false;
         this.preorder(root);
         System.out.print("\n");
 
         System.out.println("Inorder");
-        this.printing = false;
         this.inorder(root);
         System.out.print("\n");
 
         System.out.println("Postorder");
-        this.printing = false;
         this.postorder(root);
         System.out.print("\n");
     }
@@ -109,6 +104,5 @@ class Main {
 
     private void countNode(Node node) {
         System.out.printf(" %d", node.id);
-        this.printing = true;
     }
 }
