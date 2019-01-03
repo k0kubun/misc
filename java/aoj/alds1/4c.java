@@ -1,28 +1,24 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        int num = Integer.parseInt(scanner.nextLine());
 
-        int sNum = Integer.parseInt(scanner.nextLine());
-        String[] sLine = scanner.nextLine().split(" ", sNum);
-
-        Map<String, Boolean> sSeen = new HashMap<>();
-        for (int i = 0; i < sNum; i++) {
-            sSeen.put(sLine[i], true);
-        }
-
-        int tNum = Integer.parseInt(scanner.nextLine());
-        String[] tLine = scanner.nextLine().split(" ", tNum);
-
-        int result = 0;
-        for (int i = 0; i < tNum; i++) {
-            if (sSeen.containsKey(tLine[i])) {
-                result++;
+        Set<String> seen = new HashSet<>();
+        for (int i = 0; i < num; i++) {
+            String[] op = scanner.nextLine().split(" ", 2);
+            if (op[0].equals("insert")) {
+                seen.add(op[1]);
+            } else if (op[0].equals("find")) {
+                if (seen.contains(op[1])) {
+                    System.out.println("yes");
+                } else {
+                    System.out.println("no");
+                }
+            } else {
+                throw new RuntimeException(String.format("unexpected operator: %s", op[0]));
             }
         }
-        System.out.println(result);
     }
 }
