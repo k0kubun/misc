@@ -10,17 +10,23 @@ class Main {
 
         public void insert(long key) {
             this.heap.add(key);
+            int i = this.heap.size() - 1;
+
+            while (i > 0 && this.heap.get(this.parentIndexOf(i)) < this.heap.get(i)) {
+                long tmp = this.heap.get(this.parentIndexOf(i));
+                this.heap.set(this.parentIndexOf(i), this.heap.get(i));
+                this.heap.set(i, tmp);
+                i = this.parentIndexOf(i);
+            }
         }
 
         public long extractMax() {
-            this.buildMaxHeap();
-            return this.heap.remove(0);
-        }
-
-        private void buildMaxHeap() {
-            for (int i = this.heap.size() / 2; i >= 0; i--) {
-                this.maxHeapify(i);
+            long result = this.heap.get(0);
+            if (this.heap.size() > 1) {
+                this.heap.set(0, this.heap.remove(this.heap.size() - 1));
+                this.maxHeapify(0);
             }
+            return result;
         }
 
         private void maxHeapify(int i) {
