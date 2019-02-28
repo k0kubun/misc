@@ -8,6 +8,7 @@ trigger:
 
 jobs:
 - job: Linux
+  displayName: hel
   pool:
     vmImage: 'Ubuntu-16.04'
   steps:
@@ -15,6 +16,7 @@ jobs:
     displayName: 'Run a one-line script'
 
 - job: Linux2
+  displayName: hel
   pool:
     vmImage: 'Ubuntu-16.04'
   steps:
