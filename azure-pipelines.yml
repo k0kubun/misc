@@ -7,18 +7,23 @@ trigger:
 - master
 
 jobs:
-- job: Linux
-  displayName: hel
+- job: job1
+  displayName: fixed
   pool:
     vmImage: 'Ubuntu-16.04'
   steps:
-  - script: echo Hello, world!
-    displayName: 'Run a one-line script'
+  - script: echo job1
 
-- job: Linux2
-  displayName: hel
+- job: job2
+  displayName: fixed
   pool:
     vmImage: 'Ubuntu-16.04'
   steps:
-  - script: echo Hello, world!
-    displayName: 'Run a one-line script'
+  - script: echo job2
+
+- job: job3
+  displayName: fixed
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  steps:
+  - script: echo job3
