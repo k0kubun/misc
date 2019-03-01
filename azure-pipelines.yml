@@ -26,7 +26,7 @@ jobs:
       )
   - script: |
       for /l %%i in (1,1,5) do (
-        dir aaa
+        exit 2
         echo %errorlevel%
         echo %errorlevel%
         if %errorlevel% == 0 (exit 0) else (
