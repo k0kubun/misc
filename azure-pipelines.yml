@@ -8,22 +8,13 @@ trigger:
 
 jobs:
 - job: job1
-  displayName: fixed
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'vs2017-win2016'
   steps:
-  - script: echo job1
-
-- job: job2
-  displayName: fixed
-  pool:
-    vmImage: 'Ubuntu-16.04'
-  steps:
-  - script: echo job2
-
-- job: job3
-  displayName: fixed
-  pool:
-    vmImage: 'Ubuntu-16.04'
-  steps:
-  - script: echo job3
+  - script: |
+      for /l %%i in (1,1,5) do (
+        echo hello
+        if not %errorlevel% == 0 (
+          if i == 5 (exit 1) else (sleep 1)
+        )
+      )
