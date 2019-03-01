@@ -11,9 +11,10 @@ jobs:
   pool:
     vmImage: 'vs2017-win2016'
   steps:
+  - checkout: none
   - script: |
       for /l %%i in (1,1,5) do (
-        echo hello
+        dir aaa
         if not %errorlevel% == 0 (
           if i == 5 (exit 1) else (sleep 1)
         )
