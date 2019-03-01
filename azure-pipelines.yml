@@ -14,7 +14,7 @@ jobs:
   - checkout: none
   - script: |
       for /l %%i in (1,1,5) do (
-        dir ee
+        echo ha
         if errorlevel 0 (
           if %%i == 5 (exit 1) else (
             echo yo
