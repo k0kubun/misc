@@ -13,6 +13,7 @@ jobs:
   steps:
   - checkout: none
   - script: |
+      sleep 1
       dir
       if %errorlevel% == 0 (exit 0)
       dir /0
