@@ -13,8 +13,8 @@ jobs:
   steps:
   - checkout: none
   - script: |
-      dir /0
       for /l %%i in (1,1,5) do (
+        dir /0
         if %errorlevel% == 0 (echo ok) else (echo error)
       )
 #  - script: |
