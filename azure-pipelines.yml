@@ -14,9 +14,15 @@ jobs:
   - checkout: none
   - script: |
       for /l %%i in (1,1,5) do (
+        set errorlevel=
         dir /0
         if %errorlevel% == 0 (echo ok) else (echo error)
       )
+  - script: |
+      dir
+      if %errorlevel% == 0 (echo ok) else (echo error)
+      dir /0
+      if %errorlevel% == 0 (echo ok) else (echo error)
 #  - script: |
 #      for /l %%i in (1,1,5) do (
 #        echo hello
