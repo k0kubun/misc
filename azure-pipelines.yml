@@ -13,18 +13,15 @@ jobs:
   steps:
   - checkout: none
   - script: |
-      sleep 1
-      dir
+      vcpkg --triplet x64-windows install %dependencies%
       if %errorlevel% == 0 (exit 0)
-      dir /0
-      if %errorlevel% == 0 (echo ok) else (echo error)
-    continueOnError: true
-  - script: |
-      for /l %%i in (1,1,5) do (
-        set errorlevel=
-        dir /0
-        if %errorlevel% == 0 (echo ok) else (echo error)
-      )
+      sleep 4
+      vcpkg --triplet x64-windows install %dependencies%
+      if %errorlevel% == 0 (exit 0)
+      sleep 25
+      vcpkg --triplet x64-windows install %dependencies%
+    env:
+      dependencies: openssl readline zlib
 #  - script: |
 #      for /l %%i in (1,1,5) do (
 #        echo hello
