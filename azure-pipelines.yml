@@ -14,7 +14,7 @@ jobs:
   - checkout: none
   - script: |
       dir
-      if %errorlevel% == 0 (echo ok) else (echo error)
+      if %errorlevel% == 0 (exit 0)
       dir /0
       if %errorlevel% == 0 (echo ok) else (echo error)
     continueOnError: true
