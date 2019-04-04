@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Takashi Kokubun']
   spec.email         = ['takashikkbn@gmail.com']
 
-  spec.summary       = %q{Benchmark driver}
-  spec.description   = %q{Benchmark driver}
+  spec.summary       = %q{Old implementation of benchmark_driver}
+  spec.description   = %q{Old implementation of benchmark_driver}
   spec.homepage      = 'https://github.com/k0kubun/benchmark_driver'
   spec.license       = 'MIT'
 

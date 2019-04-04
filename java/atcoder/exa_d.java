@@ -9,7 +9,7 @@ class Main {
         String[] line = scanner.nextLine().split(" ", n);
 
         for (int i = 0; i < n; i++) {
-            String s = Integer.parseInt(line[i]);
+            int s = Integer.parseInt(line[i]);
         }
 
     }
