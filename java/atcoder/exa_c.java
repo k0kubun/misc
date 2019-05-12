@@ -9,8 +9,16 @@ class Main {
         String s = scanner.nextLine();
 
         long[] count = new long[n];
+        Map<Character, List<Integer>> mapIndexes = new HashMap<>();
         for (int i = 0; i < n; i++) {
             count[i] = 1;
+
+            List<Integer> list = mapIndexes.get(s.charAt(i));
+            if (list == null) {
+                list = new ArrayList<>();
+                mapIndexes.put(s.charAt(i), list);
+            }
+            list.add(i);
         }
 
         for (int i = 0; i < q; i++) {
@@ -18,9 +26,9 @@ class Main {
             char t = td[0].charAt(0);
             char d = td[1].charAt(0);
 
-            for (int j = 0; j < n; j++) {
-                char c = s.charAt(j);
-                if (c == t) {
+            List<Integer> list = mapIndexes.get(t);
+            if (list != null && list.size() > 0) {
+                for (Integer j : list) {
                     long cnt = count[j];
                     count[j] = 0;
                     if (d == 'R') {
