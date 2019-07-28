@@ -1,2 +1,4 @@
 capybara-*.png
 capybara-*.html
+Gemfile.lock
+vendor/bundle
