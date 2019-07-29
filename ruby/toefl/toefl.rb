@@ -20,7 +20,7 @@ KNOWN_PLACES = [
   /\ATokyo Yaesu Minamiguchi Testing Center/,
   /\AIkebukuro Community College PC College Seibu Ikebukuro/,
   /\AKashiwaeki Minamiguchi Testing Center/,
-  #/\AYokohama-eki Kita Higashiguchi Testing Center/,
+  /\AYokohama-eki Kita Higashiguchi Testing Center/,
   /\AHongo Sanchome \[Kurosebia Hongo Bldg.\] Testing Center/,
   /\AHongo Sanchome Testing Center/,
   /\AIchikawa Ekimae Testing Center/,
