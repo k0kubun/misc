@@ -28,7 +28,7 @@ KNOWN_PLACES = [
   /\ANihonbashi Ningyocho Testing Center/,
   /\ABenefull School Iidabashi/,
   /\AUbint Iidabashi Testing Center/,
-  #/\ATabata Test Center/,
+  /\ATabata Test Center/,
   /\ANakano Eki Minamiguchi Testing Center/,
   /\AOmiyaeki Higashiguchi Testing Center/,
   /\AAbiko Tennodai Testing Center/,
