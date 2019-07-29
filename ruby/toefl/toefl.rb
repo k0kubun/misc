@@ -8,6 +8,8 @@ require 'uri'
 UNAVAILABLE_DATES = [
   'August 3, 2019',
   'August 4, 2019',
+  'August 10, 2019',
+  'August 11, 2019',
   'September 21, 2019',
   'September 22, 2019',
   'September 28, 2019',
@@ -29,9 +31,10 @@ KNOWN_PLACES = [
   /\ATabata Test Center/,
   /\ANakano Eki Minamiguchi Testing Center/,
   /\AOmiyaeki Higashiguchi Testing Center/,
-  /\AYokohama-eki Kita Higashiguchi Testing Center/,
+  #/\AYokohama-eki Kita Higashiguchi Testing Center/,
   /\AAbiko Tennodai Testing Center/,
   /\AWaseda University/,
+  /\AYoyogi Ekimae Testing Center/,
 ]
 
 class TestCenterSearcher
@@ -118,37 +121,29 @@ begin
     next if UNAVAILABLE_DATES.any? { |date| display_date.start_with?(date) }
 
     place_names = date_info.fetch(:items).map { |i| i.fetch(:name) }
+      .reject { |place| KNOWN_PLACES.any? { |reg| reg.match(place) } }
     unless place_names.empty?
       date_places[display_date] = place_names
     end
   end
 
   # Build Slack message
-  message = ERB.new(<<~EOS, trim_mode: '%').result
-  #=====================================================
-  # <%= Time.now.getlocal('+09:00').strftime('%Y-%m-%d (%a) %H:%M:%S %z') %>
-  #=====================================================
-  % unknown_places = []
-  % date_places.each do |date, places|
-  ■ *<%= date %>*
-  %   places.each do |place|
-  %     if KNOWN_PLACES.any? { |reg| reg.match(place) }
-  * <%= place %>
-  %     else
-  * *<%= place %>*
-  %       unknown_places << place
-  %     end
-  %   end
+  if date_places.empty?
+    message = "#{Time.now.getlocal('+09:00').strftime('%Y-%m-%d (%a) %H:%M:%S %z')}: Not found"
+  else
+    message = ERB.new(<<~EOS, trim_mode: '%').result
+    #=====================================================
+    # <%= Time.now.getlocal('+09:00').strftime('%Y-%m-%d (%a) %H:%M:%S %z') %>
+    #=====================================================
+    % date_places.each do |date, places|
+    ■ *<%= date %>*
+    %   places.each do |place|
+    * <%= place %>
+    %   end
 
-  % end
-  %
-  % unless unknown_places.empty?
-  @k0kubun:
-  %   unknown_places.each do |place|
-  * *<%= place %>*
-  %   end
-  % end
-  EOS
+    % end
+    EOS
+  end
 
   # Notify Slack
   SlackWebhook.notify(message)
