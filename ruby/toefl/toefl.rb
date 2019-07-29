@@ -61,18 +61,18 @@ class TestCenterSearcher
 
     puts '3. Search with Akihabara'
     fill_in('location', with: 'Akihabara')
-    sleep 0.5
+    sleep 1
     find('#location_listbox li[data-offset-index="0"]').click
-    sleep 0.5
+    sleep 1
 
     puts '4. Submit search'
     click_button('findTestCenterButton')
-    sleep 1
+    sleep 3
 
     #open page.save_screenshot
     puts '5. Open accordions'
     find('#byDateAccordion .panel:nth-child(1) .accordion-toggle').click
-    sleep 1
+    sleep 2
 
     page.body.match(/var findSeatResponse =(?<response>{.+?});/)&.[](:response)
   end
@@ -108,7 +108,7 @@ begin
   # Get findSeatResponse.json
   seat_json = TestCenterSearcher.new.search
   if seat_json.nil?
-    puts "Failed to get findSeatResponse!"
+    puts 'Failed to get findSeatResponse!'
     return
   end
 
@@ -145,6 +145,7 @@ begin
     # Notify Slack
     SlackWebhook.notify(message)
   end
+  puts 'Finish.'
 rescue => e
   SlackWebhook.notify(e.full_message)
 end
