@@ -31,6 +31,7 @@ KNOWN_PLACES = [
   /\AOmiyaeki Higashiguchi Testing Center/,
   /\AYokohama-eki Kita Higashiguchi Testing Center/,
   /\AAbiko Tennodai Testing Center/,
+  /\AWaseda University/,
 ]
 
 class TestCenterSearcher
