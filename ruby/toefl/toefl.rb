@@ -126,10 +126,8 @@ begin
     end
   end
 
-  # Build Slack message
-  if date_places.empty?
-    message = "#{Time.now.getlocal('+09:00').strftime('%Y-%m-%d (%a) %H:%M:%S %z')}: Not found"
-  else
+  unless date_places.empty?
+    # Build Slack message
     message = ERB.new(<<~EOS, trim_mode: '%').result
     #=====================================================
     # <%= Time.now.getlocal('+09:00').strftime('%Y-%m-%d (%a) %H:%M:%S %z') %>
@@ -143,10 +141,10 @@ begin
     % end
     @k0kubun
     EOS
-  end
 
-  # Notify Slack
-  SlackWebhook.notify(message)
+    # Notify Slack
+    SlackWebhook.notify(message)
+  end
 rescue => e
   SlackWebhook.notify(e.full_message)
 end
