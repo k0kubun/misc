@@ -35,6 +35,7 @@ KNOWN_PLACES = [
   /\AWaseda University/,
   /\AYoyogi Ekimae Testing Center/,
   /\ATPS Career College YachiyoKatsutadai/,
+  /\AChiba Ekimae-oodoori Testing Center/,
 ]
 
 class TestCenterSearcher
