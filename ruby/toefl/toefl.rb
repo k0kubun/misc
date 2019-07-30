@@ -63,13 +63,13 @@ class TestCenterSearcher
 
     puts '3. Search with Akihabara'
     fill_in('location', with: 'Akihabara')
-    sleep 1
+    sleep 2
     find('#location_listbox li[data-offset-index="0"]').click
-    sleep 1
+    sleep 2
 
     puts '4. Submit search'
     click_button('findTestCenterButton')
-    sleep 3
+    sleep 10
 
     #open page.save_screenshot
     puts '5. Open accordions'
