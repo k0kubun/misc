@@ -54,6 +54,7 @@ class TestCenterSearcher
   def search
     puts '1. Open search page'
     visit "#{ETS_ORG}/ereg/public/workflowmanager/schlWorkflow?_p=TEL"
+    sleep 2
 
     puts '2. Set August/September'
     if Time.now.month == 7
