@@ -36,6 +36,7 @@ KNOWN_PLACES = [
   /\AYoyogi Ekimae Testing Center/,
   /\ATPS Career College YachiyoKatsutadai/,
   /\AChiba Ekimae-oodoori Testing Center/,
+  /\AMita Testing Center/,
 ]
 
 class TestCenterSearcher
@@ -56,11 +57,11 @@ class TestCenterSearcher
     visit "#{ETS_ORG}/ereg/public/workflowmanager/schlWorkflow?_p=TEL"
     sleep 2
 
-    puts '2. Set August/September'
-    if Time.now.month == 7
-      find('#duration .rightArrow.right').click
-      sleep 1
-    end
+    #puts '2. Set August/September'
+    #if Time.now.month == 7
+    #  find('#duration .rightArrow.right').click
+    #  sleep 1
+    #end
 
     puts '3. Search with Akihabara'
     fill_in('location', with: 'Akihabara')
