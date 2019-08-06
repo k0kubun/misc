@@ -37,6 +37,9 @@ KNOWN_PLACES = [
   /\ATPS Career College YachiyoKatsutadai/,
   /\AChiba Ekimae-oodoori Testing Center/,
   /\AMita Testing Center/,
+  /\ATELENET Japan Chiba Testing Center/,
+  /\AMachida Testing Center/,
+  /\AKawagoe Eki-Higashiguchi Testing Center/,
 ]
 
 class TestCenterSearcher
