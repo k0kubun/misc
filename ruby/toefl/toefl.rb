@@ -20,6 +20,11 @@ KNOWN_PLACES = [
   /\ATELENET Japan Chiba Testing Center/,
   /\AMachida Testing Center/,
   /\AKawagoe Eki-Higashiguchi Testing Center/,
+  /\AIchikawa Ekimae Testing Center/,
+  /\AKashiwaeki Minamiguchi Testing Center/,
+  /\AYazawagakuen Kikuna Testing Center/,
+  /\AAbiko Tennodai Testing Center/,
+  /\AChiba Ekimae-oodoori Testing Center/,
 ]
 
 class TestCenterSearcher
