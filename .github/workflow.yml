@@ -1,7 +1,0 @@
-jobs:
-  macos:
-    name: test
-    runs-on: macos-latest
-    steps:
-      - name: Test
-        run: echo hello world!
