@@ -42,7 +42,7 @@ runs:
         title: "#{status}: #{workflow} / #{matrix}",
         title_link: "#{commit_url}/checks",
         text: "<#{commit_url}|#{github_sha[0...10]}> by #{committer} on #{timestamp}: #{message}",
-        color: status == 'Success' : 'good' ? 'danger',
+        color: status == 'Success' ? 'good' : 'danger',
       }
 
       resp = Net::HTTP.post(
