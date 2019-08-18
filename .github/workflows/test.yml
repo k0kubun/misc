@@ -1,0 +1,9 @@
+name: ubuntu
+on: [push]
+jobs:
+  latest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test
+        run: |
+          echo hello
