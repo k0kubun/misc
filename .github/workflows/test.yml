@@ -7,3 +7,9 @@ jobs:
       - name: test
         run: |
           echo hello
+      - uses: 8398a7/action-slack@v1
+        with:
+          type: success
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: success()
