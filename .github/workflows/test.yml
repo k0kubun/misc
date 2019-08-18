@@ -7,7 +7,7 @@ jobs:
       - name: test
         run: |
           echo hello
-      - uses: ./notify-slack
+      - uses: ./.github/actions/notify-slack
         with:
           type: success
         env:
