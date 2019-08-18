@@ -37,7 +37,7 @@ runs:
 
       commit_url = "https://github.com/#{github_repo}/commit/#{github_sha}"
       attachment = {
-        title: "#{status}: #{workflow} / #{matrix}",
+        title: "#{workflow} / #{matrix}: #{status}",
         title_link: "#{commit_url}/checks",
         text: "<#{commit_url}|#{github_sha[0...10]}> by #{committer} on #{timestamp}: #{message}",
         color: status == 'Success' ? 'good' : 'danger',
