@@ -17,7 +17,8 @@ runs:
       p ARGV
       system('pwd')
       system('ls -la')
-      p ENV
+      require 'pp'
+      pp ENV
 
       #"GITHUB_SHA"=>"65fd37d7956d916cd3417bb770adc3b9b4cc94a7",
       #"GITHUB_WORKFLOW"=>"ubuntu",
