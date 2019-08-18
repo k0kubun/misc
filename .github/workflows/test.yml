@@ -39,20 +39,20 @@ jobs:
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
         run: echo "$STEPS_CONTEXT"
-      #- uses: k0kubun/action-slack@v1.0.0
-      #  with:
-      #    payload: |
-      #      {
-      #        "attachments": [{
-      #          "title": "${{ job.status }}: ${{ github.workflow }} / ${{ matrix.test_task }}",
-      #          "title_link": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks",
-      #          "text": "${{ github.repository }}@${{ github.ref }}: <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>\nby ${{ github.event.head_commit.committer.name }} on ${{ github.event.head_commit.timestamp }}: ${{ github.event.head_commit.message }}",
-      #          "color": "danger"
-      #        }]
-      #      }
-      #  env:
-      #    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #  if: failure() && github.event_name == 'push'
+      - uses: k0kubun/action-slack@v1.0.0
+        with:
+          payload: |
+            {
+              "attachments": [{
+                "title": "${{ job.status }}: ${{ github.workflow }} / ${{ matrix.test_task }}",
+                "title_link": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks",
+                "text": "${{ github.repository }}@${{ github.ref }}: <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>\nby ${{ github.event.head_commit.committer.name }} on ${{ github.event.head_commit.timestamp }}: ${{ github.event.head_commit.message }}",
+                "color": "danger"
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: failure() && github.event_name == 'push'
   notify:
     runs-on: ubuntu-latest
     needs: latest
