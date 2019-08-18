@@ -14,3 +14,8 @@ runs:
     - -e
     - |-
       puts "hello world"
+      p ARGV
+      system('pwd')
+      system('ls -la')
+    - '${{ toJson(inputs) }}'
+    - '${{ toJson(github) }}'
