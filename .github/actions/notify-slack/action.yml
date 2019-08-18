@@ -8,4 +8,4 @@ inputs:
     description: You can overwrite text
 runs:
   using: node12
-  main: echo hello
+  main: bash.sh
