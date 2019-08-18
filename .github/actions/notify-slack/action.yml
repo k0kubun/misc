@@ -18,4 +18,3 @@ runs:
       system('pwd')
       system('ls -la')
     - '${{ toJson(inputs) }}'
-    - '${{ toJson(github) }}'
