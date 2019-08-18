@@ -23,8 +23,6 @@ runs:
       require 'net/http'
       require 'uri'
 
-      slack_url = ENV.fetch('SLACK_WEBHOOK_URL')
-
       github_repo = ENV.fetch('GITHUB_REPOSITORY')
       github_sha  = ENV.fetch('GITHUB_SHA')
       github_ref  = ENV.fetch('GITHUB_REF')
@@ -34,8 +32,8 @@ runs:
       status   = ENV.fetch('INPUT_STATUS')
 
       message   = ENV.fetch('INPUT_COMMIT_MESSAGE')
-      committer = ENV.fetch('INPUT_COMMITTER_NAME')
       timestamp = ENV.fetch('INPUT_COMMIT_TIMESTAMP')
+      committer = ENV.fetch('INPUT_COMMITTER_NAME')
 
       commit_url = "https://github.com/#{github_repo}/commit/#{github_sha}"
       attachment = {
@@ -46,7 +44,7 @@ runs:
       }
 
       resp = Net::HTTP.post(
-        URI(webhook_url),
+        URI(ENV.fetch('SLACK_WEBHOOK_URL')),
         { attachments: [attachment] }.to_json,
         { 'Content-Type' => 'application/json' },
       )
