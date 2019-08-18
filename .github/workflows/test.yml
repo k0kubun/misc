@@ -39,16 +39,16 @@ jobs:
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
         run: echo "$STEPS_CONTEXT"
-      - uses: ./.github/actions/notify-slack
-        with:
-          status: ${{ job.status }}
-          matrix_name: ${{ matrix.test_task }}
-          committer_name: ${{ github.event.head_commit.committer.name }}
-          commit_message: ${{ github.event.head_commit.message }}
-          commit_timestamp: ${{ github.event.head_commit.timestamp }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: failure() && github.event_name == 'push'
+      #- uses: ./.github/actions/notify-slack
+      #- with:
+      #-   status: ${{ job.status }}
+      #-   matrix_name: ${{ matrix.test_task }}
+      #-   committer_name: ${{ github.event.head_commit.committer.name }}
+      #-   commit_message: ${{ github.event.head_commit.message }}
+      #-   commit_timestamp: ${{ github.event.head_commit.timestamp }}
+      #- env:
+      #-   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #- if: failure() && github.event_name == 'push'
   notify:
     runs-on: ubuntu-latest
     needs: latest
