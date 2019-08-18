@@ -8,5 +8,5 @@ inputs:
     description: You can overwrite text
 runs:
   using: docker
-  main: 'docker://rubylang/ruby:2.6.3-bionic'
+  image: 'docker://rubylang/ruby:2.6.3-bionic'
   entrypoint: ['/usr/local/bin/ruby', '-e', 'puts "hello world"']
