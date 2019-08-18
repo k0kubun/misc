@@ -7,8 +7,6 @@ jobs:
       - name: clone
         run: |
           git clone --depth=1 https://github.com/k0kubun/misc .
-      - name: test
-        run: exit 1
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
