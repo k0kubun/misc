@@ -41,10 +41,11 @@ jobs:
         run: echo "$STEPS_CONTEXT"
       - uses: ./.github/actions/notify-slack
         with:
-          type: success
+          status: ${{ job.status }}
+          test_task: ${{ matrix.test_task }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: failure()
+        if: failure() && github.event_name == 'push'
   notify:
     runs-on: ubuntu-latest
     needs: latest

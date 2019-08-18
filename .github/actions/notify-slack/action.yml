@@ -2,10 +2,10 @@ name: notify-slack
 description: You can notify slack of GitHub Actions.
 author: k0kubun
 inputs:
-  type:
-    description: success or failure
-  payload:
-    description: 'json payload(refs: https://github.com/slackapi/node-slack-sdk/blob/v5.0.0/packages/webhook/src/IncomingWebhook.ts#L91-L106)'
+  status:
+    description: Success or Failure
+  test_task:
+    description: Matrix test_task
 runs:
   using: docker
   image: 'docker://ruby:2.6-slim'
