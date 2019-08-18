@@ -13,6 +13,10 @@ runs:
     - /usr/local/bin/ruby
     - -e
     - |-
+      #payload = ENV.slice(
+      #  'GITHUB_SHA',
+      #  ''
+      #)
       puts "hello world"
       p ARGV
       system('pwd')
