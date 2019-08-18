@@ -4,6 +4,7 @@ jobs:
   latest:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
       - name: test
         run: |
           pwd
