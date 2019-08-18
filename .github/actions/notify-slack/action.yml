@@ -4,8 +4,14 @@ author: k0kubun
 inputs:
   status:
     description: Success or Failure
-  test_task:
-    description: Matrix test_task
+  matrix_name:
+    description: Matrix task name
+  committer_name:
+    description: Git committer name
+  commit_message:
+    description: Git commit message
+  commit_timestamp:
+    description: Git commit timestamp
 runs:
   using: docker
   image: 'docker://ruby:2.6-slim'
@@ -13,28 +19,36 @@ runs:
     - /usr/local/bin/ruby
     - -e
     - |-
-      #payload = ENV.slice(
-      #  'GITHUB_SHA',
-      #  ''
-      #)
-      puts "hello world"
-      p ARGV
-      system('pwd')
-      system('ls -la')
-      require 'pp'
-      pp ENV
+      require 'json'
+      require 'net/http'
+      require 'uri'
 
-      #"GITHUB_SHA"=>"65fd37d7956d916cd3417bb770adc3b9b4cc94a7",
-      #"GITHUB_WORKFLOW"=>"ubuntu",
-      #"GITHUB_BASE_REF"=>"",
-      #"GITHUB_EVENT_NAME"=>"push",
-      #"GITHUB_ACTOR"=>"k0kubun",
-      #"SLACK_WEBHOOK_URL"=>"***",
-      #"GITHUB_REF"=>"refs/heads/master",
-      #"GITHUB_REPOSITORY"=>"k0kubun/misc",
-      #"GITHUB_EVENT_PATH"=>"/github/workflow/event.json",
-      #"RUNNER_WORKSPACE"=>"/home/runner/work/misc",
-      #"INPUT_TYPE"=>"success",
-      #"GITHUB_HEAD_REF"=>"",
-      #"GITHUB_WORKSPACE"=>"/github/workspace",
-      #"GITHUB_ACTION"=>"self",
+      slack_url = ENV.fetch('SLACK_WEBHOOK_URL')
+
+      github_repo = ENV.fetch('GITHUB_REPOSITORY')
+      github_sha  = ENV.fetch('GITHUB_SHA')
+      github_ref  = ENV.fetch('GITHUB_REF')
+
+      workflow = ENV.fetch('GITHUB_WORKFLOW')
+      matrix   = ENV.fetch('INPUT_MATRIX_NAME')
+      status   = ENV.fetch('INPUT_STATUS')
+
+      message   = ENV.fetch('INPUT_COMMIT_MESSAGE')
+      committer = ENV.fetch('INPUT_COMMITTER_NAME')
+      timestamp = ENV.fetch('INPUT_COMMIT_TIMESTAMP')
+
+      commit_url = "https://github.com/#{github_repo}/commit/#{github_sha}"
+      attachment = {
+        title: "#{status}: #{workflow} / #{matrix}",
+        title_link: "#{commit_url}/checks",
+        text: "<#{commit_url}|#{github_sha[0...10]}> by #{committer} on #{timestamp}: #{message}",
+        color: status == 'Success' : 'good' ? 'danger',
+      }
+
+      resp = Net::HTTP.post(
+        URI(webhook_url),
+        { attachments: [attachment] }.to_json,
+        { 'Content-Type' => 'application/json' },
+      )
+      puts "#{resp.code} (#{resp.body}) -- #{payload.to_json}"
+      resp.value
