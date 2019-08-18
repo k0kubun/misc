@@ -8,9 +8,7 @@ jobs:
         run: |
           git clone --depth=1 https://github.com/k0kubun/misc .
       - name: test
-        run: |
-          pwd
-          find .
+        run: exit 1
       - name: Debug github context
         run: echo "$GITHUB_CONTEXT"
         env:
@@ -21,3 +19,9 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         if: success()
+  notify:
+    runs-on: ubuntu-latest
+    needs: latest
+    steps:
+      - name: hello
+        run: echo hello
