@@ -9,8 +9,8 @@ inputs:
 runs:
   using: docker
   image: 'docker://ruby:2.6-slim'
-  entrypoint: /usr/local/bin/ruby
   args:
+    - /usr/local/bin/ruby
     - -e
     - |-
       puts "hello world"
