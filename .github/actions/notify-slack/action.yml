@@ -9,4 +9,5 @@ inputs:
 runs:
   using: docker
   image: 'docker://rubylang/ruby:2.6.3-bionic'
-  entrypoint: ['/usr/local/bin/ruby', '-e', 'puts "hello world"']
+  entrypoint: |
+    /usr/local/bin/ruby -e 'puts "hello world"'
