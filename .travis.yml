@@ -2,10 +2,15 @@ language: ruby
 cache: bundler
 sudo: false
 dist: trusty
-rvm:
-- 2.4.2
 script:
 - false
+matrix:
+  include:
+    - rvm: 2.3.8
+      name: test1
+    - rvm: 2.4.9
+      name: test2
+    - rvm: 2.5.7
 notifications:
   webhooks:
     urls:
