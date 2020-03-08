@@ -3,18 +3,14 @@ cache: bundler
 sudo: false
 dist: trusty
 script:
-- false
+- true
 matrix:
   include:
-    - rvm: 2.3.8
-      name: test1
-    - rvm: 2.4.9
-      name: test2
     - rvm: 2.5.7
-notifications:
-  webhooks:
-    urls:
-      secure: fb9CawWfDEVg2z+cLuAvfP5CoxLf7KE/Z8iERwn/91mcyWq4YZMkltx6gOrs3ANn5DhYgGlvNqKW2SyLCeYuHsvFXK6bLYkX5NFyf5XODLrCH7BHmVxDsk2pMCywqI0NB2HrlSL+0ngIBYfNY0XwN19VLdkzKQGmWfgT/J1QSt1xZE5SRTQzhG4TiwRc2r53F0wtXvqN7ukYo7rqD6TqsHGogH+56J2o8Z1lxGO4syFNLspX2m7DTxBbeSY8AUnPxYYs8ubnRxPRWmiZvRjE410xv5cRIox3Qf/YmX9xtsJwqnMcTQ5wmKfBwaS51w/DjAoe8X/tHCboextQ+p83hHOkU9zQ4bDomKiDfAe5dNZjp7DNz1se0f81ZHXAkX7yB+q87Fby7JuNenvEmifYpbkxTVBcWi6yQAcb4bm6RldJTA/SFl8ou+gNUtlC1x6SH83j3CVklcPptnsDKhVWhTMM1eqInFaoMS7cT8NZ2GO+BRMzucuY5Xd4k61PwdwrhZL8p0H2ipYG+hMKRXHXQ7LdWMbIDWos7HsP7nNVeY3YlUk68btrcDf6ufA62vA8w0p8hJzAXIL7zaa+m9nIpBCCnJ25LZZduk5ICPpiAp7+rISx4MiEFfp+lv/gIZ8dnln66GV3otna7ulrersQ5/NLRB9bhT7Z5/3JzT83/d4=
-    on_build_success: false
-    on_build_failure: true
-    on_build_status_changed: false
+# notifications:
+#   webhooks:
+#     urls:
+#       secure: xxx
+#     on_build_success: false
+#     on_build_failure: true
+#     on_build_status_changed: false
