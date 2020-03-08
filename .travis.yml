@@ -5,3 +5,6 @@ dist: trusty
 
 rvm:
   - 2.4.2
+
+script:
+  - false
