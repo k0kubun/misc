@@ -32,7 +32,7 @@ class RepositoryFinder
   end
 end
 
-org_repos = RepositoryFinder.new.org_repos('treasure-data').sort
+org_repos = [] # RepositoryFinder.new.org_repos('treasure-data').sort
 my_repos = RepositoryFinder.new.user_repos('k0kubun').sort
 
 (org_repos + my_repos).each do |full_name|
