@@ -1,16 +1,14 @@
 ## Build vim/vim
-v7.4.2367
-8.0.1161
 
-/etc/apt/sources.list の deb-src の最初2つをアンコメント
+```bash
+ghq get vim
+cd vim
+git checkout v8.2.2022
+# Here, uncomment the first 2 dev-src of /etc/apt/sources.list here for build-dep
+sudo apt-get update
 sudo apt build-dep vim-gtk
-
---enable-gui のconfigureをチェック
-
-```
-sudo apt install git build-essential ncurses-dev lua5.2 lua5.2-dev luajit python-dev ruby-dev
+sudo apt install git build-essential ncurses-dev lua5.3 luajit python3-dev ruby-dev
 make distclean
-sudo apt build-dep vim
 ./configure --with-features=huge --with-x --enable-multibyte --enable-luainterp=dynamic --enable-gpm --enable-cscope --enable-fontset --enable-fail-if-missing --prefix=/usr/local --enable-pythoninterp=dynamic --enable-rubyinterp=dynamic
 make -j8
 ```
