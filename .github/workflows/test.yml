@@ -2,17 +2,12 @@ name: macos
 on: [push]
 jobs:
   latest:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         test_task: [ "check" ]
       fail-fast: false
     steps:
-      - name: clone
-        run: |
-          git clone --depth=1 https://github.com/k0kubun/misc .
-      - name: test
-        run: exit 1
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
