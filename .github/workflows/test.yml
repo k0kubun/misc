@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        configure: default
+        configure: [default]
         include:
           - test_task: test1
           - test_task: test2
