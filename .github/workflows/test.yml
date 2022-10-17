@@ -17,10 +17,10 @@ jobs:
       #  run: |
       #    git clone --depth=1 https://github.com/k0kubun/misc .
 
-      #- name: Dump GitHub context
-      #  env:
-      #    GITHUB_CONTEXT: ${{ toJson(github) }}
-      #  run: echo "$GITHUB_CONTEXT"
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
       #- name: Dump strategy context
       #  env:
