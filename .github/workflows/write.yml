@@ -1,3 +1,4 @@
+name: write
 on: [push]
 jobs:
   latest:
@@ -8,7 +9,7 @@ jobs:
           token: ${{ secrets.K0KUBUN_GITHUB_TOKEN }}
       - name: test
         run: |
-          git fetch origin
+          git fetch --depth=1 origin
           git checkout master
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
