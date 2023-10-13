@@ -1,0 +1,15 @@
+name: ubuntu
+on: [push]
+jobs:
+  latest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        with:
+          token: ${{ secrets.K0KUBUN_GITHUB_TOKEN }}
+      - name: test
+        run: |
+          git fetch origin
+          git checkout master
+          git commit --allow-empty -m "Test"
+          git push origin master
