@@ -8,7 +8,6 @@ GEM
     racc (1.7.3)
 
 PLATFORMS
-  arm64-darwin-23
   ruby
 
 DEPENDENCIES
