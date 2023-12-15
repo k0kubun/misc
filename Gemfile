@@ -2,4 +2,4 @@ source 'https://rubygems.org'
 
 ruby '>= 3.2.2'
 
-gem 'rake'
+gem 'nokogiri', '1.15.4'
